@@ -65,9 +65,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
     _statusDisposer = BackgroundTask.instance.status.listen((StatusEvent event) {
       final String message = 'status: ${event.status.value}, message: ${event.message}';
-      setState(() {
-        statusText = message;
-      });
+
+      setState(() => statusText = message);
     });
   }
 
@@ -81,16 +80,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Plugin example app'),
-        actions: <Widget>[
-          IconButton(
-            onPressed: () {},
-            icon: const Icon(Icons.edit_location_alt),
-            iconSize: 32,
-          ),
-        ],
-      ),
       body: Center(
         child: SingleChildScrollView(
           child: Padding(
@@ -98,47 +87,8 @@ class _HomeScreenState extends State<HomeScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                Text(
-                  bgText,
-                  textAlign: TextAlign.center,
-                ),
-                Text(
-                  statusText,
-                  textAlign: TextAlign.center,
-                ),
-
-                //
-                //
-                // Flexible(
-                //   flex: 2,
-                //   child: Text.rich(
-                //     TextSpan(
-                //       children: [
-                //         const TextSpan(
-                //           text: 'Monitor even if killed',
-                //         ),
-                //         WidgetSpan(
-                //           child: Padding(
-                //             padding: const EdgeInsets.symmetric(horizontal: 2),
-                //             child: CupertinoSwitch(
-                //               value: _isEnabledEvenIfKilled,
-                //               onChanged: (value) {
-                //                 setState(() {
-                //                   _isEnabledEvenIfKilled = value;
-                //                 });
-                //               },
-                //             ),
-                //           ),
-                //           alignment: PlaceholderAlignment.middle,
-                //         )
-                //       ],
-                //     ),
-                //   ),
-                // ),
-                //
-                //
-                //
-
+                Text(bgText, textAlign: TextAlign.center),
+                Text(statusText, textAlign: TextAlign.center),
                 Flexible(
                   child: FilledButton(
                     onPressed: () async {
@@ -146,26 +96,9 @@ class _HomeScreenState extends State<HomeScreen> {
                       final PermissionStatus statusAlways = await Permission.locationAlways.request();
 
                       if (status.isGranted && statusAlways.isGranted) {
-                        await BackgroundTask.instance.start(
-                          isEnabledEvenIfKilled: isEnabledEvenIfKilled,
-                        );
-                        setState(() {
-                          bgText = 'start';
-                        });
+                        await BackgroundTask.instance.start(isEnabledEvenIfKilled: isEnabledEvenIfKilled);
+                        setState(() => bgText = 'start');
                       }
-
-                      //
-                      //
-                      // else {
-                      //   setState(() {
-                      //     _bgText = 'Permission is not isGranted.\n'
-                      //         'location: $status\n'
-                      //         'locationAlways: $status';
-                      //   });
-                      // }
-                      //
-                      //
-                      //
                     },
                     child: const Text('Start'),
                   ),
@@ -174,9 +107,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   child: FilledButton(
                     onPressed: () async {
                       await BackgroundTask.instance.stop();
-                      setState(() {
-                        bgText = 'stop';
-                      });
+
+                      setState(() => bgText = 'stop');
                     },
                     child: const Text('Stop'),
                   ),
@@ -193,9 +125,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                 content: Text('isRunning: $isRunning'),
                                 action: SnackBarAction(
                                   label: 'close',
-                                  onPressed: () {
-                                    ScaffoldMessenger.of(context).clearSnackBars();
-                                  },
+                                  onPressed: () => ScaffoldMessenger.of(context).clearSnackBars(),
                                 ),
                               ),
                             );
