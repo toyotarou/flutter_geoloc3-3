@@ -9,6 +9,8 @@ import 'package:permission_handler/permission_handler.dart';
 import '../collections/geoloc.dart';
 import '../extensions/extensions.dart';
 import '../ripository/isar_repository.dart';
+import 'components/dummy_geoloc_alert.dart';
+import 'parts/geoloc_dialog.dart';
 
 @pragma('vm:entry-point')
 void backgroundHandler(Location data) {
@@ -102,6 +104,19 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('geoloc'),
+        actions: <Widget>[
+          IconButton(
+              onPressed: () {
+                GeolocDialog(
+                  context: context,
+                  widget: const DummyGeolocAlert(),
+                );
+              },
+              icon: const Icon(Icons.ac_unit)),
+        ],
+      ),
       body: Center(
         child: SingleChildScrollView(
           child: Padding(
