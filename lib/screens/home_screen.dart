@@ -2,11 +2,13 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:background_task/background_task.dart';
-
 import 'package:flutter/material.dart';
-import 'package:isar/isar.dart';
-
+import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
+
+import '../collections/geoloc.dart';
+import '../extensions/extensions.dart';
+import '../ripository/isar_repository.dart';
 
 @pragma('vm:entry-point')
 void backgroundHandler(Location data) {
@@ -18,16 +20,29 @@ void backgroundHandler(Location data) {
   print('---------');
 
   // ignore: always_specify_types
-  Future(() async {});
+  Future(() async {
+    await IsarRepository.configure();
+
+    IsarRepository.isar.writeTxnSync(() {
+      final DateTime now = DateTime.now();
+      final DateFormat timeFormat = DateFormat('HH:mm:ss');
+      final String currentTime = timeFormat.format(now);
+
+      final Geoloc geoloc = Geoloc()
+        ..date = DateTime.now().yyyymmdd
+        ..time = currentTime
+        ..latitude = data.lat.toString()
+        ..longitude = data.lng.toString();
+
+      IsarRepository.isar.geolocs.putSync(geoloc);
+    });
+  });
 }
 
 // ignore: unreachable_from_main
 class HomeScreen extends StatefulWidget {
   // ignore: unreachable_from_main
-  const HomeScreen({super.key, required this.isar});
-
-  // ignore: unreachable_from_main
-  final Isar isar;
+  const HomeScreen({super.key});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -41,16 +56,17 @@ class _HomeScreenState extends State<HomeScreen> {
   late final StreamSubscription<Location> _bgDisposer;
   late final StreamSubscription<StatusEvent> _statusDisposer;
 
+  ///
   @override
   void initState() {
     super.initState();
 
     _bgDisposer = BackgroundTask.instance.stream.listen((Location event) {
       final String message = '${DateTime.now()}: ${event.lat}, ${event.lng}';
+
       debugPrint(message);
-      setState(() {
-        bgText = message;
-      });
+
+      setState(() => bgText = message);
     });
 
     // ignore: always_specify_types
@@ -74,6 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
     });
   }
 
+  ///
   @override
   void dispose() {
     _bgDisposer.cancel();
@@ -81,6 +98,7 @@ class _HomeScreenState extends State<HomeScreen> {
     super.dispose();
   }
 
+  ///
   @override
   Widget build(BuildContext context) {
     return Scaffold(
