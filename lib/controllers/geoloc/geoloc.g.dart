@@ -6,7 +6,7 @@ part of 'geoloc.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$geolocHash() => r'830ff721c54d8ec92696af8e24b3dd5f86ddd5c0';
+String _$geolocHash() => r'1ab81c6a920aa6e65ebb46bf76ee18783c60a5f1';
 
 /// See also [Geoloc].
 @ProviderFor(Geoloc)
@@ -21,4 +21,4 @@ final geolocProvider = NotifierProvider<Geoloc, GeolocState>.internal(
 
 typedef _$Geoloc = Notifier<GeolocState>;
 // ignore_for_file: type=lint
-// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package
+// ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member

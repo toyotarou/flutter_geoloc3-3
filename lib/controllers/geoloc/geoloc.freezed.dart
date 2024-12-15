@@ -19,11 +19,8 @@ mixin _$GeolocState {
   List<GeolocModel> get geolocList => throw _privateConstructorUsedError;
   Map<String, List<GeolocModel>> get geolocMap =>
       throw _privateConstructorUsedError;
-  String get selectedFundName => throw _privateConstructorUsedError;
 
-  /// Create a copy of GeolocState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   $GeolocStateCopyWith<GeolocState> get copyWith =>
       throw _privateConstructorUsedError;
 }
@@ -35,9 +32,7 @@ abstract class $GeolocStateCopyWith<$Res> {
       _$GeolocStateCopyWithImpl<$Res, GeolocState>;
   @useResult
   $Res call(
-      {List<GeolocModel> geolocList,
-      Map<String, List<GeolocModel>> geolocMap,
-      String selectedFundName});
+      {List<GeolocModel> geolocList, Map<String, List<GeolocModel>> geolocMap});
 }
 
 /// @nodoc
@@ -50,14 +45,11 @@ class _$GeolocStateCopyWithImpl<$Res, $Val extends GeolocState>
   // ignore: unused_field
   final $Res Function($Val) _then;
 
-  /// Create a copy of GeolocState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? geolocList = null,
     Object? geolocMap = null,
-    Object? selectedFundName = null,
   }) {
     return _then(_value.copyWith(
       geolocList: null == geolocList
@@ -68,10 +60,6 @@ class _$GeolocStateCopyWithImpl<$Res, $Val extends GeolocState>
           ? _value.geolocMap
           : geolocMap // ignore: cast_nullable_to_non_nullable
               as Map<String, List<GeolocModel>>,
-      selectedFundName: null == selectedFundName
-          ? _value.selectedFundName
-          : selectedFundName // ignore: cast_nullable_to_non_nullable
-              as String,
     ) as $Val);
   }
 }
@@ -85,9 +73,7 @@ abstract class _$$GeolocStateImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {List<GeolocModel> geolocList,
-      Map<String, List<GeolocModel>> geolocMap,
-      String selectedFundName});
+      {List<GeolocModel> geolocList, Map<String, List<GeolocModel>> geolocMap});
 }
 
 /// @nodoc
@@ -98,14 +84,11 @@ class __$$GeolocStateImplCopyWithImpl<$Res>
       _$GeolocStateImpl _value, $Res Function(_$GeolocStateImpl) _then)
       : super(_value, _then);
 
-  /// Create a copy of GeolocState
-  /// with the given fields replaced by the non-null parameter values.
   @pragma('vm:prefer-inline')
   @override
   $Res call({
     Object? geolocList = null,
     Object? geolocMap = null,
-    Object? selectedFundName = null,
   }) {
     return _then(_$GeolocStateImpl(
       geolocList: null == geolocList
@@ -116,10 +99,6 @@ class __$$GeolocStateImplCopyWithImpl<$Res>
           ? _value._geolocMap
           : geolocMap // ignore: cast_nullable_to_non_nullable
               as Map<String, List<GeolocModel>>,
-      selectedFundName: null == selectedFundName
-          ? _value.selectedFundName
-          : selectedFundName // ignore: cast_nullable_to_non_nullable
-              as String,
     ));
   }
 }
@@ -130,8 +109,7 @@ class _$GeolocStateImpl implements _GeolocState {
   const _$GeolocStateImpl(
       {final List<GeolocModel> geolocList = const <GeolocModel>[],
       final Map<String, List<GeolocModel>> geolocMap =
-          const <String, List<GeolocModel>>{},
-      this.selectedFundName = ''})
+          const <String, List<GeolocModel>>{}})
       : _geolocList = geolocList,
         _geolocMap = geolocMap;
 
@@ -154,12 +132,8 @@ class _$GeolocStateImpl implements _GeolocState {
   }
 
   @override
-  @JsonKey()
-  final String selectedFundName;
-
-  @override
   String toString() {
-    return 'GeolocState(geolocList: $geolocList, geolocMap: $geolocMap, selectedFundName: $selectedFundName)';
+    return 'GeolocState(geolocList: $geolocList, geolocMap: $geolocMap)';
   }
 
   @override
@@ -170,21 +144,16 @@ class _$GeolocStateImpl implements _GeolocState {
             const DeepCollectionEquality()
                 .equals(other._geolocList, _geolocList) &&
             const DeepCollectionEquality()
-                .equals(other._geolocMap, _geolocMap) &&
-            (identical(other.selectedFundName, selectedFundName) ||
-                other.selectedFundName == selectedFundName));
+                .equals(other._geolocMap, _geolocMap));
   }
 
   @override
   int get hashCode => Object.hash(
       runtimeType,
       const DeepCollectionEquality().hash(_geolocList),
-      const DeepCollectionEquality().hash(_geolocMap),
-      selectedFundName);
+      const DeepCollectionEquality().hash(_geolocMap));
 
-  /// Create a copy of GeolocState
-  /// with the given fields replaced by the non-null parameter values.
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
   _$$GeolocStateImplCopyWith<_$GeolocStateImpl> get copyWith =>
@@ -194,20 +163,14 @@ class _$GeolocStateImpl implements _GeolocState {
 abstract class _GeolocState implements GeolocState {
   const factory _GeolocState(
       {final List<GeolocModel> geolocList,
-      final Map<String, List<GeolocModel>> geolocMap,
-      final String selectedFundName}) = _$GeolocStateImpl;
+      final Map<String, List<GeolocModel>> geolocMap}) = _$GeolocStateImpl;
 
   @override
   List<GeolocModel> get geolocList;
   @override
   Map<String, List<GeolocModel>> get geolocMap;
   @override
-  String get selectedFundName;
-
-  /// Create a copy of GeolocState
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @JsonKey(includeFromJson: false, includeToJson: false)
+  @JsonKey(ignore: true)
   _$$GeolocStateImplCopyWith<_$GeolocStateImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

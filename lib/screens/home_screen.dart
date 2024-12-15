@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:background_task/background_task.dart';
 
 import 'package:flutter/material.dart';
+import 'package:isar/isar.dart';
 
 import 'package:permission_handler/permission_handler.dart';
 
@@ -23,7 +24,10 @@ void backgroundHandler(Location data) {
 // ignore: unreachable_from_main
 class HomeScreen extends StatefulWidget {
   // ignore: unreachable_from_main
-  const HomeScreen({super.key});
+  const HomeScreen({super.key, required this.isar});
+
+  // ignore: unreachable_from_main
+  final Isar isar;
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
