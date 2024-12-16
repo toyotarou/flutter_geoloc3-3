@@ -52,11 +52,19 @@ void backgroundHandler(Location data) {
         isInsert = true;
       }
 
-      if (secondDiff >= 30) {
+      debugPrint(secondDiff.toString());
+
+      if (secondDiff >= 60) {
         isInsert = true;
       }
 
       if (isInsert) {
+        debugPrint('---------');
+        debugPrint(DateTime.now().toString());
+        debugPrint(data.lat.toString());
+        debugPrint(data.lng.toString());
+        debugPrint('---------');
+
         await IsarRepository.configure();
         IsarRepository.isar.writeTxnSync(() => IsarRepository.isar.geolocs.putSync(geoloc));
       }
@@ -140,15 +148,6 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text('geoloc'),
         actions: <Widget>[
           IconButton(
-            onPressed: () {
-              GeolocDialog(
-                context: context,
-                widget: const DummyGeolocAlert(),
-              );
-            },
-            icon: const Icon(Icons.ac_unit),
-          ),
-          IconButton(
             onPressed: () async {
               final PermissionStatus status = await Permission.location.request();
               final PermissionStatus statusAlways = await Permission.locationAlways.request();
@@ -165,9 +164,18 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
-      body: const Column(
+      body: Column(
         children: <Widget>[
           Text('HomeScreen'),
+          IconButton(
+            onPressed: () {
+              GeolocDialog(
+                context: context,
+                widget: const DummyGeolocAlert(),
+              );
+            },
+            icon: const Icon(Icons.ac_unit),
+          ),
         ],
       ),
 
