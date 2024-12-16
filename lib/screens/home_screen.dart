@@ -81,6 +81,8 @@ class _HomeScreenState extends State<HomeScreen> {
   late final StreamSubscription<Location> _bgDisposer;
   late final StreamSubscription<StatusEvent> _statusDisposer;
 
+  bool isRunning = false;
+
   ///
   @override
   void initState() {
@@ -113,6 +115,13 @@ class _HomeScreenState extends State<HomeScreen> {
 
       setState(() => statusText = message);
     });
+
+    loadRunningStatus();
+  }
+
+  ///
+  Future<void> loadRunningStatus() async {
+    isRunning = await BackgroundTask.instance.isRunning;
   }
 
   ///
@@ -131,15 +140,38 @@ class _HomeScreenState extends State<HomeScreen> {
         title: const Text('geoloc'),
         actions: <Widget>[
           IconButton(
-              onPressed: () {
-                GeolocDialog(
-                  context: context,
-                  widget: const DummyGeolocAlert(),
-                );
-              },
-              icon: const Icon(Icons.ac_unit)),
+            onPressed: () {
+              GeolocDialog(
+                context: context,
+                widget: const DummyGeolocAlert(),
+              );
+            },
+            icon: const Icon(Icons.ac_unit),
+          ),
+          IconButton(
+            onPressed: () async {
+              final PermissionStatus status = await Permission.location.request();
+              final PermissionStatus statusAlways = await Permission.locationAlways.request();
+
+              if (status.isGranted && statusAlways.isGranted) {
+                await BackgroundTask.instance.start(isEnabledEvenIfKilled: isEnabledEvenIfKilled);
+                setState(() => bgText = 'start');
+              }
+            },
+            icon: Icon(
+              Icons.play_arrow,
+              color: isRunning ? Colors.yellowAccent : Colors.white,
+            ),
+          ),
         ],
       ),
+      body: const Column(
+        children: <Widget>[
+          Text('HomeScreen'),
+        ],
+      ),
+
+      /*
       body: Center(
         child: SingleChildScrollView(
           child: Padding(
@@ -201,6 +233,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
       ),
+      */
     );
   }
 }
