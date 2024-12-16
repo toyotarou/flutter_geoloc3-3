@@ -60,7 +60,7 @@ void backgroundHandler(Location data) {
 
       debugPrint(secondDiff.toString());
 
-      if (secondDiff >= 300) {
+      if (secondDiff >= 60) {
         isInsert = true;
       }
 
