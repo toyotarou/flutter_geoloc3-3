@@ -18,6 +18,20 @@ void backgroundHandler(Location data) {
   // ignore: always_specify_types
   Future(() async {
     GeolocRepository().getRecentOneGeoloc().then((Geoloc? value) async {
+      /////////////////////
+      final DateTime now = DateTime.now();
+      final DateFormat timeFormat = DateFormat('HH:mm:ss');
+      final String currentTime = timeFormat.format(now);
+
+      final Geoloc geoloc = Geoloc()
+        ..date = DateTime.now().yyyymmdd
+        ..time = currentTime
+        ..latitude = data.lat.toString()
+        ..longitude = data.lng.toString();
+      /////////////////////
+
+      bool isInsert = false;
+
       int secondDiff = 0;
 
       if (value != null) {
@@ -33,41 +47,19 @@ void backgroundHandler(Location data) {
               ),
             )
             .inSeconds;
+      } else {
+        /// 初回
+        isInsert = true;
       }
 
-      //--------------------//
+      if (secondDiff >= 30) {
+        isInsert = true;
+      }
 
-      await IsarRepository.configure();
-
-      IsarRepository.isar.writeTxnSync(() {
-        print('===================');
-
-        debugPrint('backgroundHandler: ${DateTime.now()}, $data');
-
-        print('---------');
-        print(data.lat);
-        print(data.lng);
-        print('---------');
-
-        print('xxxxxxxxx');
-        print(value?.time);
-        print(secondDiff);
-        print('xxxxxxxxx');
-
-        final DateTime now = DateTime.now();
-        final DateFormat timeFormat = DateFormat('HH:mm:ss');
-        final String currentTime = timeFormat.format(now);
-
-        final Geoloc geoloc = Geoloc()
-          ..date = DateTime.now().yyyymmdd
-          ..time = currentTime
-          ..latitude = data.lat.toString()
-          ..longitude = data.lng.toString();
-
-        IsarRepository.isar.geolocs.putSync(geoloc);
-      });
-
-      //--------------------//
+      if (isInsert) {
+        await IsarRepository.configure();
+        IsarRepository.isar.writeTxnSync(() => IsarRepository.isar.geolocs.putSync(geoloc));
+      }
     });
   });
 }
