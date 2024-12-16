@@ -8,35 +8,66 @@ import 'package:permission_handler/permission_handler.dart';
 
 import '../collections/geoloc.dart';
 import '../extensions/extensions.dart';
+import '../ripository/geolocs_repository.dart';
 import '../ripository/isar_repository.dart';
 import 'components/dummy_geoloc_alert.dart';
 import 'parts/geoloc_dialog.dart';
 
 @pragma('vm:entry-point')
 void backgroundHandler(Location data) {
-  debugPrint('backgroundHandler: ${DateTime.now()}, $data');
-
-  print('---------');
-  print(data.lat);
-  print(data.lng);
-  print('---------');
-
   // ignore: always_specify_types
   Future(() async {
-    await IsarRepository.configure();
+    GeolocRepository().getRecentOneGeoloc().then((Geoloc? value) async {
+      int secondDiff = 0;
 
-    IsarRepository.isar.writeTxnSync(() {
-      final DateTime now = DateTime.now();
-      final DateFormat timeFormat = DateFormat('HH:mm:ss');
-      final String currentTime = timeFormat.format(now);
+      if (value != null) {
+        secondDiff = DateTime.now()
+            .difference(
+              DateTime(
+                value.date.split('-')[0].toInt(),
+                value.date.split('-')[1].toInt(),
+                value.date.split('-')[2].toInt(),
+                value.time.split(':')[0].toInt(),
+                value.time.split(':')[1].toInt(),
+                value.time.split(':')[2].toInt(),
+              ),
+            )
+            .inSeconds;
+      }
 
-      final Geoloc geoloc = Geoloc()
-        ..date = DateTime.now().yyyymmdd
-        ..time = currentTime
-        ..latitude = data.lat.toString()
-        ..longitude = data.lng.toString();
+      //--------------------//
 
-      IsarRepository.isar.geolocs.putSync(geoloc);
+      await IsarRepository.configure();
+
+      IsarRepository.isar.writeTxnSync(() {
+        print('===================');
+
+        debugPrint('backgroundHandler: ${DateTime.now()}, $data');
+
+        print('---------');
+        print(data.lat);
+        print(data.lng);
+        print('---------');
+
+        print('xxxxxxxxx');
+        print(value?.time);
+        print(secondDiff);
+        print('xxxxxxxxx');
+
+        final DateTime now = DateTime.now();
+        final DateFormat timeFormat = DateFormat('HH:mm:ss');
+        final String currentTime = timeFormat.format(now);
+
+        final Geoloc geoloc = Geoloc()
+          ..date = DateTime.now().yyyymmdd
+          ..time = currentTime
+          ..latitude = data.lat.toString()
+          ..longitude = data.lng.toString();
+
+        IsarRepository.isar.geolocs.putSync(geoloc);
+      });
+
+      //--------------------//
     });
   });
 }
