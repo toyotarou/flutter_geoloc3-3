@@ -29,11 +29,21 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
     Future(_init);
 
     return Scaffold(
+      backgroundColor: Colors.transparent,
       body: SafeArea(
-          child: Column(
-        children: <Widget>[
-          Expanded(child: displayGeolocList()),
-        ],
+          child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          children: <Widget>[
+            Container(width: context.screenSize.width),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[Text(widget.date.yyyymmdd), Container()],
+            ),
+            Divider(color: Colors.white.withOpacity(0.5), thickness: 5),
+            Expanded(child: displayGeolocList()),
+          ],
+        ),
       )),
     );
   }
@@ -53,13 +63,15 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
 
     geolocList?.forEach((Geoloc element) {
       if (widget.date.yyyymmdd == element.date) {
-        list.add(Row(
-          children: <Widget>[
-            Expanded(child: Text(element.date)),
-            Expanded(child: Text(element.time)),
-            Expanded(child: Text(element.latitude)),
-            Expanded(child: Text(element.longitude)),
-          ],
+        list.add(DefaultTextStyle(
+          style: const TextStyle(fontSize: 12),
+          child: Row(
+            children: <Widget>[
+              Expanded(child: Text(element.time)),
+              Expanded(child: Container(alignment: Alignment.topRight, child: Text(element.latitude))),
+              Expanded(child: Container(alignment: Alignment.topRight, child: Text(element.longitude))),
+            ],
+          ),
         ));
       }
     });
