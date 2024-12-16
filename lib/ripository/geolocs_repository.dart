@@ -7,7 +7,7 @@ class GeolocRepository {
   ///
   Future<List<Geoloc>?> getAllGeoloc() async {
     await IsarRepository.configure();
-    return IsarRepository.isar.geolocs.where().findAll();
+    return IsarRepository.isar.geolocs.where().sortByDateDesc().thenByTimeDesc().findAll();
   }
 
   ///

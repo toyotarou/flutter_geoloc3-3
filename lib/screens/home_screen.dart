@@ -89,8 +89,6 @@ class _HomeScreenState extends State<HomeScreen> {
   late final StreamSubscription<Location> _bgDisposer;
   late final StreamSubscription<StatusEvent> _statusDisposer;
 
-  bool isRunning = false;
-
   ///
   @override
   void initState() {
@@ -123,13 +121,6 @@ class _HomeScreenState extends State<HomeScreen> {
 
       setState(() => statusText = message);
     });
-
-    loadRunningStatus();
-  }
-
-  ///
-  Future<void> loadRunningStatus() async {
-    isRunning = await BackgroundTask.instance.isRunning;
   }
 
   ///
@@ -149,6 +140,24 @@ class _HomeScreenState extends State<HomeScreen> {
         actions: <Widget>[
           IconButton(
             onPressed: () async {
+              final bool isRunning = await BackgroundTask.instance.isRunning;
+
+              if (context.mounted) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('isRunning: $isRunning'),
+                    action: SnackBarAction(
+                      label: 'close',
+                      onPressed: () => ScaffoldMessenger.of(context).clearSnackBars(),
+                    ),
+                  ),
+                );
+              }
+            },
+            icon: const Icon(Icons.signal_wifi_statusbar_4_bar),
+          ),
+          IconButton(
+            onPressed: () async {
               final PermissionStatus status = await Permission.location.request();
               final PermissionStatus statusAlways = await Permission.locationAlways.request();
 
@@ -157,10 +166,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 setState(() => bgText = 'start');
               }
             },
-            icon: Icon(
-              Icons.play_arrow,
-              color: isRunning ? Colors.yellowAccent : Colors.white,
-            ),
+            icon: const Icon(Icons.play_arrow),
           ),
         ],
       ),
