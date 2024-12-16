@@ -15,10 +15,4 @@ class GeolocRepository {
     await IsarRepository.configure();
     return IsarRepository.isar.geolocs.where().sortByDateDesc().thenByTimeDesc().findFirst();
   }
-
-  ///
-  Future<void> inputGeoloc({required Geoloc geoloc}) async {
-    await IsarRepository.configure();
-    IsarRepository.isar.geolocs.putSync(geoloc);
-  }
 }
