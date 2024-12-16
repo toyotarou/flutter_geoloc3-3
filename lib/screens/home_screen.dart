@@ -3,14 +3,20 @@ import 'dart:io';
 
 import 'package:background_task/background_task.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../collections/geoloc.dart';
+import '../controllers/calendars/calendars_notifier.dart';
+import '../controllers/calendars/calendars_response_state.dart';
+import '../controllers/holidays/holidays_notifier.dart';
+import '../controllers/holidays/holidays_response_state.dart';
 import '../extensions/extensions.dart';
 import '../ripository/geolocs_repository.dart';
 import '../ripository/isar_repository.dart';
-import 'components/dummy_geoloc_alert.dart';
+import '../utilities/utilities.dart';
+import 'components/daily_geoloc_display_alert.dart';
 import 'parts/geoloc_dialog.dart';
 
 @pragma('vm:entry-point')
@@ -72,22 +78,52 @@ void backgroundHandler(Location data) {
   });
 }
 
-// ignore: unreachable_from_main
-class HomeScreen extends StatefulWidget {
+// ignore: must_be_immutable, unreachable_from_main
+class HomeScreen extends ConsumerStatefulWidget {
   // ignore: unreachable_from_main
-  const HomeScreen({super.key});
+  HomeScreen({super.key, this.baseYm});
+
+  // ignore: unreachable_from_main
+  String? baseYm;
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends State<HomeScreen> {
+class _HomeScreenState extends ConsumerState<HomeScreen> {
   String bgText = 'no start';
   String statusText = 'status';
   bool isEnabledEvenIfKilled = true;
 
   late final StreamSubscription<Location> _bgDisposer;
   late final StreamSubscription<StatusEvent> _statusDisposer;
+
+  DateTime _calendarMonthFirst = DateTime.now();
+  final List<String> _youbiList = <String>[
+    'Sunday',
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday'
+  ];
+  List<String> _calendarDays = <String>[];
+
+  Map<String, String> _holidayMap = <String, String>{};
+
+  final Utility _utility = Utility();
+
+  Map<String, int> dateCurrencySumMap = <String, int>{};
+
+  Map<String, int> monthlySpendTimePlaceSumMap = <String, int>{};
+
+  Map<String, Map<String, int>> bankPricePadMap = <String, Map<String, int>>{};
+  Map<String, int> bankPriceTotalPadMap = <String, int>{};
+
+  List<String> monthFirstDateList = <String>[];
+
+  Map<String, int> monthlySpendMap = <String, int>{};
 
   ///
   @override
@@ -134,9 +170,35 @@ class _HomeScreenState extends State<HomeScreen> {
   ///
   @override
   Widget build(BuildContext context) {
+    if (widget.baseYm != null) {
+      // ignore: always_specify_types
+      Future(() => ref.read(calendarProvider.notifier).setCalendarYearMonth(baseYm: widget.baseYm));
+    }
+
+    final CalendarsResponseState calendarState = ref.watch(calendarProvider);
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('geoloc'),
+        title: Row(
+          children: <Widget>[
+            Text(calendarState.baseYearMonth),
+            const SizedBox(width: 10),
+            IconButton(
+              onPressed: _goPrevMonth,
+              icon: Icon(Icons.arrow_back_ios, color: Colors.white.withOpacity(0.8), size: 14),
+            ),
+            IconButton(
+              onPressed: (DateTime.now().yyyymm == calendarState.baseYearMonth) ? null : _goNextMonth,
+              icon: Icon(
+                Icons.arrow_forward_ios,
+                color: (DateTime.now().yyyymm == calendarState.baseYearMonth)
+                    ? Colors.grey.withOpacity(0.6)
+                    : Colors.white.withOpacity(0.8),
+                size: 14,
+              ),
+            ),
+          ],
+        ),
         actions: <Widget>[
           IconButton(
             onPressed: () async {
@@ -172,82 +234,144 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       body: Column(
         children: <Widget>[
-          const Text('HomeScreen'),
-          IconButton(
-            onPressed: () {
-              GeolocDialog(
-                context: context,
-                widget: const DummyGeolocAlert(),
-              );
-            },
-            icon: const Icon(Icons.ac_unit),
-          ),
+          Expanded(child: _getCalendar()),
         ],
       ),
+    );
+  }
 
-      /*
-      body: Center(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                Text(bgText, textAlign: TextAlign.center),
-                Text(statusText, textAlign: TextAlign.center),
-                Flexible(
-                  child: FilledButton(
-                    onPressed: () async {
-                      final PermissionStatus status = await Permission.location.request();
-                      final PermissionStatus statusAlways = await Permission.locationAlways.request();
+  Widget _getCalendar() {
+    monthlySpendMap = <String, int>{};
 
-                      if (status.isGranted && statusAlways.isGranted) {
-                        await BackgroundTask.instance.start(isEnabledEvenIfKilled: isEnabledEvenIfKilled);
-                        setState(() => bgText = 'start');
-                      }
-                    },
-                    child: const Text('Start'),
-                  ),
-                ),
-                Flexible(
-                  child: FilledButton(
-                    onPressed: () async {
-                      await BackgroundTask.instance.stop();
+    final HolidaysResponseState holidayState = ref.watch(holidayProvider);
 
-                      setState(() => bgText = 'stop');
-                    },
-                    child: const Text('Stop'),
-                  ),
+    if (holidayState.holidayMap.value != null) {
+      _holidayMap = holidayState.holidayMap.value!;
+    }
+
+    final CalendarsResponseState calendarState = ref.watch(calendarProvider);
+
+    _calendarMonthFirst = DateTime.parse('${calendarState.baseYearMonth}-01 00:00:00');
+
+    final DateTime monthEnd = DateTime.parse('${calendarState.nextYearMonth}-00 00:00:00');
+
+    final int diff = monthEnd.difference(_calendarMonthFirst).inDays;
+    final int monthDaysNum = diff + 1;
+
+    final String youbi = _calendarMonthFirst.youbiStr;
+    final int youbiNum = _youbiList.indexWhere((String element) => element == youbi);
+
+    final int weekNum = ((monthDaysNum + youbiNum) <= 35) ? 5 : 6;
+
+    // ignore: always_specify_types
+    _calendarDays = List.generate(weekNum * 7, (int index) => '');
+
+    for (int i = 0; i < (weekNum * 7); i++) {
+      if (i >= youbiNum) {
+        final DateTime gendate = _calendarMonthFirst.add(Duration(days: i - youbiNum));
+
+        if (_calendarMonthFirst.month == gendate.month) {
+          _calendarDays[i] = gendate.day.toString();
+        }
+      }
+    }
+
+    final List<Widget> list = <Widget>[];
+    for (int i = 0; i < weekNum; i++) {
+      list.add(_getCalendarRow(week: i));
+    }
+
+    return DefaultTextStyle(style: const TextStyle(fontSize: 10), child: Column(children: list));
+  }
+
+  ///
+  Widget _getCalendarRow({required int week}) {
+    final List<Widget> list = <Widget>[];
+
+    for (int i = week * 7; i < ((week + 1) * 7); i++) {
+      final String generateYmd = (_calendarDays[i] == '')
+          ? ''
+          : DateTime(_calendarMonthFirst.year, _calendarMonthFirst.month, _calendarDays[i].toInt()).yyyymmdd;
+
+      final String youbiStr = (_calendarDays[i] == '')
+          ? ''
+          : DateTime(_calendarMonthFirst.year, _calendarMonthFirst.month, _calendarDays[i].toInt()).youbiStr;
+
+      list.add(
+        Expanded(
+          child: GestureDetector(
+            onTap: (_calendarDays[i] == '')
+                ? null
+                : (DateTime.parse('$generateYmd 00:00:00').isAfter(DateTime.now()))
+                    ? null
+                    : () {
+                        GeolocDialog(
+                          context: context,
+                          widget: DailyGeolocDisplayAlert(date: DateTime.parse('$generateYmd 00:00:00')),
+                        );
+                      },
+            child: Container(
+              margin: const EdgeInsets.all(1),
+              padding: const EdgeInsets.all(2),
+              decoration: BoxDecoration(
+                border: Border.all(
+                  color: (_calendarDays[i] == '')
+                      ? Colors.transparent
+                      : (generateYmd == DateTime.now().yyyymmdd)
+                          ? Colors.orangeAccent.withOpacity(0.4)
+                          : Colors.white.withOpacity(0.1),
+                  width: 3,
                 ),
-                Flexible(
-                  child: Builder(
-                    builder: (BuildContext context) {
-                      return FilledButton(
-                        onPressed: () async {
-                          final bool isRunning = await BackgroundTask.instance.isRunning;
-                          if (context.mounted) {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              SnackBar(
-                                content: Text('isRunning: $isRunning'),
-                                action: SnackBarAction(
-                                  label: 'close',
-                                  onPressed: () => ScaffoldMessenger.of(context).clearSnackBars(),
-                                ),
-                              ),
-                            );
-                          }
-                        },
-                        child: const Text('isRunning'),
-                      );
-                    },
-                  ),
-                ),
-              ],
+                color: (_calendarDays[i] == '')
+                    ? Colors.transparent
+                    : (DateTime.parse('$generateYmd 00:00:00').isAfter(DateTime.now()))
+                        ? Colors.white.withOpacity(0.1)
+                        : _utility.getYoubiColor(date: generateYmd, youbiStr: youbiStr, holidayMap: _holidayMap),
+              ),
+              child: (_calendarDays[i] == '')
+                  ? const Text('')
+                  : Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: <Widget>[Text(_calendarDays[i].padLeft(2, '0')), Container()],
+                        ),
+                        const SizedBox(height: 5),
+                        ConstrainedBox(
+                          constraints: BoxConstraints(minHeight: context.screenSize.height / 25),
+                          child: const Column(),
+                        ),
+                      ],
+                    ),
             ),
           ),
         ),
-      ),
-      */
+      );
+    }
+
+    return Row(crossAxisAlignment: CrossAxisAlignment.start, children: list);
+  }
+
+  ///
+  void _goPrevMonth() {
+    final CalendarsResponseState calendarState = ref.watch(calendarProvider);
+
+    Navigator.pushReplacement(
+      context,
+      // ignore: inference_failure_on_instance_creation, always_specify_types
+      MaterialPageRoute(builder: (BuildContext context) => HomeScreen(baseYm: calendarState.prevYearMonth)),
+    );
+  }
+
+  ///
+  void _goNextMonth() {
+    final CalendarsResponseState calendarState = ref.watch(calendarProvider);
+
+    Navigator.pushReplacement(
+      context,
+      // ignore: inference_failure_on_instance_creation, always_specify_types
+      MaterialPageRoute(builder: (BuildContext context) => HomeScreen(baseYm: calendarState.nextYearMonth)),
     );
   }
 }

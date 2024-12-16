@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
 
 import '../../collections/geoloc.dart';
+
+import '../../extensions/extensions.dart';
 import '../../ripository/geolocs_repository.dart';
 
-class DummyGeolocAlert extends StatefulWidget {
-  const DummyGeolocAlert({super.key});
+class DailyGeolocDisplayAlert extends StatefulWidget {
+  const DailyGeolocDisplayAlert({super.key, required this.date});
+
+  final DateTime date;
 
   @override
-  State<DummyGeolocAlert> createState() => _DummyGeolocAlertState();
+  State<DailyGeolocDisplayAlert> createState() => _DailyGeolocDisplayAlertState();
 }
 
-class _DummyGeolocAlertState extends State<DummyGeolocAlert> {
+class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
   List<Geoloc>? geolocList = <Geoloc>[];
 
   ///
@@ -48,14 +52,16 @@ class _DummyGeolocAlertState extends State<DummyGeolocAlert> {
     final List<Widget> list = <Widget>[];
 
     geolocList?.forEach((Geoloc element) {
-      list.add(Row(
-        children: <Widget>[
-          Expanded(child: Text(element.date)),
-          Expanded(child: Text(element.time)),
-          Expanded(child: Text(element.latitude)),
-          Expanded(child: Text(element.longitude)),
-        ],
-      ));
+      if (widget.date.yyyymmdd == element.date) {
+        list.add(Row(
+          children: <Widget>[
+            Expanded(child: Text(element.date)),
+            Expanded(child: Text(element.time)),
+            Expanded(child: Text(element.latitude)),
+            Expanded(child: Text(element.longitude)),
+          ],
+        ));
+      }
     });
 
     return SingleChildScrollView(

@@ -1,4 +1,3 @@
-
 import 'package:background_task/background_task.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -16,15 +15,6 @@ void main() async {
   await initializeDateFormatting('ja_JP');
 
   runApp(const ProviderScope(child: MyApp()));
-
-  // final Directory dir = await getApplicationSupportDirectory();
-  //
-  // // ignore: always_specify_types
-  // final Isar isar = await Isar.open([GeolocSchema], directory: dir.path);
-  //
-  // await SystemChrome.setPreferredOrientations(
-  //         <DeviceOrientation>[DeviceOrientation.portraitUp, DeviceOrientation.portraitDown])
-  //     .then((_) => runApp(ProviderScope(child: MyApp(isar: isar))));
 }
 
 class MyApp extends StatelessWidget {
@@ -55,7 +45,7 @@ class MyApp extends StatelessWidget {
       themeMode: ThemeMode.dark,
       title: 'invest note',
       debugShowCheckedModeBanner: false,
-      home: GestureDetector(onTap: () => primaryFocus?.unfocus(), child: const HomeScreen()),
+      home: GestureDetector(onTap: () => primaryFocus?.unfocus(), child: HomeScreen()),
     );
   }
 }
