@@ -4,6 +4,8 @@ import '../../collections/geoloc.dart';
 
 import '../../extensions/extensions.dart';
 import '../../ripository/geolocs_repository.dart';
+import '../parts/geoloc_dialog.dart';
+import 'pickup_geoloc_display_alert.dart';
 
 class DailyGeolocDisplayAlert extends StatefulWidget {
   const DailyGeolocDisplayAlert({super.key, required this.date});
@@ -16,6 +18,9 @@ class DailyGeolocDisplayAlert extends StatefulWidget {
 
 class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
   List<Geoloc>? geolocList = <Geoloc>[];
+  List<Geoloc>? reverseGeolocList = <Geoloc>[];
+
+  List<Geoloc> pickupGeolocList = <Geoloc>[];
 
   ///
   void _init() {
@@ -38,7 +43,21 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
             Container(width: context.screenSize.width),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[Text(widget.date.yyyymmdd), Container()],
+              children: <Widget>[
+                Text(widget.date.yyyymmdd),
+                GestureDetector(
+                  onTap: () async {
+                    await makeReverseGeolocList();
+
+                    GeolocDialog(
+                      // ignore: use_build_context_synchronously
+                      context: context,
+                      widget: PickupGeolocDisplayAlert(date: widget.date, pickupGeolocList: pickupGeolocList),
+                    );
+                  },
+                  child: const Icon(Icons.list),
+                ),
+              ],
             ),
             Divider(color: Colors.white.withOpacity(0.5), thickness: 5),
             Expanded(child: displayGeolocList()),
@@ -52,7 +71,10 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
   Future<void> _makeGeolocList() async {
     GeolocRepository().getAllGeoloc().then((List<Geoloc>? value) {
       if (mounted) {
-        setState(() => geolocList = value);
+        setState(() {
+          geolocList = value;
+          reverseGeolocList = value;
+        });
       }
     });
   }
@@ -76,8 +98,30 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
       }
     });
 
-    return SingleChildScrollView(
-      child: Column(children: list),
+    return CustomScrollView(
+      slivers: <Widget>[
+        SliverList(
+          delegate: SliverChildBuilderDelegate(
+            (BuildContext context, int index) => list[index],
+            childCount: list.length,
+          ),
+        ),
+      ],
     );
+  }
+
+  Future<void> makeReverseGeolocList() async {
+    pickupGeolocList = <Geoloc>[];
+    final List<String> latLngList = <String>[];
+
+    reverseGeolocList
+      ?..sort((Geoloc a, Geoloc b) => a.time.compareTo(b.time))
+      ..forEach((Geoloc element) {
+        if (!latLngList.contains('${element.latitude}|${element.longitude}')) {
+          pickupGeolocList.add(element);
+        }
+
+        latLngList.add('${element.latitude}|${element.longitude}');
+      });
   }
 }
