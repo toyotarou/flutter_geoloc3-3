@@ -125,6 +125,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Map<String, int> monthlySpendMap = <String, int>{};
 
+  bool baseYmSetFlag = false;
+
+  List<Geoloc>? geolocList = <Geoloc>[];
+  Map<String, List<Geoloc>> geolocMap = <String, List<Geoloc>>{};
+
   ///
   @override
   void initState() {
@@ -167,11 +172,28 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     super.dispose();
   }
 
-  bool baseYmSetFlag = false;
+  ///
+  void _init() {
+    // _makeMoneyList();
+    // _makeBankPriceList();
+    //
+    // _makeSpendTimePlaceList();
+    //
+    // _makeBankNameList();
+    //
+    // _makeSpendItemList();
+    //
+    // _makeIncomeList();
+
+    _makeGeolocList();
+  }
 
   ///
   @override
   Widget build(BuildContext context) {
+    // ignore: always_specify_types
+    Future(_init);
+
     if (widget.baseYm != null && !baseYmSetFlag) {
       // ignore: always_specify_types
       Future(() => ref.read(calendarProvider.notifier).setCalendarYearMonth(baseYm: widget.baseYm));
@@ -300,16 +322,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       list.add(
         Expanded(
           child: GestureDetector(
-            onTap: (_calendarDays[i] == '')
-                ? null
-                : (DateTime.parse('$generateYmd 00:00:00').isAfter(DateTime.now()))
-                    ? null
-                    : () {
-                        GeolocDialog(
-                          context: context,
-                          widget: DailyGeolocDisplayAlert(date: DateTime.parse('$generateYmd 00:00:00')),
-                        );
-                      },
+            // onTap: (_calendarDays[i] == '')
+            //     ? null
+            //     : (DateTime.parse('$generateYmd 00:00:00').isAfter(DateTime.now()))
+            //         ? null
+            //         : () {
+            //             GeolocDialog(
+            //               context: context,
+            //               widget: DailyGeolocDisplayAlert(date: DateTime.parse('$generateYmd 00:00:00')),
+            //             );
+            //           },
             child: Container(
               margin: const EdgeInsets.all(1),
               padding: const EdgeInsets.all(2),
@@ -340,7 +362,36 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         const SizedBox(height: 5),
                         ConstrainedBox(
                           constraints: BoxConstraints(minHeight: context.screenSize.height / 10),
-                          child: const Column(),
+                          child: Column(
+                            children: <Widget>[
+                              //---------------------------------------//
+
+                              Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: <Widget>[
+                                  if (_calendarDays[i] != '' &&
+                                      DateTime.parse('$generateYmd 00:00:00').isBefore(DateTime.now())) ...<Widget>[
+                                    if (geolocMap[generateYmd] == null) ...<Widget>[Container()],
+                                    if (geolocMap[generateYmd] != null) ...<Widget>[
+                                      GestureDetector(
+                                        onTap: () {
+                                          GeolocDialog(
+                                            context: context,
+                                            widget:
+                                                DailyGeolocDisplayAlert(date: DateTime.parse('$generateYmd 00:00:00')),
+                                          );
+                                        },
+                                        child: Icon(Icons.info_outline, size: 14, color: Colors.white.withOpacity(0.4)),
+                                      ),
+                                    ],
+                                  ],
+                                  Text(geolocMap[generateYmd]?.length.toString() ?? ''),
+                                ],
+                              ),
+
+                              //---------------------------------------//
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -373,5 +424,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       // ignore: inference_failure_on_instance_creation, always_specify_types
       MaterialPageRoute(builder: (BuildContext context) => HomeScreen(baseYm: calendarState.nextYearMonth)),
     );
+  }
+
+  ///
+  Future<void> _makeGeolocList() async {
+    GeolocRepository().getAllGeoloc().then((List<Geoloc>? value) {
+      if (mounted) {
+        setState(() {
+          geolocList = value;
+
+          if (value!.isNotEmpty) {
+            for (final Geoloc element in value) {
+              geolocMap[element.date] = <Geoloc>[];
+            }
+
+            for (final Geoloc element in value) {
+              geolocMap[element.date]?.add(element);
+            }
+          }
+        });
+      }
+    });
   }
 }
