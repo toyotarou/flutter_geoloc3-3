@@ -22,6 +22,8 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
 
   List<Geoloc> pickupGeolocList = <Geoloc>[];
 
+  String diffSeconds = '';
+
   ///
   void _init() {
     _makeGeolocList();
@@ -32,6 +34,8 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
   Widget build(BuildContext context) {
     // ignore: always_specify_types
     Future(_init);
+
+    makeDiffSeconds();
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -61,6 +65,11 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
             ),
             Divider(color: Colors.white.withOpacity(0.5), thickness: 5),
             Expanded(child: displayGeolocList()),
+            Divider(color: Colors.white.withOpacity(0.5), thickness: 5),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[Container(), Text(diffSeconds)],
+            ),
           ],
         ),
       )),
@@ -123,5 +132,29 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
 
         latLngList.add('${element.latitude}|${element.longitude}');
       });
+  }
+
+  ///
+  void makeDiffSeconds() {
+    GeolocRepository().getRecentOneGeoloc().then((Geoloc? value) {
+      int secondDiff = 0;
+
+      if (value != null) {
+        secondDiff = DateTime.now()
+            .difference(
+              DateTime(
+                value.date.split('-')[0].toInt(),
+                value.date.split('-')[1].toInt(),
+                value.date.split('-')[2].toInt(),
+                value.time.split(':')[0].toInt(),
+                value.time.split(':')[1].toInt(),
+                value.time.split(':')[2].toInt(),
+              ),
+            )
+            .inSeconds;
+      }
+
+      diffSeconds = secondDiff.toString().padLeft(2, '0');
+    });
   }
 }
