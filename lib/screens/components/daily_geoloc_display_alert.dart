@@ -126,11 +126,13 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
     reverseGeolocList
       ?..sort((Geoloc a, Geoloc b) => a.time.compareTo(b.time))
       ..forEach((Geoloc element) {
-        if (!latLngList.contains('${element.latitude}|${element.longitude}')) {
-          pickupGeolocList.add(element);
-        }
+        if (element.date == widget.date.yyyymmdd) {
+          if (!latLngList.contains('${element.latitude}|${element.longitude}')) {
+            pickupGeolocList.add(element);
+          }
 
-        latLngList.add('${element.latitude}|${element.longitude}');
+          latLngList.add('${element.latitude}|${element.longitude}');
+        }
       });
   }
 

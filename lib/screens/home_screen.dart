@@ -363,27 +363,27 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                     height: 25,
                                     child: (geolocMap[generateYmd] == null)
                                         ? null
-                                        : Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: <Widget>[
-                                              GestureDetector(
-                                                onTap: () {
-                                                  GeolocDialog(
-                                                    context: context,
-                                                    widget: DailyGeolocDisplayAlert(
-                                                      date: DateTime.parse('$generateYmd 00:00:00'),
-                                                    ),
-                                                  );
-                                                },
-                                                child: Icon(
+                                        : GestureDetector(
+                                            onTap: () {
+                                              GeolocDialog(
+                                                context: context,
+                                                widget: DailyGeolocDisplayAlert(
+                                                  date: DateTime.parse('$generateYmd 00:00:00'),
+                                                ),
+                                              );
+                                            },
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: <Widget>[
+                                                Icon(
                                                   Icons.info_outline,
                                                   size: 14,
                                                   color: Colors.white.withOpacity(0.4),
                                                 ),
-                                              ),
-                                              Text(geolocMap[generateYmd]!.length.toString()),
-                                            ],
+                                                Text(geolocMap[generateYmd]!.length.toString()),
+                                              ],
+                                            ),
                                           ),
                                   ),
                                   SizedBox(

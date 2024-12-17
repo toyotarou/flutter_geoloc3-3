@@ -69,4 +69,18 @@ class GeolocController extends _$GeolocController {
       utility.showError('予期せぬエラーが発生しました');
     });
   }
+
+  ///
+  Future<void> deleteGeoloc({required String date}) async {
+    // ignore: always_specify_types
+    await ref
+        .read(httpClientProvider)
+        .deleteReturnBodyString(path: 'geoloc/date/$date')
+        // ignore: always_specify_types
+        .then((value) {})
+        // ignore: always_specify_types
+        .catchError((error, _) {
+      utility.showError('予期せぬエラーが発生しました');
+    });
+  }
 }

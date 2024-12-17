@@ -26,14 +26,6 @@ class HttpClient {
 
     final String bodyString = utf8.decode(response.bodyBytes);
 
-
-
-
-
-
-
-
-
     try {
       if (bodyString.isEmpty) {
         throw Exception();
@@ -122,6 +114,25 @@ class HttpClient {
     final Uri uri = Uri.http(Environment.apiEndPoint, '${Environment.apiBasePath}/$path', queryParameters);
 
     final Response response = await _client.patch(uri, headers: await _headers, body: json.encode(body));
+
+    final String bodyString = utf8.decode(response.bodyBytes);
+
+    try {
+      if (bodyString.isEmpty) {
+        throw Exception();
+      }
+      return bodyString;
+    } on Exception catch (_) {
+      throw Exception('json parse error');
+    }
+  }
+
+  ///
+  Future<dynamic> deleteReturnBodyString(
+      {required String path, Map<String, dynamic>? queryParameters, Map<String, dynamic>? body}) async {
+    final Uri uri = Uri.http(Environment.apiEndPoint, '${Environment.apiBasePath}/$path', queryParameters);
+
+    final Response response = await _client.delete(uri, headers: await _headers, body: json.encode(body));
 
     final String bodyString = utf8.decode(response.bodyBytes);
 

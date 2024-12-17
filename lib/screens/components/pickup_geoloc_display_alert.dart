@@ -40,6 +40,11 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
             ),
             Divider(color: Colors.white.withOpacity(0.5), thickness: 5),
             Expanded(child: displayPickupGeolocList()),
+            Divider(color: Colors.white.withOpacity(0.5), thickness: 5),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[Container(), Text(widget.pickupGeolocList.length.toString())],
+            ),
           ],
         ),
       )),
@@ -77,22 +82,27 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
 
   ///
   Future<void> inputPickupGeoloc() async {
-    widget.pickupGeolocList
-      ..sort((Geoloc a, Geoloc b) => a.time.compareTo(b.time))
-      ..forEach((Geoloc element) async {
-        final Map<String, String> map = <String, String>{
-          'year': element.date.split('-')[0],
-          'month': element.date.split('-')[1],
-          'day': element.date.split('-')[2],
-          'time': element.time,
-          'latitude': element.latitude,
-          'longitude': element.longitude,
-        };
+    // ignore: always_specify_types
+    ref.read(geolocControllerProvider.notifier).deleteGeoloc(date: widget.date.yyyymmdd).then((value) async {
+      widget.pickupGeolocList
+        ..sort((Geoloc a, Geoloc b) => a.time.compareTo(b.time))
+        ..forEach((Geoloc element) async {
+          final Map<String, String> map = <String, String>{
+            'year': element.date.split('-')[0],
+            'month': element.date.split('-')[1],
+            'day': element.date.split('-')[2],
+            'time': element.time,
+            'latitude': element.latitude,
+            'longitude': element.longitude,
+          };
 
-        await ref.read(geolocControllerProvider.notifier).inputGeoloc(map: map);
-      });
+          await ref.read(geolocControllerProvider.notifier).inputGeoloc(map: map);
+        });
 
-    Navigator.pop(context);
-    Navigator.pop(context);
+      if (mounted) {
+        Navigator.pop(context);
+        Navigator.pop(context);
+      }
+    });
   }
 }
