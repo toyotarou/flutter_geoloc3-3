@@ -1,19 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../collections/geoloc.dart';
+import '../../controllers/geoloc/geoloc.dart';
 import '../../extensions/extensions.dart';
 
-class PickupGeolocDisplayAlert extends StatefulWidget {
+class PickupGeolocDisplayAlert extends ConsumerStatefulWidget {
   const PickupGeolocDisplayAlert({super.key, required this.pickupGeolocList, required this.date});
 
   final DateTime date;
   final List<Geoloc> pickupGeolocList;
 
   @override
-  State<PickupGeolocDisplayAlert> createState() => _PickupGeolocDisplayAlertState();
+  ConsumerState<PickupGeolocDisplayAlert> createState() => _PickupGeolocDisplayAlertState();
 }
 
-class _PickupGeolocDisplayAlertState extends State<PickupGeolocDisplayAlert> {
+class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAlert> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -29,7 +31,9 @@ class _PickupGeolocDisplayAlertState extends State<PickupGeolocDisplayAlert> {
               children: <Widget>[
                 Text(widget.date.yyyymmdd),
                 GestureDetector(
-                  onTap: () {},
+                  onTap: () {
+                    inputPickupGeoloc();
+                  },
                   child: const Icon(Icons.input),
                 ),
               ],
@@ -69,5 +73,26 @@ class _PickupGeolocDisplayAlertState extends State<PickupGeolocDisplayAlert> {
         ),
       ],
     );
+  }
+
+  ///
+  Future<void> inputPickupGeoloc() async {
+    widget.pickupGeolocList
+      ..sort((Geoloc a, Geoloc b) => a.time.compareTo(b.time))
+      ..forEach((Geoloc element) async {
+        final Map<String, String> map = <String, String>{
+          'year': element.date.split('-')[0],
+          'month': element.date.split('-')[1],
+          'day': element.date.split('-')[2],
+          'time': element.time,
+          'latitude': element.latitude,
+          'longitude': element.longitude,
+        };
+
+        await ref.read(geolocControllerProvider.notifier).inputGeoloc(map: map);
+      });
+
+    Navigator.pop(context);
+    Navigator.pop(context);
   }
 }

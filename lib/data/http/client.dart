@@ -26,6 +26,14 @@ class HttpClient {
 
     final String bodyString = utf8.decode(response.bodyBytes);
 
+
+
+
+
+
+
+
+
     try {
       if (bodyString.isEmpty) {
         throw Exception();

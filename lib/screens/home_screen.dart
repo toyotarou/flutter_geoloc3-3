@@ -10,9 +10,11 @@ import 'package:permission_handler/permission_handler.dart';
 import '../collections/geoloc.dart';
 import '../controllers/calendars/calendars_notifier.dart';
 import '../controllers/calendars/calendars_response_state.dart';
+import '../controllers/geoloc/geoloc.dart';
 import '../controllers/holidays/holidays_notifier.dart';
 import '../controllers/holidays/holidays_response_state.dart';
 import '../extensions/extensions.dart';
+import '../models/geoloc_model.dart';
 import '../ripository/geolocs_repository.dart';
 import '../ripository/isar_repository.dart';
 import '../utilities/utilities.dart';
@@ -162,6 +164,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
       setState(() => statusText = message);
     });
+
+    ref
+        .read(geolocControllerProvider.notifier)
+        .getYearMonthGeoloc(yearmonth: (widget.baseYm != null) ? widget.baseYm! : DateTime.now().yyyymm);
   }
 
   ///
@@ -174,17 +180,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   ///
   void _init() {
-    // _makeMoneyList();
-    // _makeBankPriceList();
-    //
-    // _makeSpendTimePlaceList();
-    //
-    // _makeBankNameList();
-    //
-    // _makeSpendItemList();
-    //
-    // _makeIncomeList();
-
     _makeGeolocList();
   }
 
@@ -310,6 +305,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   Widget _getCalendarRow({required int week}) {
     final List<Widget> list = <Widget>[];
 
+    final Map<String, List<GeolocModel>> geolocStateMap =
+        ref.watch(geolocControllerProvider.select((GeolocControllerState value) => value.geolocMap));
+
     for (int i = week * 7; i < ((week + 1) * 7); i++) {
       final String generateYmd = (_calendarDays[i] == '')
           ? ''
@@ -319,83 +317,93 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ? ''
           : DateTime(_calendarMonthFirst.year, _calendarMonthFirst.month, _calendarDays[i].toInt()).youbiStr;
 
+      if (generateYmd == '2024-12-17') {
+//        print(geolocStateMap);
+
+//        print(geolocStateMap['2024-12-17']?.length);
+      }
+
       list.add(
         Expanded(
-          child: GestureDetector(
-            // onTap: (_calendarDays[i] == '')
-            //     ? null
-            //     : (DateTime.parse('$generateYmd 00:00:00').isAfter(DateTime.now()))
-            //         ? null
-            //         : () {
-            //             GeolocDialog(
-            //               context: context,
-            //               widget: DailyGeolocDisplayAlert(date: DateTime.parse('$generateYmd 00:00:00')),
-            //             );
-            //           },
-            child: Container(
-              margin: const EdgeInsets.all(1),
-              padding: const EdgeInsets.all(2),
-              decoration: BoxDecoration(
-                border: Border.all(
-                  color: (_calendarDays[i] == '')
-                      ? Colors.transparent
-                      : (generateYmd == DateTime.now().yyyymmdd)
-                          ? Colors.orangeAccent.withOpacity(0.4)
-                          : Colors.white.withOpacity(0.1),
-                  width: 3,
-                ),
+          child: Container(
+            margin: const EdgeInsets.all(1),
+            padding: const EdgeInsets.all(2),
+            decoration: BoxDecoration(
+              border: Border.all(
                 color: (_calendarDays[i] == '')
                     ? Colors.transparent
-                    : (DateTime.parse('$generateYmd 00:00:00').isAfter(DateTime.now()))
-                        ? Colors.white.withOpacity(0.1)
-                        : _utility.getYoubiColor(date: generateYmd, youbiStr: youbiStr, holidayMap: _holidayMap),
+                    : (generateYmd == DateTime.now().yyyymmdd)
+                        ? Colors.orangeAccent.withOpacity(0.4)
+                        : Colors.white.withOpacity(0.1),
+                width: 3,
               ),
-              child: (_calendarDays[i] == '')
-                  ? const Text('')
-                  : Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: <Widget>[Text(_calendarDays[i].padLeft(2, '0')), Container()],
-                        ),
-                        const SizedBox(height: 5),
-                        ConstrainedBox(
-                          constraints: BoxConstraints(minHeight: context.screenSize.height / 10),
-                          child: Column(
-                            children: <Widget>[
-                              //---------------------------------------//
-
-                              Row(
-                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              color: (_calendarDays[i] == '')
+                  ? Colors.transparent
+                  : (DateTime.parse('$generateYmd 00:00:00').isAfter(DateTime.now()))
+                      ? Colors.white.withOpacity(0.1)
+                      : _utility.getYoubiColor(date: generateYmd, youbiStr: youbiStr, holidayMap: _holidayMap),
+            ),
+            child: (_calendarDays[i] == '')
+                ? const Text('')
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: <Widget>[Text(_calendarDays[i].padLeft(2, '0')), Container()],
+                      ),
+                      const SizedBox(height: 5),
+                      ConstrainedBox(
+                        constraints: BoxConstraints(minHeight: context.screenSize.height / 10),
+                        child: (DateTime.parse('$generateYmd 00:00:00').isAfter(DateTime.now()))
+                            ? null
+                            : Column(
                                 children: <Widget>[
-                                  if (_calendarDays[i] != '' &&
-                                      DateTime.parse('$generateYmd 00:00:00').isBefore(DateTime.now())) ...<Widget>[
-                                    if (geolocMap[generateYmd] == null) ...<Widget>[Container()],
-                                    if (geolocMap[generateYmd] != null) ...<Widget>[
-                                      GestureDetector(
-                                        onTap: () {
-                                          GeolocDialog(
-                                            context: context,
-                                            widget:
-                                                DailyGeolocDisplayAlert(date: DateTime.parse('$generateYmd 00:00:00')),
-                                          );
-                                        },
-                                        child: Icon(Icons.info_outline, size: 14, color: Colors.white.withOpacity(0.4)),
-                                      ),
-                                    ],
-                                  ],
-                                  Text(geolocMap[generateYmd]?.length.toString() ?? ''),
+                                  SizedBox(
+                                    height: 25,
+                                    child: (geolocMap[generateYmd] == null)
+                                        ? null
+                                        : Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: <Widget>[
+                                              GestureDetector(
+                                                onTap: () {
+                                                  GeolocDialog(
+                                                    context: context,
+                                                    widget: DailyGeolocDisplayAlert(
+                                                      date: DateTime.parse('$generateYmd 00:00:00'),
+                                                    ),
+                                                  );
+                                                },
+                                                child: Icon(
+                                                  Icons.info_outline,
+                                                  size: 14,
+                                                  color: Colors.white.withOpacity(0.4),
+                                                ),
+                                              ),
+                                              Text(geolocMap[generateYmd]!.length.toString()),
+                                            ],
+                                          ),
+                                  ),
+                                  SizedBox(
+                                    height: 25,
+                                    child: (geolocStateMap[generateYmd] == null)
+                                        ? null
+                                        : Row(
+                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: <Widget>[
+                                              Icon(Icons.location_on, size: 14, color: Colors.white.withOpacity(0.4)),
+                                              Text(geolocStateMap[generateYmd]!.length.toString()),
+                                            ],
+                                          ),
+                                  ),
                                 ],
                               ),
-
-                              //---------------------------------------//
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-            ),
+                      ),
+                    ],
+                  ),
           ),
         ),
       );
