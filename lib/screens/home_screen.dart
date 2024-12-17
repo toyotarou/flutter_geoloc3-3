@@ -125,6 +125,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Map<String, int> monthlySpendMap = <String, int>{};
 
+  String lastRecord = '';
+
   ///
   @override
   void initState() {
@@ -176,6 +178,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     }
 
     final CalendarsResponseState calendarState = ref.watch(calendarProvider);
+
+    makeDisplayLastRecord();
 
     return Scaffold(
       appBar: AppBar(
@@ -232,9 +236,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         ],
       ),
-      body: Column(
+      body: Stack(
         children: <Widget>[
-          Expanded(child: _getCalendar()),
+          Positioned(
+            bottom: 0,
+            right: 0,
+            child: Padding(
+              padding: const EdgeInsets.all(10),
+              child: Text(lastRecord, style: const TextStyle(fontSize: 30)),
+            ),
+          ),
+          Column(children: <Widget>[Expanded(child: _getCalendar())]),
         ],
       ),
     );
@@ -339,7 +351,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         ),
                         const SizedBox(height: 5),
                         ConstrainedBox(
-                          constraints: BoxConstraints(minHeight: context.screenSize.height / 25),
+                          constraints: BoxConstraints(minHeight: context.screenSize.height / 10),
                           child: const Column(),
                         ),
                       ],
@@ -373,5 +385,29 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       // ignore: inference_failure_on_instance_creation, always_specify_types
       MaterialPageRoute(builder: (BuildContext context) => HomeScreen(baseYm: calendarState.nextYearMonth)),
     );
+  }
+
+  ///
+  void makeDisplayLastRecord() {
+    GeolocRepository().getRecentOneGeoloc().then((Geoloc? value) {
+      int secondDiff = 0;
+
+      if (value != null) {
+        secondDiff = DateTime.now()
+            .difference(
+              DateTime(
+                value.date.split('-')[0].toInt(),
+                value.date.split('-')[1].toInt(),
+                value.date.split('-')[2].toInt(),
+                value.time.split(':')[0].toInt(),
+                value.time.split(':')[1].toInt(),
+                value.time.split(':')[2].toInt(),
+              ),
+            )
+            .inSeconds;
+
+        lastRecord = secondDiff.toString().padLeft(2, '0');
+      }
+    });
   }
 }
