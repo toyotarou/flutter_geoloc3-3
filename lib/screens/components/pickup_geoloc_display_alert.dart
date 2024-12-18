@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../collections/geoloc.dart';
 import '../../controllers/geoloc/geoloc.dart';
 import '../../extensions/extensions.dart';
+import '../../utilities/utilities.dart';
 import '../home_screen.dart';
 
 class PickupGeolocDisplayAlert extends ConsumerStatefulWidget {
@@ -17,6 +18,9 @@ class PickupGeolocDisplayAlert extends ConsumerStatefulWidget {
 }
 
 class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAlert> {
+  Utility utility = Utility();
+
+  ///
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -57,17 +61,43 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
   Widget displayPickupGeolocList() {
     final List<Widget> list = <Widget>[];
 
+    int i = 0;
+    String keepLat = '';
+    String keepLng = '';
     for (final Geoloc element in widget.pickupGeolocList) {
+      String distance = '';
+      if (i == 0) {
+        distance = '0';
+      } else {
+        final String di = utility.calcDistance(
+          originLat: keepLat.toDouble(),
+          originLng: keepLng.toDouble(),
+          destLat: element.latitude.toDouble(),
+          destLng: element.longitude.toDouble(),
+        );
+
+        final double dis = di.toDouble() * 1000;
+
+        final List<String> exDis = dis.toString().split('.');
+
+        distance = exDis[0];
+      }
+
       list.add(DefaultTextStyle(
         style: const TextStyle(fontSize: 12),
         child: Row(
           children: <Widget>[
             Expanded(child: Text(element.time)),
-            Expanded(child: Container(alignment: Alignment.topRight, child: Text(element.latitude))),
-            Expanded(child: Container(alignment: Alignment.topRight, child: Text(element.longitude))),
+            Expanded(flex: 2, child: Container(alignment: Alignment.topRight, child: Text(element.latitude))),
+            Expanded(flex: 2, child: Container(alignment: Alignment.topRight, child: Text(element.longitude))),
+            Expanded(child: Container(alignment: Alignment.topRight, child: Text('$distance m'))),
           ],
         ),
       ));
+
+      keepLat = element.latitude;
+      keepLng = element.longitude;
+      i++;
     }
 
     return CustomScrollView(
