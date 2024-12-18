@@ -120,20 +120,24 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
   }
 
   Future<void> makeReverseGeolocList() async {
-    pickupGeolocList = <Geoloc>[];
-    final List<String> latLngList = <String>[];
+    if (reverseGeolocList != null) {
+      pickupGeolocList = <Geoloc>[];
+      final List<String> latLngList = <String>[];
 
-    reverseGeolocList
-      ?..sort((Geoloc a, Geoloc b) => a.time.compareTo(b.time))
-      ..forEach((Geoloc element) {
-        if (element.date == widget.date.yyyymmdd) {
-          if (!latLngList.contains('${element.latitude}|${element.longitude}')) {
-            pickupGeolocList.add(element);
+      reverseGeolocList!.sort((Geoloc a, Geoloc b) => a.time.compareTo(b.time));
+
+      for (var i = 0; i < reverseGeolocList!.length; i++) {
+        var value = reverseGeolocList![i];
+
+        if (value.date == widget.date.yyyymmdd) {
+          if (!latLngList.contains('${value.latitude}|${value.longitude}')) {
+            pickupGeolocList.add(value);
           }
 
-          latLngList.add('${element.latitude}|${element.longitude}');
+          latLngList.add('${value.latitude}|${value.longitude}');
         }
-      });
+      }
+    }
   }
 
   ///
