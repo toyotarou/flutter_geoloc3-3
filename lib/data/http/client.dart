@@ -128,11 +128,10 @@ class HttpClient {
   }
 
   ///
-  Future<dynamic> deleteReturnBodyString(
-      {required String path, Map<String, dynamic>? queryParameters, Map<String, dynamic>? body}) async {
-    final Uri uri = Uri.http(Environment.apiEndPoint, '${Environment.apiBasePath}/$path', queryParameters);
+  Future<dynamic> deleteReturnBodyString({required String path}) async {
+    final Uri uri = Uri.http(Environment.apiEndPoint, '${Environment.apiBasePath}/$path');
 
-    final Response response = await _client.delete(uri, headers: await _headers, body: json.encode(body));
+    final Response response = await _client.delete(uri, headers: await _headers);
 
     final String bodyString = utf8.decode(response.bodyBytes);
 

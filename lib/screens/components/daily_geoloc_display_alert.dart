@@ -138,32 +138,19 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
   Future<void> makeReverseGeolocList() async {
     pickupGeolocList = <Geoloc>[];
 
-    final List<Geoloc>? list = geolocMap[widget.date.yyyymmdd];
+    String keepLat = '';
+    String keepLng = '';
 
-    if (list != null) {
-      list.sort((Geoloc a, Geoloc b) => a.time.compareTo(b.time));
-
-      for (int i = 0; i < list.length; i++) {
-        if (i == 0) {
-          pickupGeolocList.add(list[i]);
-        } else {
-          if (list[i - 1].latitude != list[i].latitude || list[i - 1].longitude != list[i].longitude) {
-            final String distance = utility.calcDistance(
-              originLat: list[i - 1].latitude.toDouble(),
-              originLng: list[i - 1].longitude.toDouble(),
-              destLat: list[i].latitude.toDouble(),
-              destLng: list[i].longitude.toDouble(),
-            );
-
-            final String hundred = distance.split('.')[1].substring(0, 1);
-
-            if (hundred.toInt() > 0) {
-              pickupGeolocList.add(list[i]);
-            }
-          }
+    geolocMap[widget.date.yyyymmdd]
+      ?..sort((Geoloc a, Geoloc b) => a.time.compareTo(b.time))
+      ..forEach((Geoloc element) {
+        if (element.latitude != keepLat && element.longitude != keepLng) {
+          pickupGeolocList.add(element);
         }
-      }
-    }
+
+        keepLat = element.latitude;
+        keepLng = element.longitude;
+      });
   }
 
   ///

@@ -222,6 +222,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
         actions: <Widget>[
           IconButton(
+            onPressed: () {
+              Navigator.pushReplacement(
+                context,
+                // ignore: inference_failure_on_instance_creation, always_specify_types
+                MaterialPageRoute(
+                  builder: (BuildContext context) =>
+                      HomeScreen(baseYm: (widget.baseYm != null) ? widget.baseYm : DateTime.now().yyyymm),
+                ),
+              );
+            },
+            icon: const Icon(Icons.refresh, color: Colors.yellowAccent),
+          ),
+          IconButton(
             onPressed: () async {
               final bool isRunning = await BackgroundTask.instance.isRunning;
 

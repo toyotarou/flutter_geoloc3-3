@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../collections/geoloc.dart';
 import '../../controllers/geoloc/geoloc.dart';
 import '../../extensions/extensions.dart';
+import '../home_screen.dart';
 
 class PickupGeolocDisplayAlert extends ConsumerStatefulWidget {
   const PickupGeolocDisplayAlert({super.key, required this.pickupGeolocList, required this.date});
@@ -30,11 +31,12 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text(widget.date.yyyymmdd),
-                GestureDetector(
-                  onTap: () {
-                    inputPickupGeoloc();
-                  },
-                  child: const Icon(Icons.input),
+                Row(
+                  children: <Widget>[
+                    GestureDetector(onTap: () => deletePickupGeoloc(), child: const Icon(Icons.delete)),
+                    const SizedBox(width: 30),
+                    GestureDetector(onTap: () => inputPickupGeoloc(), child: const Icon(Icons.input)),
+                  ],
                 ),
               ],
             ),
@@ -81,28 +83,52 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
   }
 
   ///
-  Future<void> inputPickupGeoloc() async {
+  Future<void> deletePickupGeoloc() async {
     // ignore: always_specify_types
-    ref.read(geolocControllerProvider.notifier).deleteGeoloc(date: widget.date.yyyymmdd).then((value) async {
-      widget.pickupGeolocList
-        ..sort((Geoloc a, Geoloc b) => a.time.compareTo(b.time))
-        ..forEach((Geoloc element) async {
-          final Map<String, String> map = <String, String>{
-            'year': element.date.split('-')[0],
-            'month': element.date.split('-')[1],
-            'day': element.date.split('-')[2],
-            'time': element.time,
-            'latitude': element.latitude,
-            'longitude': element.longitude,
-          };
-
-          await ref.read(geolocControllerProvider.notifier).inputGeoloc(map: map);
-        });
-
+    ref.read(geolocControllerProvider.notifier).deleteGeoloc(date: widget.date.yyyymmdd).then((value) {
       if (mounted) {
         Navigator.pop(context);
         Navigator.pop(context);
+
+        Navigator.pushReplacement(
+          context,
+          // ignore: inference_failure_on_instance_creation, always_specify_types
+          MaterialPageRoute(
+            builder: (BuildContext context) => HomeScreen(baseYm: widget.date.yyyymm),
+          ),
+        );
       }
     });
+  }
+
+  ///
+  Future<void> inputPickupGeoloc() async {
+    widget.pickupGeolocList
+      ..sort((Geoloc a, Geoloc b) => a.time.compareTo(b.time))
+      ..forEach((Geoloc element) async {
+        final Map<String, String> map = <String, String>{
+          'year': element.date.split('-')[0],
+          'month': element.date.split('-')[1],
+          'day': element.date.split('-')[2],
+          'time': element.time,
+          'latitude': element.latitude,
+          'longitude': element.longitude,
+        };
+
+        await ref.read(geolocControllerProvider.notifier).inputGeoloc(map: map);
+      });
+
+    if (mounted) {
+      Navigator.pop(context);
+      Navigator.pop(context);
+
+      Navigator.pushReplacement(
+        context,
+        // ignore: inference_failure_on_instance_creation, always_specify_types
+        MaterialPageRoute(
+          builder: (BuildContext context) => HomeScreen(baseYm: widget.date.yyyymm),
+        ),
+      );
+    }
   }
 }
