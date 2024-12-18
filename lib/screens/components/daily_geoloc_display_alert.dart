@@ -4,6 +4,7 @@ import '../../collections/geoloc.dart';
 
 import '../../extensions/extensions.dart';
 import '../../ripository/geolocs_repository.dart';
+import '../../utilities/utilities.dart';
 import '../parts/geoloc_dialog.dart';
 import 'pickup_geoloc_display_alert.dart';
 
@@ -18,11 +19,14 @@ class DailyGeolocDisplayAlert extends StatefulWidget {
 
 class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
   List<Geoloc>? geolocList = <Geoloc>[];
-  List<Geoloc>? reverseGeolocList = <Geoloc>[];
 
   List<Geoloc> pickupGeolocList = <Geoloc>[];
 
   String diffSeconds = '';
+
+  Utility utility = Utility();
+
+  Map<String, List<Geoloc>> geolocMap = <String, List<Geoloc>>{};
 
   ///
   void _init() {
@@ -37,6 +41,8 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
 
     makeDiffSeconds();
 
+    makeReverseGeolocList();
+
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: SafeArea(
@@ -50,9 +56,7 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
               children: <Widget>[
                 Text(widget.date.yyyymmdd),
                 GestureDetector(
-                  onTap: () async {
-                    await makeReverseGeolocList();
-
+                  onTap: () {
                     GeolocDialog(
                       // ignore: use_build_context_synchronously
                       context: context,
@@ -78,11 +82,22 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
 
   ///
   Future<void> _makeGeolocList() async {
+    geolocMap = <String, List<Geoloc>>{};
+
     GeolocRepository().getAllGeoloc().then((List<Geoloc>? value) {
       if (mounted) {
         setState(() {
           geolocList = value;
-          reverseGeolocList = value;
+
+          if (value!.isNotEmpty) {
+            for (final Geoloc element in value) {
+              geolocMap[element.date] = <Geoloc>[];
+            }
+
+            for (final Geoloc element in value) {
+              geolocMap[element.date]?.add(element);
+            }
+          }
         });
       }
     });
@@ -119,22 +134,33 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
     );
   }
 
+  ///
   Future<void> makeReverseGeolocList() async {
-    if (reverseGeolocList != null) {
-      pickupGeolocList = <Geoloc>[];
-      final List<String> latLngList = <String>[];
+    pickupGeolocList = <Geoloc>[];
 
-      reverseGeolocList!.sort((Geoloc a, Geoloc b) => a.time.compareTo(b.time));
+    final List<Geoloc>? list = geolocMap[widget.date.yyyymmdd];
 
-      for (var i = 0; i < reverseGeolocList!.length; i++) {
-        var value = reverseGeolocList![i];
+    if (list != null) {
+      list.sort((Geoloc a, Geoloc b) => a.time.compareTo(b.time));
 
-        if (value.date == widget.date.yyyymmdd) {
-          if (!latLngList.contains('${value.latitude}|${value.longitude}')) {
-            pickupGeolocList.add(value);
+      for (int i = 0; i < list.length; i++) {
+        if (i == 0) {
+          pickupGeolocList.add(list[i]);
+        } else {
+          if (list[i - 1].latitude != list[i].latitude || list[i - 1].longitude != list[i].longitude) {
+            final String distance = utility.calcDistance(
+              originLat: list[i - 1].latitude.toDouble(),
+              originLng: list[i - 1].longitude.toDouble(),
+              destLat: list[i].latitude.toDouble(),
+              destLng: list[i].longitude.toDouble(),
+            );
+
+            final String hundred = distance.split('.')[1].substring(0, 1);
+
+            if (hundred.toInt() > 0) {
+              pickupGeolocList.add(list[i]);
+            }
           }
-
-          latLngList.add('${value.latitude}|${value.longitude}');
         }
       }
     }

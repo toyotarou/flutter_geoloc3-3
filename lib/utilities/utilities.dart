@@ -43,16 +43,17 @@ class Utility {
   ///
   String calcDistance(
       {required double originLat, required double originLng, required double destLat, required double destLng}) {
-    final distanceKm = 6371 *
+    final double distanceKm = 6371 *
         acos(
           cos(originLat / 180 * pi) * cos((destLng - originLng) / 180 * pi) * cos(destLat / 180 * pi) +
               sin(originLat / 180 * pi) * sin(destLat / 180 * pi),
         );
 
-    final exDistance = distanceKm.toString().split('.');
+    final List<String> exDistance = distanceKm.toString().split('.');
 
-    final seisuu = exDistance[0];
-    final shousuu = exDistance[1].substring(0, 2);
+    final String seisuu = exDistance[0];
+
+    final String shousuu = exDistance[1];
 
     return '$seisuu.$shousuu';
   }
