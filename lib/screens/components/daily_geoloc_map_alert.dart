@@ -39,49 +39,63 @@ class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
     makeMarker();
 
     return Scaffold(
-      body: Column(
+      backgroundColor: Colors.transparent,
+      body: Row(
         children: <Widget>[
           Expanded(
-              child: FlutterMap(
-            mapController: mapController,
-            options: MapOptions(
-              initialCenter: LatLng(minLat, minLng),
-              initialCameraFit: ((minLat == maxLat) && (minLng == maxLng))
-                  ? null
-                  : CameraFit.bounds(
-                      bounds: LatLngBounds.fromPoints(
-                        <LatLng>[LatLng(minLat, maxLng), LatLng(maxLat, minLng)],
-                      ),
-                      padding: const EdgeInsets.all(50),
-                    ),
-            ),
-            children: <Widget>[
-              TileLayer(
-                urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                tileProvider: CachedTileProvider(),
-                userAgentPackageName: 'com.example.app',
-              ),
-
-              MarkerLayer(markers: markerList),
-
-              // ignore: always_specify_types
-              PolylineLayer(
-                polylines: <Polyline<Object>>[
-                  // ignore: always_specify_types
-                  Polyline(
-                    points: widget.geolocStateList.map((GeolocModel e) {
-                      return LatLng(
-                        e.latitude.toDouble(),
-                        e.longitude.toDouble(),
-                      );
-                    }).toList(),
-                    color: Colors.redAccent,
-                    strokeWidth: 5,
+            child: Column(
+              children: <Widget>[
+                Expanded(
+                    child: FlutterMap(
+                  mapController: mapController,
+                  options: MapOptions(
+                    initialCenter: LatLng(minLat, minLng),
+                    initialCameraFit: ((minLat == maxLat) && (minLng == maxLng))
+                        ? null
+                        : CameraFit.bounds(
+                            bounds: LatLngBounds.fromPoints(
+                              <LatLng>[LatLng(minLat, maxLng), LatLng(maxLat, minLng)],
+                            ),
+                            padding: const EdgeInsets.all(50),
+                          ),
                   ),
-                ],
-              ),
-            ],
-          )),
+                  children: <Widget>[
+                    TileLayer(
+                      urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                      tileProvider: CachedTileProvider(),
+                      userAgentPackageName: 'com.example.app',
+                    ),
+
+                    MarkerLayer(markers: markerList),
+
+                    // // ignore: always_specify_types
+                    // PolylineLayer(
+                    //   polylines: <Polyline<Object>>[
+                    //     // ignore: always_specify_types
+                    //     Polyline(
+                    //       points: widget.geolocStateList.map((GeolocModel e) {
+                    //         return LatLng(
+                    //           e.latitude.toDouble(),
+                    //           e.longitude.toDouble(),
+                    //         );
+                    //       }).toList(),
+                    //       color: Colors.redAccent,
+                    //       strokeWidth: 5,
+                    //     ),
+                    //   ],
+                    // ),
+                    //
+                    //
+                    //
+                  ],
+                )),
+              ],
+            ),
+          ),
+          SizedBox(
+            width: 60,
+            child: displayTimeCircleAvatar(),
+          ),
         ],
       ),
     );
@@ -116,21 +130,45 @@ class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
           width: 40,
           height: 40,
           child: CircleAvatar(
-            // backgroundColor: getCircleAvatarBgColor(element: widget.geolocStateList[i], ref: ref),
-            //
-            //
-            //
-            //
-
             backgroundColor: Colors.green[900]?.withOpacity(0.5),
-
             child: Text(
               widget.geolocStateList[i].time,
-              style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              style: const TextStyle(color: Colors.white, fontSize: 10),
             ),
           ),
         ),
       );
     }
+  }
+
+  ///
+  Widget displayTimeCircleAvatar() {
+    final List<Widget> list = <Widget>[];
+
+    for (final GeolocModel element in widget.geolocStateList) {
+      list.add(
+        Padding(
+          padding: const EdgeInsets.only(bottom: 10),
+          child: CircleAvatar(
+            backgroundColor: Colors.green[900]?.withOpacity(0.5),
+            child: Text(
+              element.time,
+              style: const TextStyle(color: Colors.white, fontSize: 10),
+            ),
+          ),
+        ),
+      );
+    }
+
+    return CustomScrollView(
+      slivers: <Widget>[
+        SliverList(
+          delegate: SliverChildBuilderDelegate(
+            (BuildContext context, int index) => list[index],
+            childCount: list.length,
+          ),
+        ),
+      ],
+    );
   }
 }
