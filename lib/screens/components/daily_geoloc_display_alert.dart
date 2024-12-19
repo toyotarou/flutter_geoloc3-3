@@ -144,7 +144,7 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
     geolocMap[widget.date.yyyymmdd]
       ?..sort((Geoloc a, Geoloc b) => a.time.compareTo(b.time))
       ..forEach((Geoloc element) {
-        if (element.latitude != keepLat && element.longitude != keepLng) {
+        if (<String>{keepLat, keepLng, element.latitude, element.longitude}.toList().length >= 3) {
           pickupGeolocList.add(element);
         }
 
