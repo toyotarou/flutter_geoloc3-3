@@ -368,7 +368,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ),
                       const SizedBox(height: 5),
                       ConstrainedBox(
-                        constraints: BoxConstraints(minHeight: context.screenSize.height / 10),
+                        constraints: BoxConstraints(minHeight: context.screenSize.height / 9),
                         child: (DateTime.parse('$generateYmd 00:00:00').isAfter(DateTime.now()))
                             ? null
                             : Column(
