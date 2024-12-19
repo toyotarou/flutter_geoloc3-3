@@ -311,7 +311,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       list.add(_getCalendarRow(week: i));
     }
 
-    return DefaultTextStyle(style: const TextStyle(fontSize: 10), child: Column(children: list));
+    return SingleChildScrollView(
+        child: DefaultTextStyle(style: const TextStyle(fontSize: 10), child: Column(children: list)));
   }
 
   ///
@@ -372,46 +373,49 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                             ? null
                             : Column(
                                 children: <Widget>[
-                                  SizedBox(
-                                    height: 25,
-                                    child: (geolocMap[generateYmd] == null)
+                                  /////
+
+                                  OutlinedButton(
+                                    style: OutlinedButton.styleFrom(
+                                      padding: EdgeInsets.zero,
+                                      backgroundColor:
+                                          (geolocMap[generateYmd] == null) ? null : Colors.greenAccent.withOpacity(0.1),
+                                    ),
+                                    onPressed: (geolocMap[generateYmd] == null)
                                         ? null
-                                        : GestureDetector(
-                                            onTap: () {
-                                              GeolocDialog(
-                                                context: context,
-                                                widget: DailyGeolocDisplayAlert(
-                                                  date: DateTime.parse('$generateYmd 00:00:00'),
-                                                ),
-                                              );
-                                            },
-                                            child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                              crossAxisAlignment: CrossAxisAlignment.start,
-                                              children: <Widget>[
-                                                Icon(
-                                                  Icons.info_outline,
-                                                  size: 14,
-                                                  color: Colors.white.withOpacity(0.4),
-                                                ),
-                                                Text(geolocMap[generateYmd]!.length.toString()),
-                                              ],
-                                            ),
-                                          ),
+                                        : () {
+                                            GeolocDialog(
+                                              context: context,
+                                              widget: DailyGeolocDisplayAlert(
+                                                date: DateTime.parse('$generateYmd 00:00:00'),
+                                              ),
+                                            );
+                                          },
+                                    child: Text(
+                                      (geolocMap[generateYmd] != null) ? geolocMap[generateYmd]!.length.toString() : '',
+                                      style: const TextStyle(fontSize: 8, color: Colors.white),
+                                    ),
                                   ),
-                                  SizedBox(
-                                    height: 25,
-                                    child: (geolocStateMap[generateYmd] == null)
-                                        ? null
-                                        : Row(
-                                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: <Widget>[
-                                              Icon(Icons.location_on, size: 14, color: Colors.white.withOpacity(0.4)),
-                                              Text(geolocStateMap[generateYmd]!.length.toString()),
-                                            ],
-                                          ),
+
+                                  /////
+
+                                  OutlinedButton(
+                                    style: OutlinedButton.styleFrom(
+                                      padding: EdgeInsets.zero,
+                                      backgroundColor: (geolocStateMap[generateYmd] == null)
+                                          ? null
+                                          : Colors.blueAccent.withOpacity(0.1),
+                                    ),
+                                    onPressed: (geolocStateMap[generateYmd] == null) ? null : () {},
+                                    child: Text(
+                                      (geolocStateMap[generateYmd] != null)
+                                          ? geolocStateMap[generateYmd]!.length.toString()
+                                          : '',
+                                      style: const TextStyle(fontSize: 8, color: Colors.white),
+                                    ),
                                   ),
+
+                                  /////
                                 ],
                               ),
                       ),
