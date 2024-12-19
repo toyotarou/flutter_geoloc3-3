@@ -36,6 +36,13 @@ dependencies:
   flutter_launcher_icons: ^0.14.2
   flutter_native_splash: ^2.4.3
 
+  flutter_map: ^7.0.2
+  latlong2: ^0.9.1
+
+  flutter_cache_manager: ^3.4.1
+
+  cached_network_image: ^3.4.1
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

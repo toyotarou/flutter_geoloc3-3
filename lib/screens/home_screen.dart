@@ -19,6 +19,7 @@ import '../ripository/geolocs_repository.dart';
 import '../ripository/isar_repository.dart';
 import '../utilities/utilities.dart';
 import 'components/daily_geoloc_display_alert.dart';
+import 'components/daily_geoloc_map_alert.dart';
 import 'parts/geoloc_dialog.dart';
 
 @pragma('vm:entry-point')
@@ -406,7 +407,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                           ? null
                                           : Colors.blueAccent.withOpacity(0.1),
                                     ),
-                                    onPressed: (geolocStateMap[generateYmd] == null) ? null : () {},
+                                    onPressed: (geolocStateMap[generateYmd] == null)
+                                        ? null
+                                        : () {
+                                            GeolocDialog(
+                                              context: context,
+                                              widget: DailyGeolocMapAlert(
+                                                geolocStateList: geolocStateMap[generateYmd] ?? <GeolocModel>[],
+                                              ),
+                                            );
+                                          },
                                     child: Text(
                                       (geolocStateMap[generateYmd] != null)
                                           ? geolocStateMap[generateYmd]!.length.toString()

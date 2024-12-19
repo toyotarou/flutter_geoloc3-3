@@ -49,13 +49,27 @@ class Utility {
               sin(originLat / 180 * pi) * sin(destLat / 180 * pi),
         );
 
-    final List<String> exDistance = distanceKm.toString().split('.');
+    return distanceKm.toString();
+  }
 
-    final String seisuu = exDistance[0];
+  ///
+  String calculateDistance(
+      {required double originLat, required double originLng, required double destLat, required double destLng}) {
+    const int earthRadiusKm = 6371;
 
-    final String shousuu = exDistance[1];
+    double toRadians(double degree) => degree * pi / 180;
 
-    return '$seisuu.$shousuu';
+    final double dLat = toRadians(destLat - originLat);
+    final double dLon = toRadians(destLng - originLng);
+
+    final double a = sin(dLat / 2) * sin(dLat / 2) +
+        cos(toRadians(originLat)) * cos(toRadians(destLat)) * sin(dLon / 2) * sin(dLon / 2);
+
+    final double c = 2 * atan2(sqrt(a), sqrt(1 - a));
+
+    final double distance = earthRadiusKm * c;
+
+    return distance.toString();
   }
 }
 
