@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 import '../../controllers/app_params/app_params_notifier.dart';
 import '../../controllers/app_params/app_params_response_state.dart';
@@ -37,6 +38,27 @@ class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
 
   List<GeolocModel> polylineGeolocList = <GeolocModel>[];
 
+  late ScrollController _scrollController;
+
+  final ItemScrollController controller = ItemScrollController();
+  final ItemPositionsListener listener = ItemPositionsListener.create();
+
+  ///
+  @override
+  void initState() {
+    super.initState();
+
+    _scrollController = ScrollController();
+  }
+
+  ///
+  @override
+  void dispose() {
+    _scrollController.dispose();
+
+    super.dispose();
+  }
+
   ///
   @override
   Widget build(BuildContext context) {
@@ -50,15 +72,17 @@ class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
         children: <Widget>[
           Expanded(
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
+                const SizedBox(height: 10),
+                displayMapHeadTimeSelect(),
+                const SizedBox(height: 10),
                 Expanded(
                   child: FlutterMap(
                     mapController: mapController,
                     options: MapOptions(
                       initialCameraFit: CameraFit.bounds(
-                        bounds: LatLngBounds.fromPoints(
-                          <LatLng>[LatLng(minLat, maxLng), LatLng(maxLat, minLng)],
-                        ),
+                        bounds: LatLngBounds.fromPoints(<LatLng>[LatLng(minLat, maxLng), LatLng(maxLat, minLng)]),
                         padding: const EdgeInsets.all(50),
                       ),
                     ),
@@ -76,12 +100,9 @@ class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
                         polylines: <Polyline<Object>>[
                           // ignore: always_specify_types
                           Polyline(
-                            points: polylineGeolocList.map((GeolocModel e) {
-                              return LatLng(
-                                e.latitude.toDouble(),
-                                e.longitude.toDouble(),
-                              );
-                            }).toList(),
+                            points: polylineGeolocList
+                                .map((GeolocModel e) => LatLng(e.latitude.toDouble(), e.longitude.toDouble()))
+                                .toList(),
                             color: Colors.redAccent,
                             strokeWidth: 5,
                           ),
@@ -93,12 +114,75 @@ class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
               ],
             ),
           ),
-          SizedBox(
-            width: 60,
-            child: displayTimeCircleAvatar(),
-          ),
+          SizedBox(width: 60, child: displayTimeCircleAvatar()),
         ],
       ),
+    );
+  }
+
+  ///
+  Widget displayMapHeadTimeSelect() {
+    final List<String> timeList = <String>[];
+
+    for (final GeolocModel element in widget.geolocStateList) {
+      final List<String> exTime = element.time.split(':');
+
+      if (!timeList.contains(exTime[0])) {
+        timeList.add(exTime[0]);
+      }
+    }
+
+    return Row(
+      children: <Widget>[
+        const SizedBox(width: 10),
+
+        /////
+
+        OutlinedButton(
+          style:
+              OutlinedButton.styleFrom(padding: EdgeInsets.zero, backgroundColor: Colors.pinkAccent.withOpacity(0.1)),
+          onPressed: () {
+            ref.read(appParamProvider.notifier).setSelectedTimeGeoloc();
+
+            polylineGeolocList = <GeolocModel>[];
+
+            controller.jumpTo(index: 0);
+          },
+          child: const Text('clear', style: TextStyle(color: Colors.white)),
+        ),
+
+        /////
+
+        const SizedBox(width: 10),
+
+        /////
+
+        Expanded(
+          child: SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: timeList.map((String e) {
+                return Padding(
+                  padding: const EdgeInsets.only(right: 10),
+                  child: GestureDetector(
+                    onTap: () {
+                      controller.jumpTo(
+                        index: widget.geolocStateList.indexWhere((GeolocModel element) => element.time.split(':')[0] == e),
+                      );
+                    },
+                    child: CircleAvatar(
+                      backgroundColor: Colors.white.withOpacity(0.2),
+                      child: Text(e, style: const TextStyle(fontSize: 12)),
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ),
+        ),
+
+        /////
+      ],
     );
   }
 
@@ -138,10 +222,7 @@ class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
                 : (widget.displayTempMap == true)
                     ? Colors.orangeAccent.withOpacity(0.5)
                     : Colors.green[900]?.withOpacity(0.5),
-            child: Text(
-              element.time,
-              style: const TextStyle(color: Colors.white, fontSize: 10),
-            ),
+            child: Text(element.time, style: const TextStyle(color: Colors.white, fontSize: 10)),
           ),
         ),
       );
@@ -150,50 +231,45 @@ class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
 
   ///
   Widget displayTimeCircleAvatar() {
-    final List<Widget> list = <Widget>[];
-
     final GeolocModel? selectedTimeGeoloc =
         ref.watch(appParamProvider.select((AppParamsResponseState value) => value.selectedTimeGeoloc));
 
-    for (final GeolocModel element in widget.geolocStateList) {
-      list.add(
-        Padding(
+    return ScrollablePositionedList.builder(
+      itemCount: widget.geolocStateList.length,
+      itemScrollController: controller,
+      itemPositionsListener: listener,
+      itemBuilder: (BuildContext context, int index) {
+        return Padding(
           padding: const EdgeInsets.only(bottom: 10),
           child: GestureDetector(
             onTap: () {
-              ref.read(appParamProvider.notifier).setSelectedTimeGeoloc(geoloc: element);
+              ref.read(appParamProvider.notifier).setSelectedTimeGeoloc(geoloc: widget.geolocStateList[index]);
 
-              mapController.move(LatLng(element.latitude.toDouble(), element.longitude.toDouble()), 18);
+              mapController.move(
+                  LatLng(
+                    widget.geolocStateList[index].latitude.toDouble(),
+                    widget.geolocStateList[index].longitude.toDouble(),
+                  ),
+                  18);
 
-              makePolylineGeolocList(geoloc: element);
+              makePolylineGeolocList(geoloc: widget.geolocStateList[index]);
             },
             child: CircleAvatar(
-              // ignore: use_if_null_to_convert_nulls_to_bools
-              backgroundColor: (selectedTimeGeoloc != null && selectedTimeGeoloc.time == element.time)
-                  ? Colors.redAccent.withOpacity(0.5)
-                  // ignore: use_if_null_to_convert_nulls_to_bools
-                  : (widget.displayTempMap == true)
-                      ? Colors.orangeAccent.withOpacity(0.5)
-                      : Colors.green[900]?.withOpacity(0.5),
+              backgroundColor:
+                  (selectedTimeGeoloc != null && selectedTimeGeoloc.time == widget.geolocStateList[index].time)
+                      ? Colors.redAccent.withOpacity(0.5)
+                      // ignore: use_if_null_to_convert_nulls_to_bools
+                      : (widget.displayTempMap == true)
+                          ? Colors.orangeAccent.withOpacity(0.5)
+                          : Colors.green[900]?.withOpacity(0.5),
               child: Text(
-                element.time,
+                widget.geolocStateList[index].time,
                 style: const TextStyle(color: Colors.white, fontSize: 10),
               ),
             ),
           ),
-        ),
-      );
-    }
-
-    return CustomScrollView(
-      slivers: <Widget>[
-        SliverList(
-          delegate: SliverChildBuilderDelegate(
-            (BuildContext context, int index) => list[index],
-            childCount: list.length,
-          ),
-        ),
-      ],
+        );
+      },
     );
   }
 

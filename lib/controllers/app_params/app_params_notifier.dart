@@ -15,5 +15,5 @@ class AppParamNotifier extends StateNotifier<AppParamsResponseState> {
   void setCalendarSelectedDate({required DateTime date}) => state = state.copyWith(calendarSelectedDate: date);
 
   ///
-  void setSelectedTimeGeoloc({required GeolocModel geoloc}) => state = state.copyWith(selectedTimeGeoloc: geoloc);
+  void setSelectedTimeGeoloc({GeolocModel? geoloc}) => state = state.copyWith(selectedTimeGeoloc: geoloc);
 }
