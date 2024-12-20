@@ -122,8 +122,8 @@ class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
           SizedBox(
               width: 60,
               child: Column(
-                children: [
-                  SizedBox(height: 10),
+                children: <Widget>[
+                  const SizedBox(height: 10),
                   Expanded(child: displayTimeCircleAvatar()),
                 ],
               )),

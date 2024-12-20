@@ -114,8 +114,8 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
           child: Row(
             children: <Widget>[
               Expanded(child: Text(element.time)),
-              Expanded(child: Container(alignment: Alignment.topRight, child: Text(element.latitude))),
-              Expanded(child: Container(alignment: Alignment.topRight, child: Text(element.longitude))),
+              Expanded(child: Text(element.latitude)),
+              Expanded(child: Text(element.longitude)),
             ],
           ),
         ));
