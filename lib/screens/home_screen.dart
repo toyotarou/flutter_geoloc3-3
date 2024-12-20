@@ -380,7 +380,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                     style: OutlinedButton.styleFrom(
                                       padding: EdgeInsets.zero,
                                       backgroundColor:
-                                          (geolocMap[generateYmd] == null) ? null : Colors.greenAccent.withOpacity(0.1),
+                                          (geolocMap[generateYmd] == null) ? null : Colors.blueAccent.withOpacity(0.1),
                                     ),
                                     onPressed: (geolocMap[generateYmd] == null)
                                         ? null
@@ -405,7 +405,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                       padding: EdgeInsets.zero,
                                       backgroundColor: (geolocStateMap[generateYmd] == null)
                                           ? null
-                                          : Colors.blueAccent.withOpacity(0.1),
+                                          : Colors.greenAccent.withOpacity(0.1),
                                     ),
                                     onPressed: (geolocStateMap[generateYmd] == null)
                                         ? null

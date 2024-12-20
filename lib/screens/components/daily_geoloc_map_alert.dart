@@ -5,14 +5,18 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 
+import '../../controllers/app_params/app_params_notifier.dart';
+import '../../controllers/app_params/app_params_response_state.dart';
 import '../../extensions/extensions.dart';
 import '../../models/geoloc_model.dart';
 import '../../utilities/tile_provider.dart';
 
 class DailyGeolocMapAlert extends ConsumerStatefulWidget {
-  const DailyGeolocMapAlert({super.key, required this.geolocStateList});
+  const DailyGeolocMapAlert({super.key, required this.geolocStateList, this.displayTempMap});
 
   final List<GeolocModel> geolocStateList;
+
+  final bool? displayTempMap;
 
   @override
   ConsumerState<DailyGeolocMapAlert> createState() => _DailyGeolocMapAlertState();
@@ -120,19 +124,25 @@ class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
   void makeMarker() {
     markerList = <Marker>[];
 
-    for (int i = 0; i < widget.geolocStateList.length; i++) {
+    final GeolocModel? selectedTimeGeoloc =
+        ref.watch(appParamProvider.select((AppParamsResponseState value) => value.selectedTimeGeoloc));
+
+    for (final GeolocModel element in widget.geolocStateList) {
       markerList.add(
         Marker(
-          point: LatLng(
-            widget.geolocStateList[i].latitude.toDouble(),
-            widget.geolocStateList[i].longitude.toDouble(),
-          ),
+          point: LatLng(element.latitude.toDouble(), element.longitude.toDouble()),
           width: 40,
           height: 40,
           child: CircleAvatar(
-            backgroundColor: Colors.green[900]?.withOpacity(0.5),
+            // ignore: use_if_null_to_convert_nulls_to_bools
+            backgroundColor: (selectedTimeGeoloc != null && selectedTimeGeoloc.time == element.time)
+                ? Colors.redAccent.withOpacity(0.5)
+                // ignore: use_if_null_to_convert_nulls_to_bools
+                : (widget.displayTempMap == true)
+                    ? Colors.orangeAccent.withOpacity(0.5)
+                    : Colors.green[900]?.withOpacity(0.5),
             child: Text(
-              widget.geolocStateList[i].time,
+              element.time,
               style: const TextStyle(color: Colors.white, fontSize: 10),
             ),
           ),
@@ -145,15 +155,29 @@ class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
   Widget displayTimeCircleAvatar() {
     final List<Widget> list = <Widget>[];
 
+    final GeolocModel? selectedTimeGeoloc =
+        ref.watch(appParamProvider.select((AppParamsResponseState value) => value.selectedTimeGeoloc));
+
     for (final GeolocModel element in widget.geolocStateList) {
       list.add(
         Padding(
           padding: const EdgeInsets.only(bottom: 10),
-          child: CircleAvatar(
-            backgroundColor: Colors.green[900]?.withOpacity(0.5),
-            child: Text(
-              element.time,
-              style: const TextStyle(color: Colors.white, fontSize: 10),
+          child: GestureDetector(
+            onTap: () {
+              ref.read(appParamProvider.notifier).setSelectedTimeGeoloc(geoloc: element);
+            },
+            child: CircleAvatar(
+              // ignore: use_if_null_to_convert_nulls_to_bools
+              backgroundColor: (selectedTimeGeoloc != null && selectedTimeGeoloc.time == element.time)
+                  ? Colors.redAccent.withOpacity(0.5)
+                  // ignore: use_if_null_to_convert_nulls_to_bools
+                  : (widget.displayTempMap == true)
+                      ? Colors.orangeAccent.withOpacity(0.5)
+                      : Colors.green[900]?.withOpacity(0.5),
+              child: Text(
+                element.time,
+                style: const TextStyle(color: Colors.white, fontSize: 10),
+              ),
             ),
           ),
         ),

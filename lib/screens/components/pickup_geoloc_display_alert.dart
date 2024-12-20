@@ -4,8 +4,11 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../collections/geoloc.dart';
 import '../../controllers/geoloc/geoloc.dart';
 import '../../extensions/extensions.dart';
+import '../../models/geoloc_model.dart';
 import '../../utilities/utilities.dart';
 import '../home_screen.dart';
+import '../parts/geoloc_dialog.dart';
+import 'daily_geoloc_map_alert.dart';
 
 class PickupGeolocDisplayAlert extends ConsumerStatefulWidget {
   const PickupGeolocDisplayAlert({super.key, required this.pickupGeolocList, required this.date});
@@ -37,6 +40,30 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
                 Text(widget.date.yyyymmdd),
                 Row(
                   children: <Widget>[
+                    GestureDetector(
+                        onTap: () {
+                          final List<GeolocModel> list = <GeolocModel>[];
+                          for (final Geoloc element in widget.pickupGeolocList) {
+                            list.add(
+                              GeolocModel(
+                                id: 0,
+                                year: element.date.split('-')[0],
+                                month: element.date.split('-')[1],
+                                day: element.date.split('-')[2],
+                                time: element.time,
+                                latitude: element.latitude,
+                                longitude: element.longitude,
+                              ),
+                            );
+                          }
+
+                          GeolocDialog(
+                            context: context,
+                            widget: DailyGeolocMapAlert(geolocStateList: list, displayTempMap: true),
+                          );
+                        },
+                        child: const Icon(Icons.map, color: Colors.orangeAccent)),
+                    const SizedBox(width: 30),
                     GestureDetector(onTap: () => deletePickupGeoloc(), child: const Icon(Icons.delete)),
                     const SizedBox(width: 30),
                     GestureDetector(onTap: () => inputPickupGeoloc(), child: const Icon(Icons.input)),

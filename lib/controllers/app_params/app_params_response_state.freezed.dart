@@ -17,16 +17,7 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$AppParamsResponseState {
   DateTime? get calendarSelectedDate => throw _privateConstructorUsedError;
-  int get menuNumber => throw _privateConstructorUsedError;
-  String get selectedIncomeYear => throw _privateConstructorUsedError;
-  bool get sameMonthIncomeDeleteFlag => throw _privateConstructorUsedError;
-  String get incomeInputDate => throw _privateConstructorUsedError;
-  bool get inputButtonClicked => throw _privateConstructorUsedError;
-  int get sameDaySelectedDay => throw _privateConstructorUsedError;
-  int get selectedGraphMonth => throw _privateConstructorUsedError;
-  bool get calendarDisp => throw _privateConstructorUsedError;
-  String get selectedYearlySpendCircleGraphSpendItem =>
-      throw _privateConstructorUsedError;
+  GeolocModel? get selectedTimeGeoloc => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $AppParamsResponseStateCopyWith<AppParamsResponseState> get copyWith =>
@@ -39,17 +30,7 @@ abstract class $AppParamsResponseStateCopyWith<$Res> {
           $Res Function(AppParamsResponseState) then) =
       _$AppParamsResponseStateCopyWithImpl<$Res, AppParamsResponseState>;
   @useResult
-  $Res call(
-      {DateTime? calendarSelectedDate,
-      int menuNumber,
-      String selectedIncomeYear,
-      bool sameMonthIncomeDeleteFlag,
-      String incomeInputDate,
-      bool inputButtonClicked,
-      int sameDaySelectedDay,
-      int selectedGraphMonth,
-      bool calendarDisp,
-      String selectedYearlySpendCircleGraphSpendItem});
+  $Res call({DateTime? calendarSelectedDate, GeolocModel? selectedTimeGeoloc});
 }
 
 /// @nodoc
@@ -67,58 +48,17 @@ class _$AppParamsResponseStateCopyWithImpl<$Res,
   @override
   $Res call({
     Object? calendarSelectedDate = freezed,
-    Object? menuNumber = null,
-    Object? selectedIncomeYear = null,
-    Object? sameMonthIncomeDeleteFlag = null,
-    Object? incomeInputDate = null,
-    Object? inputButtonClicked = null,
-    Object? sameDaySelectedDay = null,
-    Object? selectedGraphMonth = null,
-    Object? calendarDisp = null,
-    Object? selectedYearlySpendCircleGraphSpendItem = null,
+    Object? selectedTimeGeoloc = freezed,
   }) {
     return _then(_value.copyWith(
       calendarSelectedDate: freezed == calendarSelectedDate
           ? _value.calendarSelectedDate
           : calendarSelectedDate // ignore: cast_nullable_to_non_nullable
               as DateTime?,
-      menuNumber: null == menuNumber
-          ? _value.menuNumber
-          : menuNumber // ignore: cast_nullable_to_non_nullable
-              as int,
-      selectedIncomeYear: null == selectedIncomeYear
-          ? _value.selectedIncomeYear
-          : selectedIncomeYear // ignore: cast_nullable_to_non_nullable
-              as String,
-      sameMonthIncomeDeleteFlag: null == sameMonthIncomeDeleteFlag
-          ? _value.sameMonthIncomeDeleteFlag
-          : sameMonthIncomeDeleteFlag // ignore: cast_nullable_to_non_nullable
-              as bool,
-      incomeInputDate: null == incomeInputDate
-          ? _value.incomeInputDate
-          : incomeInputDate // ignore: cast_nullable_to_non_nullable
-              as String,
-      inputButtonClicked: null == inputButtonClicked
-          ? _value.inputButtonClicked
-          : inputButtonClicked // ignore: cast_nullable_to_non_nullable
-              as bool,
-      sameDaySelectedDay: null == sameDaySelectedDay
-          ? _value.sameDaySelectedDay
-          : sameDaySelectedDay // ignore: cast_nullable_to_non_nullable
-              as int,
-      selectedGraphMonth: null == selectedGraphMonth
-          ? _value.selectedGraphMonth
-          : selectedGraphMonth // ignore: cast_nullable_to_non_nullable
-              as int,
-      calendarDisp: null == calendarDisp
-          ? _value.calendarDisp
-          : calendarDisp // ignore: cast_nullable_to_non_nullable
-              as bool,
-      selectedYearlySpendCircleGraphSpendItem: null ==
-              selectedYearlySpendCircleGraphSpendItem
-          ? _value.selectedYearlySpendCircleGraphSpendItem
-          : selectedYearlySpendCircleGraphSpendItem // ignore: cast_nullable_to_non_nullable
-              as String,
+      selectedTimeGeoloc: freezed == selectedTimeGeoloc
+          ? _value.selectedTimeGeoloc
+          : selectedTimeGeoloc // ignore: cast_nullable_to_non_nullable
+              as GeolocModel?,
     ) as $Val);
   }
 }
@@ -132,17 +72,7 @@ abstract class _$$AppParamsResponseStateImplCopyWith<$Res>
       __$$AppParamsResponseStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call(
-      {DateTime? calendarSelectedDate,
-      int menuNumber,
-      String selectedIncomeYear,
-      bool sameMonthIncomeDeleteFlag,
-      String incomeInputDate,
-      bool inputButtonClicked,
-      int sameDaySelectedDay,
-      int selectedGraphMonth,
-      bool calendarDisp,
-      String selectedYearlySpendCircleGraphSpendItem});
+  $Res call({DateTime? calendarSelectedDate, GeolocModel? selectedTimeGeoloc});
 }
 
 /// @nodoc
@@ -159,58 +89,17 @@ class __$$AppParamsResponseStateImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? calendarSelectedDate = freezed,
-    Object? menuNumber = null,
-    Object? selectedIncomeYear = null,
-    Object? sameMonthIncomeDeleteFlag = null,
-    Object? incomeInputDate = null,
-    Object? inputButtonClicked = null,
-    Object? sameDaySelectedDay = null,
-    Object? selectedGraphMonth = null,
-    Object? calendarDisp = null,
-    Object? selectedYearlySpendCircleGraphSpendItem = null,
+    Object? selectedTimeGeoloc = freezed,
   }) {
     return _then(_$AppParamsResponseStateImpl(
       calendarSelectedDate: freezed == calendarSelectedDate
           ? _value.calendarSelectedDate
           : calendarSelectedDate // ignore: cast_nullable_to_non_nullable
               as DateTime?,
-      menuNumber: null == menuNumber
-          ? _value.menuNumber
-          : menuNumber // ignore: cast_nullable_to_non_nullable
-              as int,
-      selectedIncomeYear: null == selectedIncomeYear
-          ? _value.selectedIncomeYear
-          : selectedIncomeYear // ignore: cast_nullable_to_non_nullable
-              as String,
-      sameMonthIncomeDeleteFlag: null == sameMonthIncomeDeleteFlag
-          ? _value.sameMonthIncomeDeleteFlag
-          : sameMonthIncomeDeleteFlag // ignore: cast_nullable_to_non_nullable
-              as bool,
-      incomeInputDate: null == incomeInputDate
-          ? _value.incomeInputDate
-          : incomeInputDate // ignore: cast_nullable_to_non_nullable
-              as String,
-      inputButtonClicked: null == inputButtonClicked
-          ? _value.inputButtonClicked
-          : inputButtonClicked // ignore: cast_nullable_to_non_nullable
-              as bool,
-      sameDaySelectedDay: null == sameDaySelectedDay
-          ? _value.sameDaySelectedDay
-          : sameDaySelectedDay // ignore: cast_nullable_to_non_nullable
-              as int,
-      selectedGraphMonth: null == selectedGraphMonth
-          ? _value.selectedGraphMonth
-          : selectedGraphMonth // ignore: cast_nullable_to_non_nullable
-              as int,
-      calendarDisp: null == calendarDisp
-          ? _value.calendarDisp
-          : calendarDisp // ignore: cast_nullable_to_non_nullable
-              as bool,
-      selectedYearlySpendCircleGraphSpendItem: null ==
-              selectedYearlySpendCircleGraphSpendItem
-          ? _value.selectedYearlySpendCircleGraphSpendItem
-          : selectedYearlySpendCircleGraphSpendItem // ignore: cast_nullable_to_non_nullable
-              as String,
+      selectedTimeGeoloc: freezed == selectedTimeGeoloc
+          ? _value.selectedTimeGeoloc
+          : selectedTimeGeoloc // ignore: cast_nullable_to_non_nullable
+              as GeolocModel?,
     ));
   }
 }
@@ -219,50 +108,16 @@ class __$$AppParamsResponseStateImplCopyWithImpl<$Res>
 
 class _$AppParamsResponseStateImpl implements _AppParamsResponseState {
   const _$AppParamsResponseStateImpl(
-      {this.calendarSelectedDate,
-      this.menuNumber = 0,
-      this.selectedIncomeYear = '',
-      this.sameMonthIncomeDeleteFlag = false,
-      this.incomeInputDate = '',
-      this.inputButtonClicked = false,
-      this.sameDaySelectedDay = 0,
-      this.selectedGraphMonth = 0,
-      this.calendarDisp = true,
-      this.selectedYearlySpendCircleGraphSpendItem = ''});
+      {this.calendarSelectedDate, this.selectedTimeGeoloc});
 
   @override
   final DateTime? calendarSelectedDate;
   @override
-  @JsonKey()
-  final int menuNumber;
-  @override
-  @JsonKey()
-  final String selectedIncomeYear;
-  @override
-  @JsonKey()
-  final bool sameMonthIncomeDeleteFlag;
-  @override
-  @JsonKey()
-  final String incomeInputDate;
-  @override
-  @JsonKey()
-  final bool inputButtonClicked;
-  @override
-  @JsonKey()
-  final int sameDaySelectedDay;
-  @override
-  @JsonKey()
-  final int selectedGraphMonth;
-  @override
-  @JsonKey()
-  final bool calendarDisp;
-  @override
-  @JsonKey()
-  final String selectedYearlySpendCircleGraphSpendItem;
+  final GeolocModel? selectedTimeGeoloc;
 
   @override
   String toString() {
-    return 'AppParamsResponseState(calendarSelectedDate: $calendarSelectedDate, menuNumber: $menuNumber, selectedIncomeYear: $selectedIncomeYear, sameMonthIncomeDeleteFlag: $sameMonthIncomeDeleteFlag, incomeInputDate: $incomeInputDate, inputButtonClicked: $inputButtonClicked, sameDaySelectedDay: $sameDaySelectedDay, selectedGraphMonth: $selectedGraphMonth, calendarDisp: $calendarDisp, selectedYearlySpendCircleGraphSpendItem: $selectedYearlySpendCircleGraphSpendItem)';
+    return 'AppParamsResponseState(calendarSelectedDate: $calendarSelectedDate, selectedTimeGeoloc: $selectedTimeGeoloc)';
   }
 
   @override
@@ -272,42 +127,13 @@ class _$AppParamsResponseStateImpl implements _AppParamsResponseState {
             other is _$AppParamsResponseStateImpl &&
             (identical(other.calendarSelectedDate, calendarSelectedDate) ||
                 other.calendarSelectedDate == calendarSelectedDate) &&
-            (identical(other.menuNumber, menuNumber) ||
-                other.menuNumber == menuNumber) &&
-            (identical(other.selectedIncomeYear, selectedIncomeYear) ||
-                other.selectedIncomeYear == selectedIncomeYear) &&
-            (identical(other.sameMonthIncomeDeleteFlag,
-                    sameMonthIncomeDeleteFlag) ||
-                other.sameMonthIncomeDeleteFlag == sameMonthIncomeDeleteFlag) &&
-            (identical(other.incomeInputDate, incomeInputDate) ||
-                other.incomeInputDate == incomeInputDate) &&
-            (identical(other.inputButtonClicked, inputButtonClicked) ||
-                other.inputButtonClicked == inputButtonClicked) &&
-            (identical(other.sameDaySelectedDay, sameDaySelectedDay) ||
-                other.sameDaySelectedDay == sameDaySelectedDay) &&
-            (identical(other.selectedGraphMonth, selectedGraphMonth) ||
-                other.selectedGraphMonth == selectedGraphMonth) &&
-            (identical(other.calendarDisp, calendarDisp) ||
-                other.calendarDisp == calendarDisp) &&
-            (identical(other.selectedYearlySpendCircleGraphSpendItem,
-                    selectedYearlySpendCircleGraphSpendItem) ||
-                other.selectedYearlySpendCircleGraphSpendItem ==
-                    selectedYearlySpendCircleGraphSpendItem));
+            (identical(other.selectedTimeGeoloc, selectedTimeGeoloc) ||
+                other.selectedTimeGeoloc == selectedTimeGeoloc));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      calendarSelectedDate,
-      menuNumber,
-      selectedIncomeYear,
-      sameMonthIncomeDeleteFlag,
-      incomeInputDate,
-      inputButtonClicked,
-      sameDaySelectedDay,
-      selectedGraphMonth,
-      calendarDisp,
-      selectedYearlySpendCircleGraphSpendItem);
+  int get hashCode =>
+      Object.hash(runtimeType, calendarSelectedDate, selectedTimeGeoloc);
 
   @JsonKey(ignore: true)
   @override
@@ -319,38 +145,13 @@ class _$AppParamsResponseStateImpl implements _AppParamsResponseState {
 
 abstract class _AppParamsResponseState implements AppParamsResponseState {
   const factory _AppParamsResponseState(
-          {final DateTime? calendarSelectedDate,
-          final int menuNumber,
-          final String selectedIncomeYear,
-          final bool sameMonthIncomeDeleteFlag,
-          final String incomeInputDate,
-          final bool inputButtonClicked,
-          final int sameDaySelectedDay,
-          final int selectedGraphMonth,
-          final bool calendarDisp,
-          final String selectedYearlySpendCircleGraphSpendItem}) =
-      _$AppParamsResponseStateImpl;
+      {final DateTime? calendarSelectedDate,
+      final GeolocModel? selectedTimeGeoloc}) = _$AppParamsResponseStateImpl;
 
   @override
   DateTime? get calendarSelectedDate;
   @override
-  int get menuNumber;
-  @override
-  String get selectedIncomeYear;
-  @override
-  bool get sameMonthIncomeDeleteFlag;
-  @override
-  String get incomeInputDate;
-  @override
-  bool get inputButtonClicked;
-  @override
-  int get sameDaySelectedDay;
-  @override
-  int get selectedGraphMonth;
-  @override
-  bool get calendarDisp;
-  @override
-  String get selectedYearlySpendCircleGraphSpendItem;
+  GeolocModel? get selectedTimeGeoloc;
   @override
   @JsonKey(ignore: true)
   _$$AppParamsResponseStateImplCopyWith<_$AppParamsResponseStateImpl>
