@@ -50,49 +50,47 @@ class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
             child: Column(
               children: <Widget>[
                 Expanded(
-                    child: FlutterMap(
-                  mapController: mapController,
-                  options: MapOptions(
-                    initialCenter: LatLng(minLat, minLng),
-                    initialCameraFit: ((minLat == maxLat) && (minLng == maxLng))
-                        ? null
-                        : CameraFit.bounds(
-                            bounds: LatLngBounds.fromPoints(
-                              <LatLng>[LatLng(minLat, maxLng), LatLng(maxLat, minLng)],
-                            ),
-                            padding: const EdgeInsets.all(50),
-                          ),
-                  ),
-                  children: <Widget>[
-                    TileLayer(
-                      urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
-                      tileProvider: CachedTileProvider(),
-                      userAgentPackageName: 'com.example.app',
+                  child: FlutterMap(
+                    mapController: mapController,
+                    options: MapOptions(
+                      initialCameraFit: CameraFit.bounds(
+                        bounds: LatLngBounds.fromPoints(
+                          <LatLng>[LatLng(minLat, maxLng), LatLng(maxLat, minLng)],
+                        ),
+                        padding: const EdgeInsets.all(50),
+                      ),
                     ),
+                    children: <Widget>[
+                      TileLayer(
+                        urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
+                        tileProvider: CachedTileProvider(),
+                        userAgentPackageName: 'com.example.app',
+                      ),
 
-                    MarkerLayer(markers: markerList),
+                      MarkerLayer(markers: markerList),
 
-                    // // ignore: always_specify_types
-                    // PolylineLayer(
-                    //   polylines: <Polyline<Object>>[
-                    //     // ignore: always_specify_types
-                    //     Polyline(
-                    //       points: widget.geolocStateList.map((GeolocModel e) {
-                    //         return LatLng(
-                    //           e.latitude.toDouble(),
-                    //           e.longitude.toDouble(),
-                    //         );
-                    //       }).toList(),
-                    //       color: Colors.redAccent,
-                    //       strokeWidth: 5,
-                    //     ),
-                    //   ],
-                    // ),
-                    //
-                    //
-                    //
-                  ],
-                )),
+                      // // ignore: always_specify_types
+                      // PolylineLayer(
+                      //   polylines: <Polyline<Object>>[
+                      //     // ignore: always_specify_types
+                      //     Polyline(
+                      //       points: widget.geolocStateList.map((GeolocModel e) {
+                      //         return LatLng(
+                      //           e.latitude.toDouble(),
+                      //           e.longitude.toDouble(),
+                      //         );
+                      //       }).toList(),
+                      //       color: Colors.redAccent,
+                      //       strokeWidth: 5,
+                      //     ),
+                      //   ],
+                      // ),
+                      //
+                      //
+                      //
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
@@ -165,6 +163,8 @@ class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
           child: GestureDetector(
             onTap: () {
               ref.read(appParamProvider.notifier).setSelectedTimeGeoloc(geoloc: element);
+
+              mapController.move(LatLng(element.latitude.toDouble(), element.longitude.toDouble()), 18);
             },
             child: CircleAvatar(
               // ignore: use_if_null_to_convert_nulls_to_bools
