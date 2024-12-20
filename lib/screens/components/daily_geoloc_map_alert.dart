@@ -35,6 +35,8 @@ class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
 
   List<Marker> markerList = <Marker>[];
 
+  List<GeolocModel> polylineGeolocList = <GeolocModel>[];
+
   ///
   @override
   Widget build(BuildContext context) {
@@ -69,25 +71,22 @@ class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
 
                       MarkerLayer(markers: markerList),
 
-                      // // ignore: always_specify_types
-                      // PolylineLayer(
-                      //   polylines: <Polyline<Object>>[
-                      //     // ignore: always_specify_types
-                      //     Polyline(
-                      //       points: widget.geolocStateList.map((GeolocModel e) {
-                      //         return LatLng(
-                      //           e.latitude.toDouble(),
-                      //           e.longitude.toDouble(),
-                      //         );
-                      //       }).toList(),
-                      //       color: Colors.redAccent,
-                      //       strokeWidth: 5,
-                      //     ),
-                      //   ],
-                      // ),
-                      //
-                      //
-                      //
+                      // ignore: always_specify_types
+                      PolylineLayer(
+                        polylines: <Polyline<Object>>[
+                          // ignore: always_specify_types
+                          Polyline(
+                            points: polylineGeolocList.map((GeolocModel e) {
+                              return LatLng(
+                                e.latitude.toDouble(),
+                                e.longitude.toDouble(),
+                              );
+                            }).toList(),
+                            color: Colors.redAccent,
+                            strokeWidth: 5,
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ),
@@ -165,6 +164,8 @@ class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
               ref.read(appParamProvider.notifier).setSelectedTimeGeoloc(geoloc: element);
 
               mapController.move(LatLng(element.latitude.toDouble(), element.longitude.toDouble()), 18);
+
+              makePolylineGeolocList(geoloc: element);
             },
             child: CircleAvatar(
               // ignore: use_if_null_to_convert_nulls_to_bools
@@ -194,5 +195,17 @@ class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
         ),
       ],
     );
+  }
+
+  ///
+  void makePolylineGeolocList({required GeolocModel geoloc}) {
+    polylineGeolocList = <GeolocModel>[];
+
+    final int pos = widget.geolocStateList.indexWhere((GeolocModel element) => element.time == geoloc.time);
+
+    if (pos > 0) {
+      polylineGeolocList.add(widget.geolocStateList[pos - 1]);
+      polylineGeolocList.add(geoloc);
+    }
   }
 }
