@@ -60,6 +60,11 @@ class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
   }
 
   ///
+  void _scrollToTop() {
+    _scrollController.animateTo(0, duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
+  }
+
+  ///
   @override
   Widget build(BuildContext context) {
     makeMinMaxLatLng();
@@ -114,7 +119,14 @@ class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
               ],
             ),
           ),
-          SizedBox(width: 60, child: displayTimeCircleAvatar()),
+          SizedBox(
+              width: 60,
+              child: Column(
+                children: [
+                  SizedBox(height: 10),
+                  Expanded(child: displayTimeCircleAvatar()),
+                ],
+              )),
         ],
       ),
     );
@@ -147,6 +159,8 @@ class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
             polylineGeolocList = <GeolocModel>[];
 
             controller.jumpTo(index: 0);
+
+            _scrollToTop();
           },
           child: const Text('clear', style: TextStyle(color: Colors.white)),
         ),
@@ -159,6 +173,7 @@ class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
 
         Expanded(
           child: SingleChildScrollView(
+            controller: _scrollController,
             scrollDirection: Axis.horizontal,
             child: Row(
               children: timeList.map((String e) {
@@ -167,7 +182,8 @@ class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
                   child: GestureDetector(
                     onTap: () {
                       controller.jumpTo(
-                        index: widget.geolocStateList.indexWhere((GeolocModel element) => element.time.split(':')[0] == e),
+                        index:
+                            widget.geolocStateList.indexWhere((GeolocModel element) => element.time.split(':')[0] == e),
                       );
                     },
                     child: CircleAvatar(
