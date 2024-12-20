@@ -43,6 +43,8 @@ class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
   final ItemScrollController controller = ItemScrollController();
   final ItemPositionsListener listener = ItemPositionsListener.create();
 
+  double currentZoom = 18;
+
   ///
   @override
   void initState() {
@@ -116,6 +118,7 @@ class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
                     ],
                   ),
                 ),
+                displayMapBottomZoomChangeButton(),
               ],
             ),
           ),
@@ -203,6 +206,66 @@ class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
   }
 
   ///
+  Widget displayMapBottomZoomChangeButton() {
+    final GeolocModel? selectedTimeGeoloc =
+        ref.watch(appParamProvider.select((AppParamsResponseState value) => value.selectedTimeGeoloc));
+
+    return (selectedTimeGeoloc == null)
+        ? Container()
+        : Column(
+            children: <Widget>[
+              const SizedBox(height: 10),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Container(),
+                  Row(
+                    children: <Widget>[
+                      CircleAvatar(
+                        backgroundColor: Colors.redAccent.withOpacity(0.5),
+                        child: IconButton(
+                          onPressed: () {
+                            setState(() => currentZoom += 1);
+
+                            mapController.move(
+                              LatLng(
+                                selectedTimeGeoloc.latitude.toDouble(),
+                                selectedTimeGeoloc.longitude.toDouble(),
+                              ),
+                              currentZoom,
+                            );
+                          },
+                          icon: const Icon(Icons.plus_one, color: Colors.white),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      CircleAvatar(
+                        backgroundColor: Colors.redAccent.withOpacity(0.5),
+                        child: IconButton(
+                          onPressed: () {
+                            setState(() => currentZoom -= 1);
+
+                            mapController.move(
+                              LatLng(
+                                selectedTimeGeoloc.latitude.toDouble(),
+                                selectedTimeGeoloc.longitude.toDouble(),
+                              ),
+                              currentZoom,
+                            );
+                          },
+                          icon: const Icon(Icons.exposure_minus_1, color: Colors.white),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 10),
+            ],
+          );
+  }
+
+  ///
   void makeMinMaxLatLng() {
     for (final GeolocModel element in widget.geolocStateList) {
       latList.add(element.latitude.toDouble());
@@ -262,11 +325,12 @@ class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
               ref.read(appParamProvider.notifier).setSelectedTimeGeoloc(geoloc: widget.geolocStateList[index]);
 
               mapController.move(
-                  LatLng(
-                    widget.geolocStateList[index].latitude.toDouble(),
-                    widget.geolocStateList[index].longitude.toDouble(),
-                  ),
-                  18);
+                LatLng(
+                  widget.geolocStateList[index].latitude.toDouble(),
+                  widget.geolocStateList[index].longitude.toDouble(),
+                ),
+                currentZoom,
+              );
 
               makePolylineGeolocList(geoloc: widget.geolocStateList[index]);
             },
