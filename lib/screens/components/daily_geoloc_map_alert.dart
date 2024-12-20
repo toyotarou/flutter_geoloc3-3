@@ -73,6 +73,8 @@ class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
 
     makeMarker();
 
+    final bool isMarkerHide = ref.watch(appParamProvider.select((AppParamsResponseState value) => value.isMarkerHide));
+
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Row(
@@ -100,7 +102,9 @@ class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
                         userAgentPackageName: 'com.example.app',
                       ),
 
-                      MarkerLayer(markers: markerList),
+                      if (!isMarkerHide) ...<Widget>[
+                        MarkerLayer(markers: markerList),
+                      ],
 
                       // ignore: always_specify_types
                       PolylineLayer(
@@ -210,14 +214,27 @@ class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
     final GeolocModel? selectedTimeGeoloc =
         ref.watch(appParamProvider.select((AppParamsResponseState value) => value.selectedTimeGeoloc));
 
-    return (selectedTimeGeoloc == null)
-        ? Container()
-        : Column(
+    return Row(
+      children: <Widget>[
+        IconButton(
+          onPressed: () {
+            setState(() {
+              polylineGeolocList = widget.geolocStateList;
+            });
+
+            ref.read(appParamProvider.notifier).setIsMarkerHide(flag: true);
+          },
+          icon: const Icon(Icons.stacked_line_chart),
+        ),
+        if (selectedTimeGeoloc == null)
+          Container()
+        else
+          Column(
             children: <Widget>[
               const SizedBox(height: 10),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
+                children: <Widget>[
                   Container(),
                   Row(
                     children: <Widget>[
@@ -262,7 +279,9 @@ class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
               ),
               const SizedBox(height: 10),
             ],
-          );
+          ),
+      ],
+    );
   }
 
   ///

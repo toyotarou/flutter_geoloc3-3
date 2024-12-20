@@ -16,4 +16,7 @@ class AppParamNotifier extends StateNotifier<AppParamsResponseState> {
 
   ///
   void setSelectedTimeGeoloc({GeolocModel? geoloc}) => state = state.copyWith(selectedTimeGeoloc: geoloc);
+
+  ///
+  void setIsMarkerHide({required bool flag}) => state = state.copyWith(isMarkerHide: flag);
 }

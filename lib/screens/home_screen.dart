@@ -8,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../collections/geoloc.dart';
+import '../controllers/app_params/app_params_notifier.dart';
 import '../controllers/calendars/calendars_notifier.dart';
 import '../controllers/calendars/calendars_response_state.dart';
 import '../controllers/geoloc/geoloc.dart';
@@ -389,6 +390,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                               context: context,
                                               widget: DailyGeolocDisplayAlert(
                                                 date: DateTime.parse('$generateYmd 00:00:00'),
+                                                geolocStateList: geolocStateMap[generateYmd] ?? <GeolocModel>[],
                                               ),
                                             );
                                           },
@@ -410,6 +412,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                     onPressed: (geolocStateMap[generateYmd] == null)
                                         ? null
                                         : () {
+                                            ref.read(appParamProvider.notifier).setIsMarkerHide(flag: false);
+
                                             GeolocDialog(
                                               context: context,
                                               widget: DailyGeolocMapAlert(

@@ -18,6 +18,7 @@ final _privateConstructorUsedError = UnsupportedError(
 mixin _$AppParamsResponseState {
   DateTime? get calendarSelectedDate => throw _privateConstructorUsedError;
   GeolocModel? get selectedTimeGeoloc => throw _privateConstructorUsedError;
+  bool get isMarkerHide => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $AppParamsResponseStateCopyWith<AppParamsResponseState> get copyWith =>
@@ -30,7 +31,10 @@ abstract class $AppParamsResponseStateCopyWith<$Res> {
           $Res Function(AppParamsResponseState) then) =
       _$AppParamsResponseStateCopyWithImpl<$Res, AppParamsResponseState>;
   @useResult
-  $Res call({DateTime? calendarSelectedDate, GeolocModel? selectedTimeGeoloc});
+  $Res call(
+      {DateTime? calendarSelectedDate,
+      GeolocModel? selectedTimeGeoloc,
+      bool isMarkerHide});
 }
 
 /// @nodoc
@@ -49,6 +53,7 @@ class _$AppParamsResponseStateCopyWithImpl<$Res,
   $Res call({
     Object? calendarSelectedDate = freezed,
     Object? selectedTimeGeoloc = freezed,
+    Object? isMarkerHide = null,
   }) {
     return _then(_value.copyWith(
       calendarSelectedDate: freezed == calendarSelectedDate
@@ -59,6 +64,10 @@ class _$AppParamsResponseStateCopyWithImpl<$Res,
           ? _value.selectedTimeGeoloc
           : selectedTimeGeoloc // ignore: cast_nullable_to_non_nullable
               as GeolocModel?,
+      isMarkerHide: null == isMarkerHide
+          ? _value.isMarkerHide
+          : isMarkerHide // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -72,7 +81,10 @@ abstract class _$$AppParamsResponseStateImplCopyWith<$Res>
       __$$AppParamsResponseStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({DateTime? calendarSelectedDate, GeolocModel? selectedTimeGeoloc});
+  $Res call(
+      {DateTime? calendarSelectedDate,
+      GeolocModel? selectedTimeGeoloc,
+      bool isMarkerHide});
 }
 
 /// @nodoc
@@ -90,6 +102,7 @@ class __$$AppParamsResponseStateImplCopyWithImpl<$Res>
   $Res call({
     Object? calendarSelectedDate = freezed,
     Object? selectedTimeGeoloc = freezed,
+    Object? isMarkerHide = null,
   }) {
     return _then(_$AppParamsResponseStateImpl(
       calendarSelectedDate: freezed == calendarSelectedDate
@@ -100,6 +113,10 @@ class __$$AppParamsResponseStateImplCopyWithImpl<$Res>
           ? _value.selectedTimeGeoloc
           : selectedTimeGeoloc // ignore: cast_nullable_to_non_nullable
               as GeolocModel?,
+      isMarkerHide: null == isMarkerHide
+          ? _value.isMarkerHide
+          : isMarkerHide // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -108,16 +125,21 @@ class __$$AppParamsResponseStateImplCopyWithImpl<$Res>
 
 class _$AppParamsResponseStateImpl implements _AppParamsResponseState {
   const _$AppParamsResponseStateImpl(
-      {this.calendarSelectedDate, this.selectedTimeGeoloc});
+      {this.calendarSelectedDate,
+      this.selectedTimeGeoloc,
+      this.isMarkerHide = false});
 
   @override
   final DateTime? calendarSelectedDate;
   @override
   final GeolocModel? selectedTimeGeoloc;
+  @override
+  @JsonKey()
+  final bool isMarkerHide;
 
   @override
   String toString() {
-    return 'AppParamsResponseState(calendarSelectedDate: $calendarSelectedDate, selectedTimeGeoloc: $selectedTimeGeoloc)';
+    return 'AppParamsResponseState(calendarSelectedDate: $calendarSelectedDate, selectedTimeGeoloc: $selectedTimeGeoloc, isMarkerHide: $isMarkerHide)';
   }
 
   @override
@@ -128,12 +150,14 @@ class _$AppParamsResponseStateImpl implements _AppParamsResponseState {
             (identical(other.calendarSelectedDate, calendarSelectedDate) ||
                 other.calendarSelectedDate == calendarSelectedDate) &&
             (identical(other.selectedTimeGeoloc, selectedTimeGeoloc) ||
-                other.selectedTimeGeoloc == selectedTimeGeoloc));
+                other.selectedTimeGeoloc == selectedTimeGeoloc) &&
+            (identical(other.isMarkerHide, isMarkerHide) ||
+                other.isMarkerHide == isMarkerHide));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, calendarSelectedDate, selectedTimeGeoloc);
+  int get hashCode => Object.hash(
+      runtimeType, calendarSelectedDate, selectedTimeGeoloc, isMarkerHide);
 
   @JsonKey(ignore: true)
   @override
@@ -146,12 +170,15 @@ class _$AppParamsResponseStateImpl implements _AppParamsResponseState {
 abstract class _AppParamsResponseState implements AppParamsResponseState {
   const factory _AppParamsResponseState(
       {final DateTime? calendarSelectedDate,
-      final GeolocModel? selectedTimeGeoloc}) = _$AppParamsResponseStateImpl;
+      final GeolocModel? selectedTimeGeoloc,
+      final bool isMarkerHide}) = _$AppParamsResponseStateImpl;
 
   @override
   DateTime? get calendarSelectedDate;
   @override
   GeolocModel? get selectedTimeGeoloc;
+  @override
+  bool get isMarkerHide;
   @override
   @JsonKey(ignore: true)
   _$$AppParamsResponseStateImplCopyWith<_$AppParamsResponseStateImpl>

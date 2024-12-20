@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../collections/geoloc.dart';
+import '../../controllers/app_params/app_params_notifier.dart';
 import '../../controllers/geoloc/geoloc.dart';
 import '../../extensions/extensions.dart';
 import '../../models/geoloc_model.dart';
@@ -42,6 +43,8 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
                   children: <Widget>[
                     GestureDetector(
                         onTap: () {
+                          ref.read(appParamProvider.notifier).setIsMarkerHide(flag: false);
+
                           final List<GeolocModel> list = <GeolocModel>[];
                           for (final Geoloc element in widget.pickupGeolocList) {
                             list.add(
@@ -64,7 +67,10 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
                         },
                         child: const Icon(Icons.map, color: Colors.orangeAccent)),
                     const SizedBox(width: 30),
-                    GestureDetector(onTap: () => deletePickupGeoloc(), child: const Icon(Icons.delete)),
+                    GestureDetector(
+                      onTap: () => deletePickupGeoloc(),
+                      child: const Icon(Icons.delete, color: Colors.greenAccent),
+                    ),
                     const SizedBox(width: 30),
                     GestureDetector(onTap: () => inputPickupGeoloc(), child: const Icon(Icons.input)),
                   ],

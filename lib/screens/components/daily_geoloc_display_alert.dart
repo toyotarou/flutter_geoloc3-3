@@ -3,15 +3,18 @@ import 'package:flutter/material.dart';
 import '../../collections/geoloc.dart';
 
 import '../../extensions/extensions.dart';
+import '../../models/geoloc_model.dart';
 import '../../ripository/geolocs_repository.dart';
 import '../../utilities/utilities.dart';
+import '../parts/error_dialog.dart';
 import '../parts/geoloc_dialog.dart';
 import 'pickup_geoloc_display_alert.dart';
 
 class DailyGeolocDisplayAlert extends StatefulWidget {
-  const DailyGeolocDisplayAlert({super.key, required this.date});
+  const DailyGeolocDisplayAlert({super.key, required this.date, required this.geolocStateList});
 
   final DateTime date;
+  final List<GeolocModel> geolocStateList;
 
   @override
   State<DailyGeolocDisplayAlert> createState() => _DailyGeolocDisplayAlertState();
@@ -55,15 +58,38 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text(widget.date.yyyymmdd),
-                GestureDetector(
-                  onTap: () {
-                    GeolocDialog(
-                      // ignore: use_build_context_synchronously
-                      context: context,
-                      widget: PickupGeolocDisplayAlert(date: widget.date, pickupGeolocList: pickupGeolocList),
-                    );
-                  },
-                  child: const Icon(Icons.list),
+                Row(
+                  children: <Widget>[
+                    GestureDetector(
+                      onTap: () {
+                        if (widget.geolocStateList.isEmpty) {
+                          // ignore: always_specify_types
+                          Future.delayed(
+                            Duration.zero,
+                            () => error_dialog(
+                                // ignore: use_build_context_synchronously
+                                context: context,
+                                title: 'isarデータを削除できません。',
+                                content: 'mysqlデータがありません。'),
+                          );
+
+                          return;
+                        }
+                      },
+                      child: const Icon(Icons.delete, color: Colors.lightBlueAccent),
+                    ),
+                    const SizedBox(width: 30),
+                    GestureDetector(
+                      onTap: () {
+                        GeolocDialog(
+                          // ignore: use_build_context_synchronously
+                          context: context,
+                          widget: PickupGeolocDisplayAlert(date: widget.date, pickupGeolocList: pickupGeolocList),
+                        );
+                      },
+                      child: const Icon(Icons.list),
+                    ),
+                  ],
                 ),
               ],
             ),

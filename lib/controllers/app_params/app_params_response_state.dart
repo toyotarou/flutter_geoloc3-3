@@ -9,5 +9,6 @@ class AppParamsResponseState with _$AppParamsResponseState {
   const factory AppParamsResponseState({
     DateTime? calendarSelectedDate,
     GeolocModel? selectedTimeGeoloc,
+    @Default(false) bool isMarkerHide,
   }) = _AppParamsResponseState;
 }
