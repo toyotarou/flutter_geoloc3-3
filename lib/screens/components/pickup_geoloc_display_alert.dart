@@ -41,32 +41,34 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
                 Text(widget.date.yyyymmdd),
                 Row(
                   children: <Widget>[
-                    GestureDetector(
-                        onTap: () {
-                          ref.read(appParamProvider.notifier).setIsMarkerHide(flag: false);
+                    if (widget.pickupGeolocList.length > 1) ...<Widget>[
+                      GestureDetector(
+                          onTap: () {
+                            ref.read(appParamProvider.notifier).setIsMarkerHide(flag: false);
 
-                          final List<GeolocModel> list = <GeolocModel>[];
-                          for (final Geoloc element in widget.pickupGeolocList) {
-                            list.add(
-                              GeolocModel(
-                                id: 0,
-                                year: element.date.split('-')[0],
-                                month: element.date.split('-')[1],
-                                day: element.date.split('-')[2],
-                                time: element.time,
-                                latitude: element.latitude,
-                                longitude: element.longitude,
-                              ),
+                            final List<GeolocModel> list = <GeolocModel>[];
+                            for (final Geoloc element in widget.pickupGeolocList) {
+                              list.add(
+                                GeolocModel(
+                                  id: 0,
+                                  year: element.date.split('-')[0],
+                                  month: element.date.split('-')[1],
+                                  day: element.date.split('-')[2],
+                                  time: element.time,
+                                  latitude: element.latitude,
+                                  longitude: element.longitude,
+                                ),
+                              );
+                            }
+
+                            GeolocDialog(
+                              context: context,
+                              widget: DailyGeolocMapAlert(geolocStateList: list, displayTempMap: true),
                             );
-                          }
-
-                          GeolocDialog(
-                            context: context,
-                            widget: DailyGeolocMapAlert(geolocStateList: list, displayTempMap: true),
-                          );
-                        },
-                        child: const Icon(Icons.map, color: Colors.orangeAccent)),
-                    const SizedBox(width: 30),
+                          },
+                          child: const Icon(Icons.map, color: Colors.orangeAccent)),
+                      const SizedBox(width: 30),
+                    ],
                     GestureDetector(
                       onTap: () => deletePickupGeoloc(),
                       child: const Icon(Icons.delete, color: Colors.greenAccent),

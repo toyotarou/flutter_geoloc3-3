@@ -6,7 +6,11 @@ import '../../extensions/extensions.dart';
 import '../../models/geoloc_model.dart';
 import '../../ripository/geolocs_repository.dart';
 import '../../utilities/utilities.dart';
-import '../parts/error_dialog.dart';
+
+// import '../parts/error_dialog.dart';
+//
+//
+
 import '../parts/geoloc_dialog.dart';
 import 'pickup_geoloc_display_alert.dart';
 
@@ -60,6 +64,7 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
                 Text(widget.date.yyyymmdd),
                 Row(
                   children: <Widget>[
+                    /*
                     GestureDetector(
                       onTap: () async {
                         bool errFlg = false;
@@ -105,6 +110,8 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
                       ),
                     ),
                     const SizedBox(width: 30),
+                    */
+
                     GestureDetector(
                       onTap: () {
                         GeolocDialog(
