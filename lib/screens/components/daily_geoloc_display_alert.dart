@@ -61,8 +61,21 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
                 Row(
                   children: <Widget>[
                     GestureDetector(
-                      onTap: () {
+                      onTap: () async {
+                        bool errFlg = false;
+                        String contentStr = '';
+
+                        if (geolocList == null) {
+                          errFlg = true;
+                          contentStr = 'isarデータがありません。';
+                        }
+
                         if (widget.geolocStateList.isEmpty) {
+                          errFlg = true;
+                          contentStr = 'mysqlデータがありません。';
+                        }
+
+                        if (errFlg) {
                           // ignore: always_specify_types
                           Future.delayed(
                             Duration.zero,
@@ -70,13 +83,26 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
                                 // ignore: use_build_context_synchronously
                                 context: context,
                                 title: 'isarデータを削除できません。',
-                                content: 'mysqlデータがありません。'),
+                                content: contentStr),
                           );
 
                           return;
                         }
+
+                        // ignore: always_specify_types
+                        await GeolocRepository().deleteGeolocList(geolocList: geolocList).then((value) {
+                          if (mounted) {
+                            // ignore: use_build_context_synchronously
+                            Navigator.pop(context);
+                          }
+                        });
                       },
-                      child: const Icon(Icons.delete, color: Colors.lightBlueAccent),
+                      child: Icon(
+                        Icons.delete,
+                        color: (geolocList == null || widget.geolocStateList.isEmpty)
+                            ? Colors.grey
+                            : Colors.lightBlueAccent,
+                      ),
                     ),
                     const SizedBox(width: 30),
                     GestureDetector(

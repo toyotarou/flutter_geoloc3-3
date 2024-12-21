@@ -15,4 +15,15 @@ class GeolocRepository {
     await IsarRepository.configure();
     return IsarRepository.isar.geolocs.where().sortByDateDesc().thenByTimeDesc().findFirst();
   }
+
+  ///
+  Future<void> deleteGeolocList({required List<Geoloc>? geolocList}) async {
+    geolocList?.forEach((Geoloc element) => deleteGeoloc(id: element.id));
+  }
+
+  ///
+  Future<void> deleteGeoloc({required int id}) async {
+    await IsarRepository.configure();
+    IsarRepository.isar.writeTxn(() => IsarRepository.isar.geolocs.delete(id));
+  }
 }
