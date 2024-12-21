@@ -214,18 +214,88 @@ class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
     final GeolocModel? selectedTimeGeoloc =
         ref.watch(appParamProvider.select((AppParamsResponseState value) => value.selectedTimeGeoloc));
 
+    final bool isMarkerHide = ref.watch(appParamProvider.select((AppParamsResponseState value) => value.isMarkerHide));
+
     return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
         IconButton(
           onPressed: () {
             setState(() {
-              polylineGeolocList = widget.geolocStateList;
+              polylineGeolocList = (!isMarkerHide) ? widget.geolocStateList : <GeolocModel>[];
             });
 
-            ref.read(appParamProvider.notifier).setIsMarkerHide(flag: true);
+            ref.read(appParamProvider.notifier).setIsMarkerHide(flag: !isMarkerHide);
           },
           icon: const Icon(Icons.stacked_line_chart),
         ),
+        Column(
+          children: <Widget>[
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Container(),
+                Row(
+                  children: <Widget>[
+                    CircleAvatar(
+                      backgroundColor: Colors.redAccent.withOpacity(0.5),
+                      child: IconButton(
+                        onPressed: () {
+                          setState(() => currentZoom += 1);
+
+                          mapController.move(
+                            (selectedTimeGeoloc == null)
+                                ? LatLng(
+                                    widget.geolocStateList[0].latitude.toDouble(),
+                                    widget.geolocStateList[0].longitude.toDouble(),
+                                  )
+                                : LatLng(
+                                    selectedTimeGeoloc.latitude.toDouble(),
+                                    selectedTimeGeoloc.longitude.toDouble(),
+                                  ),
+                            currentZoom,
+                          );
+                        },
+                        icon: const Icon(Icons.plus_one, color: Colors.white),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    CircleAvatar(
+                      backgroundColor: Colors.redAccent.withOpacity(0.5),
+                      child: IconButton(
+                        onPressed: () {
+                          setState(() => currentZoom -= 1);
+
+                          mapController.move(
+                            (selectedTimeGeoloc == null)
+                                ? LatLng(
+                                    widget.geolocStateList[0].latitude.toDouble(),
+                                    widget.geolocStateList[0].longitude.toDouble(),
+                                  )
+                                : LatLng(
+                                    selectedTimeGeoloc.latitude.toDouble(),
+                                    selectedTimeGeoloc.longitude.toDouble(),
+                                  ),
+                            currentZoom,
+                          );
+                        },
+                        icon: const Icon(Icons.exposure_minus_1, color: Colors.white),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+          ],
+        ),
+
+        /*
+
+
+        //------------------------//
+
         if (selectedTimeGeoloc == null)
           Container()
         else
@@ -280,6 +350,13 @@ class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
               const SizedBox(height: 10),
             ],
           ),
+
+        //------------------------//
+
+
+
+
+        */
       ],
     );
   }
@@ -341,6 +418,8 @@ class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
           padding: const EdgeInsets.only(bottom: 10),
           child: GestureDetector(
             onTap: () {
+              ref.read(appParamProvider.notifier).setIsMarkerHide(flag: false);
+
               ref.read(appParamProvider.notifier).setSelectedTimeGeoloc(geoloc: widget.geolocStateList[index]);
 
               mapController.move(
