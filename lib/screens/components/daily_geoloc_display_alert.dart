@@ -1,16 +1,11 @@
 import 'package:flutter/material.dart';
 
 import '../../collections/geoloc.dart';
-
 import '../../extensions/extensions.dart';
 import '../../models/geoloc_model.dart';
 import '../../ripository/geolocs_repository.dart';
 import '../../utilities/utilities.dart';
-
-// import '../parts/error_dialog.dart';
-//
-//
-
+import '../parts/error_dialog.dart';
 import '../parts/geoloc_dialog.dart';
 import 'pickup_geoloc_display_alert.dart';
 
@@ -48,7 +43,7 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
 
     makeDiffSeconds();
 
-    makeReverseGeolocList();
+    makePickupGeolocList();
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -64,13 +59,12 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
                 Text(widget.date.yyyymmdd),
                 Row(
                   children: <Widget>[
-                    /*
                     GestureDetector(
                       onTap: () async {
                         bool errFlg = false;
                         String contentStr = '';
 
-                        if (geolocList == null) {
+                        if (geolocMap[widget.date.yyyymmdd] == null) {
                           errFlg = true;
                           contentStr = 'isarデータがありません。';
                         }
@@ -95,7 +89,10 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
                         }
 
                         // ignore: always_specify_types
-                        await GeolocRepository().deleteGeolocList(geolocList: geolocList).then((value) {
+                        await GeolocRepository()
+                            .deleteGeolocList(geolocList: geolocMap[widget.date.yyyymmdd])
+                            // ignore: always_specify_types
+                            .then((value) {
                           if (mounted) {
                             // ignore: use_build_context_synchronously
                             Navigator.pop(context);
@@ -104,14 +101,12 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
                       },
                       child: Icon(
                         Icons.delete,
-                        color: (geolocList == null || widget.geolocStateList.isEmpty)
+                        color: (geolocMap[widget.date.yyyymmdd] == null || widget.geolocStateList.isEmpty)
                             ? Colors.grey
                             : Colors.lightBlueAccent,
                       ),
                     ),
                     const SizedBox(width: 30),
-                    */
-
                     GestureDetector(
                       onTap: () {
                         GeolocDialog(
@@ -194,7 +189,7 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
   }
 
   ///
-  Future<void> makeReverseGeolocList() async {
+  Future<void> makePickupGeolocList() async {
     pickupGeolocList = <Geoloc>[];
 
     String keepLat = '';
