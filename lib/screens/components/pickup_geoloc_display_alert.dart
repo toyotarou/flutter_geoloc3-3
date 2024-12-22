@@ -37,6 +37,7 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
             Container(width: context.screenSize.width),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(widget.date.yyyymmdd),
                 Row(
@@ -66,15 +67,30 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
                               widget: DailyGeolocMapAlert(geolocStateList: list, displayTempMap: true),
                             );
                           },
-                          child: const Icon(Icons.map, color: Colors.orangeAccent)),
+                          child: const Column(
+                            children: <Widget>[
+                              Text('isar'),
+                              Icon(Icons.map, color: Colors.orangeAccent),
+                              Text('map'),
+                            ],
+                          )),
                       const SizedBox(width: 30),
                     ],
                     GestureDetector(
                       onTap: () => deletePickupGeoloc(),
-                      child: const Icon(Icons.delete, color: Colors.greenAccent),
+                      child: const Column(
+                        children: <Widget>[
+                          Text('delete'),
+                          Icon(Icons.delete, color: Colors.greenAccent),
+                          Text('mysql'),
+                        ],
+                      ),
                     ),
                     const SizedBox(width: 30),
-                    GestureDetector(onTap: () => inputPickupGeoloc(), child: const Icon(Icons.input)),
+                    GestureDetector(
+                      onTap: () => inputPickupGeoloc(),
+                      child: const Column(children: <Widget>[Text('input'), Icon(Icons.input), Text('mysql')]),
+                    ),
                   ],
                 ),
               ],
@@ -159,9 +175,7 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
         Navigator.pushReplacement(
           context,
           // ignore: inference_failure_on_instance_creation, always_specify_types
-          MaterialPageRoute(
-            builder: (BuildContext context) => HomeScreen(baseYm: widget.date.yyyymm),
-          ),
+          MaterialPageRoute(builder: (BuildContext context) => HomeScreen(baseYm: widget.date.yyyymm)),
         );
       }
     });

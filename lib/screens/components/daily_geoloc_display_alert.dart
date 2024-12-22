@@ -55,6 +55,7 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
             Container(width: context.screenSize.width),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 Text(widget.date.yyyymmdd),
                 Row(
@@ -88,22 +89,19 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
                           return;
                         }
 
-                        // ignore: always_specify_types
-                        await GeolocRepository()
-                            .deleteGeolocList(geolocList: geolocMap[widget.date.yyyymmdd])
-                            // ignore: always_specify_types
-                            .then((value) {
-                          if (mounted) {
-                            // ignore: use_build_context_synchronously
-                            Navigator.pop(context);
-                          }
-                        });
+                        _showDeleteDialog(geolocList: geolocMap[widget.date.yyyymmdd]);
                       },
-                      child: Icon(
-                        Icons.delete,
-                        color: (geolocMap[widget.date.yyyymmdd] == null || widget.geolocStateList.isEmpty)
-                            ? Colors.grey
-                            : Colors.lightBlueAccent,
+                      child: Column(
+                        children: <Widget>[
+                          const Text('delete'),
+                          Icon(
+                            Icons.delete,
+                            color: (geolocMap[widget.date.yyyymmdd] == null || widget.geolocStateList.isEmpty)
+                                ? Colors.grey
+                                : Colors.lightBlueAccent,
+                          ),
+                          const Text('isar'),
+                        ],
                       ),
                     ),
                     const SizedBox(width: 30),
@@ -115,7 +113,7 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
                           widget: PickupGeolocDisplayAlert(date: widget.date, pickupGeolocList: pickupGeolocList),
                         );
                       },
-                      child: const Icon(Icons.list),
+                      child: const Column(children: <Widget>[Text('select'), Icon(Icons.list), Text('list')]),
                     ),
                   ],
                 ),
@@ -228,6 +226,42 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
       }
 
       diffSeconds = secondDiff.toString().padLeft(2, '0');
+    });
+  }
+
+  ///
+  void _showDeleteDialog({List<Geoloc>? geolocList}) {
+    final Widget cancelButton = TextButton(onPressed: () => Navigator.pop(context), child: const Text('いいえ'));
+
+    final Widget continueButton = TextButton(
+        onPressed: () {
+          _deleteGeolocList(geolocList: geolocList);
+
+          Navigator.pop(context);
+        },
+        child: const Text('はい'));
+
+    final AlertDialog alert = AlertDialog(
+      backgroundColor: Colors.blueGrey.withOpacity(0.3),
+      content: const Text('このデータを消去しますか？'),
+      actions: <Widget>[cancelButton, continueButton],
+    );
+
+    // ignore: inference_failure_on_function_invocation
+    showDialog(context: context, builder: (BuildContext context) => alert);
+  }
+
+  ///
+  Future<void> _deleteGeolocList({List<Geoloc>? geolocList}) async {
+    // ignore: always_specify_types
+    await GeolocRepository()
+        .deleteGeolocList(geolocList: geolocList)
+        // ignore: always_specify_types
+        .then((value) {
+      if (mounted) {
+        // ignore: use_build_context_synchronously
+        Navigator.pop(context);
+      }
     });
   }
 }
