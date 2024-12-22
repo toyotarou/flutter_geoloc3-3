@@ -175,7 +175,7 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
 
     final AlertDialog alert = AlertDialog(
       backgroundColor: Colors.blueGrey.withOpacity(0.3),
-      content: const Text('このデータを消去しますか？'),
+      content: Text('${widget.date.yyyymmdd}のmysqlデータを消去しますか？'),
       actions: <Widget>[cancelButton, continueButton],
     );
 
