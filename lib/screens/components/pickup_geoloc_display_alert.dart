@@ -44,40 +44,37 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
                   children: <Widget>[
                     if (widget.pickupGeolocList.length > 1) ...<Widget>[
                       GestureDetector(
-                          onTap: () {
-                            ref.read(appParamProvider.notifier).setIsMarkerHide(flag: false);
+                        onTap: () {
+                          ref.read(appParamProvider.notifier).setIsMarkerHide(flag: false);
 
-                            final List<GeolocModel> list = <GeolocModel>[];
-                            for (final Geoloc element in widget.pickupGeolocList) {
-                              list.add(
-                                GeolocModel(
-                                  id: 0,
-                                  year: element.date.split('-')[0],
-                                  month: element.date.split('-')[1],
-                                  day: element.date.split('-')[2],
-                                  time: element.time,
-                                  latitude: element.latitude,
-                                  longitude: element.longitude,
-                                ),
-                              );
-                            }
-
-                            GeolocDialog(
-                              context: context,
-                              widget: DailyGeolocMapAlert(geolocStateList: list, displayTempMap: true),
+                          final List<GeolocModel> list = <GeolocModel>[];
+                          for (final Geoloc element in widget.pickupGeolocList) {
+                            list.add(
+                              GeolocModel(
+                                id: 0,
+                                year: element.date.split('-')[0],
+                                month: element.date.split('-')[1],
+                                day: element.date.split('-')[2],
+                                time: element.time,
+                                latitude: element.latitude,
+                                longitude: element.longitude,
+                              ),
                             );
-                          },
-                          child: const Column(
-                            children: <Widget>[
-                              Text('isar'),
-                              Icon(Icons.map, color: Colors.orangeAccent),
-                              Text('map'),
-                            ],
-                          )),
+                          }
+
+                          GeolocDialog(
+                            context: context,
+                            widget: DailyGeolocMapAlert(geolocStateList: list, displayTempMap: true),
+                          );
+                        },
+                        child: const Column(
+                          children: <Widget>[Text('isar'), Icon(Icons.map, color: Colors.orangeAccent), Text('map')],
+                        ),
+                      ),
                       const SizedBox(width: 30),
                     ],
                     GestureDetector(
-                      onTap: () => deletePickupGeoloc(),
+                      onTap: () => _showDeleteDialog(),
                       child: const Column(
                         children: <Widget>[
                           Text('delete'),
@@ -162,6 +159,28 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
         ),
       ],
     );
+  }
+
+  ///
+  void _showDeleteDialog() {
+    final Widget cancelButton = TextButton(onPressed: () => Navigator.pop(context), child: const Text('いいえ'));
+
+    final Widget continueButton = TextButton(
+        onPressed: () {
+          deletePickupGeoloc();
+
+          Navigator.pop(context);
+        },
+        child: const Text('はい'));
+
+    final AlertDialog alert = AlertDialog(
+      backgroundColor: Colors.blueGrey.withOpacity(0.3),
+      content: const Text('このデータを消去しますか？'),
+      actions: <Widget>[cancelButton, continueButton],
+    );
+
+    // ignore: inference_failure_on_function_invocation
+    showDialog(context: context, builder: (BuildContext context) => alert);
   }
 
   ///
