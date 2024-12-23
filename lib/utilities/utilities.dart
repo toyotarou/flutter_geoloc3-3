@@ -3,6 +3,17 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 class Utility {
+  /// 背景取得
+  // ignore: always_specify_types
+  Widget getBackGround({context}) {
+    return Image.asset(
+      'assets/images/bg.png',
+      fit: BoxFit.fitHeight,
+      color: Colors.black.withOpacity(0.7),
+      colorBlendMode: BlendMode.darken,
+    );
+  }
+
   ///
   void showError(String msg) {
     ScaffoldMessenger.of(NavigationService.navigatorKey.currentContext!).showSnackBar(

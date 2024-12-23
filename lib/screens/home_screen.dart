@@ -203,6 +203,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Colors.transparent,
         title: Row(
           children: <Widget>[
             Text(calendarState.baseYearMonth),
@@ -269,7 +270,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ),
         ],
       ),
-      body: Column(children: <Widget>[Expanded(child: _getCalendar())]),
+      body: Stack(
+        fit: StackFit.expand,
+        children: <Widget>[
+          _utility.getBackGround(),
+          Column(children: <Widget>[Expanded(child: _getCalendar())]),
+        ],
+      ),
     );
   }
 
