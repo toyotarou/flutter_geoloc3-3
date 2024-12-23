@@ -118,17 +118,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   final Utility _utility = Utility();
 
-  Map<String, int> dateCurrencySumMap = <String, int>{};
-
-  Map<String, int> monthlySpendTimePlaceSumMap = <String, int>{};
-
-  Map<String, Map<String, int>> bankPricePadMap = <String, Map<String, int>>{};
-  Map<String, int> bankPriceTotalPadMap = <String, int>{};
-
-  List<String> monthFirstDateList = <String>[];
-
-  Map<String, int> monthlySpendMap = <String, int>{};
-
   bool baseYmSetFlag = false;
 
   List<Geoloc>? geolocList = <Geoloc>[];
@@ -281,8 +270,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   Widget _getCalendar() {
-    monthlySpendMap = <String, int>{};
-
     final HolidaysResponseState holidayState = ref.watch(holidayProvider);
 
     if (holidayState.holidayMap.value != null) {
@@ -340,12 +327,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       final String youbiStr = (_calendarDays[i] == '')
           ? ''
           : DateTime(_calendarMonthFirst.year, _calendarMonthFirst.month, _calendarDays[i].toInt()).youbiStr;
-
-      if (generateYmd == '2024-12-17') {
-//        print(geolocStateMap);
-
-//        print(geolocStateMap['2024-12-17']?.length);
-      }
 
       list.add(
         Expanded(
