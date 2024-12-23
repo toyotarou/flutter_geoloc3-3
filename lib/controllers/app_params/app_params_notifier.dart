@@ -19,4 +19,7 @@ class AppParamNotifier extends StateNotifier<AppParamsResponseState> {
 
   ///
   void setIsMarkerHide({required bool flag}) => state = state.copyWith(isMarkerHide: flag);
+
+  ///
+  void setSelectedHour({required String hour}) => state = state.copyWith(selectedHour: hour);
 }

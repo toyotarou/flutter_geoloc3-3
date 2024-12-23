@@ -10,5 +10,6 @@ class AppParamsResponseState with _$AppParamsResponseState {
     DateTime? calendarSelectedDate,
     GeolocModel? selectedTimeGeoloc,
     @Default(false) bool isMarkerHide,
+    @Default('') String selectedHour,
   }) = _AppParamsResponseState;
 }

@@ -45,6 +45,8 @@ class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
 
   double currentZoom = 18;
 
+  Map<String, List<String>> selectedHourMap = <String, List<String>>{};
+
   ///
   @override
   void initState() {
@@ -69,6 +71,8 @@ class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
   ///
   @override
   Widget build(BuildContext context) {
+    makeSelectedHourMap();
+
     makeMinMaxLatLng();
 
     makeMarker();
@@ -140,6 +144,19 @@ class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
   }
 
   ///
+  void makeSelectedHourMap() {
+    selectedHourMap = <String, List<String>>{};
+
+    for (final GeolocModel element in widget.geolocStateList) {
+      selectedHourMap[element.time.split(':')[0]] = <String>[];
+    }
+
+    for (final GeolocModel element in widget.geolocStateList) {
+      selectedHourMap[element.time.split(':')[0]]?.add(element.time);
+    }
+  }
+
+  ///
   Widget displayMapHeadTimeSelect() {
     final List<String> timeList = <String>[];
 
@@ -150,6 +167,9 @@ class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
         timeList.add(exTime[0]);
       }
     }
+
+    final String selectedHour =
+        ref.watch(appParamProvider.select((AppParamsResponseState value) => value.selectedHour));
 
     return Row(
       children: <Widget>[
@@ -188,13 +208,21 @@ class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
                   padding: const EdgeInsets.only(right: 10),
                   child: GestureDetector(
                     onTap: () {
+                      ref.read(appParamProvider.notifier).setSelectedHour(hour: e);
+
+                      ref.read(appParamProvider.notifier).setSelectedTimeGeoloc(
+                            geoloc: widget.geolocStateList
+                                .firstWhere((GeolocModel e2) => e2.time == selectedHourMap[e]?[0]),
+                          );
+
                       controller.jumpTo(
                         index:
                             widget.geolocStateList.indexWhere((GeolocModel element) => element.time.split(':')[0] == e),
                       );
                     },
                     child: CircleAvatar(
-                      backgroundColor: Colors.white.withOpacity(0.2),
+                      backgroundColor:
+                          (e == selectedHour) ? Colors.yellowAccent.withOpacity(0.3) : Colors.white.withOpacity(0.3),
                       child: Text(e, style: const TextStyle(fontSize: 12)),
                     ),
                   ),
@@ -290,73 +318,6 @@ class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
             const SizedBox(height: 10),
           ],
         ),
-
-        /*
-
-
-        //------------------------//
-
-        if (selectedTimeGeoloc == null)
-          Container()
-        else
-          Column(
-            children: <Widget>[
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Container(),
-                  Row(
-                    children: <Widget>[
-                      CircleAvatar(
-                        backgroundColor: Colors.redAccent.withOpacity(0.5),
-                        child: IconButton(
-                          onPressed: () {
-                            setState(() => currentZoom += 1);
-
-                            mapController.move(
-                              LatLng(
-                                selectedTimeGeoloc.latitude.toDouble(),
-                                selectedTimeGeoloc.longitude.toDouble(),
-                              ),
-                              currentZoom,
-                            );
-                          },
-                          icon: const Icon(Icons.plus_one, color: Colors.white),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      CircleAvatar(
-                        backgroundColor: Colors.redAccent.withOpacity(0.5),
-                        child: IconButton(
-                          onPressed: () {
-                            setState(() => currentZoom -= 1);
-
-                            mapController.move(
-                              LatLng(
-                                selectedTimeGeoloc.latitude.toDouble(),
-                                selectedTimeGeoloc.longitude.toDouble(),
-                              ),
-                              currentZoom,
-                            );
-                          },
-                          icon: const Icon(Icons.exposure_minus_1, color: Colors.white),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-              const SizedBox(height: 10),
-            ],
-          ),
-
-        //------------------------//
-
-
-
-
-        */
       ],
     );
   }
@@ -383,6 +344,9 @@ class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
     final GeolocModel? selectedTimeGeoloc =
         ref.watch(appParamProvider.select((AppParamsResponseState value) => value.selectedTimeGeoloc));
 
+    final String selectedHour =
+        ref.watch(appParamProvider.select((AppParamsResponseState value) => value.selectedHour));
+
     for (final GeolocModel element in widget.geolocStateList) {
       markerList.add(
         Marker(
@@ -394,9 +358,12 @@ class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
             backgroundColor: (selectedTimeGeoloc != null && selectedTimeGeoloc.time == element.time)
                 ? Colors.redAccent.withOpacity(0.5)
                 // ignore: use_if_null_to_convert_nulls_to_bools
-                : (widget.displayTempMap == true)
-                    ? Colors.orangeAccent.withOpacity(0.5)
-                    : Colors.green[900]?.withOpacity(0.5),
+                : (element.time.split(':')[0] == selectedHour)
+                    ? Colors.lime
+                    // ignore: use_if_null_to_convert_nulls_to_bools
+                    : (widget.displayTempMap == true)
+                        ? Colors.orangeAccent.withOpacity(0.5)
+                        : Colors.green[900]?.withOpacity(0.5),
             child: Text(element.time, style: const TextStyle(color: Colors.white, fontSize: 10)),
           ),
         ),
@@ -408,6 +375,9 @@ class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
   Widget displayTimeCircleAvatar() {
     final GeolocModel? selectedTimeGeoloc =
         ref.watch(appParamProvider.select((AppParamsResponseState value) => value.selectedTimeGeoloc));
+
+    final String selectedHour =
+        ref.watch(appParamProvider.select((AppParamsResponseState value) => value.selectedHour));
 
     return ScrollablePositionedList.builder(
       itemCount: widget.geolocStateList.length,
@@ -421,6 +391,10 @@ class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
               ref.read(appParamProvider.notifier).setIsMarkerHide(flag: false);
 
               ref.read(appParamProvider.notifier).setSelectedTimeGeoloc(geoloc: widget.geolocStateList[index]);
+
+              ref
+                  .read(appParamProvider.notifier)
+                  .setSelectedHour(hour: widget.geolocStateList[index].time.split(':')[0]);
 
               mapController.move(
                 LatLng(
@@ -437,9 +411,12 @@ class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
                   (selectedTimeGeoloc != null && selectedTimeGeoloc.time == widget.geolocStateList[index].time)
                       ? Colors.redAccent.withOpacity(0.5)
                       // ignore: use_if_null_to_convert_nulls_to_bools
-                      : (widget.displayTempMap == true)
-                          ? Colors.orangeAccent.withOpacity(0.5)
-                          : Colors.green[900]?.withOpacity(0.5),
+                      : (widget.geolocStateList[index].time.split(':')[0] == selectedHour)
+                          ? Colors.yellowAccent.withOpacity(0.3)
+                          // ignore: use_if_null_to_convert_nulls_to_bools
+                          : (widget.displayTempMap == true)
+                              ? Colors.orangeAccent.withOpacity(0.5)
+                              : Colors.green[900]?.withOpacity(0.5),
               child: Text(
                 widget.geolocStateList[index].time,
                 style: const TextStyle(color: Colors.white, fontSize: 10),

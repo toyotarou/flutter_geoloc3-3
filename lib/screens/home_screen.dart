@@ -62,18 +62,18 @@ void backgroundHandler(Location data) {
         isInsert = true;
       }
 
-      debugPrint(secondDiff.toString());
+//      debugPrint(secondDiff.toString());
 
       if (secondDiff >= 60) {
         isInsert = true;
       }
 
       if (isInsert) {
-        debugPrint('---------');
-        debugPrint(DateTime.now().toString());
-        debugPrint(data.lat.toString());
-        debugPrint(data.lng.toString());
-        debugPrint('---------');
+        // debugPrint('---------');
+        // debugPrint(DateTime.now().toString());
+        // debugPrint(data.lat.toString());
+        // debugPrint(data.lng.toString());
+        // debugPrint('---------');
 
         await IsarRepository.configure();
         IsarRepository.isar.writeTxnSync(() => IsarRepository.isar.geolocs.putSync(geoloc));
@@ -142,7 +142,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     _bgDisposer = BackgroundTask.instance.stream.listen((Location event) {
       final String message = '${DateTime.now()}: ${event.lat}, ${event.lng}';
 
-      debugPrint(message);
+      // debugPrint(message);
 
       setState(() => bgText = message);
     });
@@ -150,7 +150,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     // ignore: always_specify_types
     Future(() async {
       final PermissionStatus result = await Permission.notification.request();
-      debugPrint('notification: $result');
+      // debugPrint('notification: $result');
+
       if (Platform.isAndroid) {
         if (result.isGranted) {
           await BackgroundTask.instance.setAndroidNotification(
