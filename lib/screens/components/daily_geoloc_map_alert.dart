@@ -93,12 +93,17 @@ class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
                 Expanded(
                   child: FlutterMap(
                     mapController: mapController,
-                    options: MapOptions(
-                      initialCameraFit: CameraFit.bounds(
-                        bounds: LatLngBounds.fromPoints(<LatLng>[LatLng(minLat, maxLng), LatLng(maxLat, minLng)]),
-                        padding: const EdgeInsets.all(50),
-                      ),
-                    ),
+                    options: (widget.geolocStateList.length == 1)
+                        ? MapOptions(
+                            initialCenter: LatLng(widget.geolocStateList[0].latitude.toDouble(),
+                                widget.geolocStateList[0].longitude.toDouble()),
+                            initialZoom: currentZoom)
+                        : MapOptions(
+                            initialCameraFit: CameraFit.bounds(
+                              bounds: LatLngBounds.fromPoints(<LatLng>[LatLng(minLat, maxLng), LatLng(maxLat, minLng)]),
+                              padding: const EdgeInsets.all(50),
+                            ),
+                          ),
                     children: <Widget>[
                       TileLayer(
                         urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -181,6 +186,8 @@ class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
           style:
               OutlinedButton.styleFrom(padding: EdgeInsets.zero, backgroundColor: Colors.pinkAccent.withOpacity(0.1)),
           onPressed: () {
+            ref.read(appParamProvider.notifier).setSelectedHour(hour: '');
+
             ref.read(appParamProvider.notifier).setSelectedTimeGeoloc();
 
             polylineGeolocList = <GeolocModel>[];

@@ -21,6 +21,7 @@ import '../ripository/isar_repository.dart';
 import '../utilities/utilities.dart';
 import 'components/daily_geoloc_display_alert.dart';
 import 'components/daily_geoloc_map_alert.dart';
+import 'components/history_geoloc_list_alert.dart';
 import 'parts/geoloc_dialog.dart';
 
 @pragma('vm:entry-point')
@@ -214,6 +215,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           ],
         ),
         actions: <Widget>[
+          IconButton(
+            onPressed: () => GeolocDialog(context: context, widget: const HistoryGeolocListAlert()),
+            icon: const Icon(Icons.list),
+          ),
           IconButton(
             onPressed: () {
               Navigator.pushReplacement(
