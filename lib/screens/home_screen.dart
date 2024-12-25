@@ -20,7 +20,7 @@ import '../ripository/geolocs_repository.dart';
 import '../ripository/isar_repository.dart';
 import '../utilities/utilities.dart';
 import 'components/daily_geoloc_display_alert.dart';
-import 'components/daily_geoloc_map_alert.dart';
+import 'components/geoloc_map_alert.dart';
 import 'components/history_geoloc_list_alert.dart';
 import 'parts/geoloc_dialog.dart';
 
@@ -117,7 +117,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   Map<String, String> _holidayMap = <String, String>{};
 
-  final Utility _utility = Utility();
+  final Utility utility = Utility();
 
   bool baseYmSetFlag = false;
 
@@ -267,8 +267,60 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       body: Stack(
         fit: StackFit.expand,
         children: <Widget>[
-          _utility.getBackGround(),
+          utility.getBackGround(),
           Column(children: <Widget>[Expanded(child: _getCalendar())]),
+          Positioned(
+            bottom: 10,
+            right: 10,
+            child: ElevatedButton(
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
+                onPressed: () {
+                  final List<GeolocModel> list = <GeolocModel>[];
+
+                  int i = 0;
+                  String keepLat = '';
+                  String keepLng = '';
+                  ref.watch(geolocControllerProvider.select((GeolocControllerState value) => value.geolocList)).toList()
+                    ..sort((GeolocModel a, GeolocModel b) => a.latitude.compareTo(b.latitude))
+                    ..sort((GeolocModel a, GeolocModel b) => a.longitude.compareTo(b.longitude))
+                    ..forEach((GeolocModel element) {
+                      String distance = '';
+
+                      if (i == 0) {
+                        list.add(element);
+                      } else {
+                        final String di = utility.calcDistance(
+                          originLat: keepLat.toDouble(),
+                          originLng: keepLng.toDouble(),
+                          destLat: element.latitude.toDouble(),
+                          destLng: element.longitude.toDouble(),
+                        );
+
+                        final double dis = di.toDouble() * 1000;
+
+                        final List<String> exDis = dis.toString().split('.');
+
+                        distance = exDis[0];
+
+                        final int? dist = int.tryParse(distance);
+
+                        if (dist != null && dist > 1000) {
+                          list.add(element);
+                        }
+                      }
+
+                      keepLat = element.latitude;
+                      keepLng = element.longitude;
+                      i++;
+                    });
+
+                  GeolocDialog(
+                    context: context,
+                    widget: GeolocMapAlert(geolocStateList: list, displayMonthMap: true),
+                  );
+                },
+                child: const Text('month')),
+          ),
         ],
       ),
     );
@@ -351,7 +403,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ? Colors.transparent
                   : (DateTime.parse('$generateYmd 00:00:00').isAfter(DateTime.now()))
                       ? Colors.white.withOpacity(0.1)
-                      : _utility.getYoubiColor(date: generateYmd, youbiStr: youbiStr, holidayMap: _holidayMap),
+                      : utility.getYoubiColor(date: generateYmd, youbiStr: youbiStr, holidayMap: _holidayMap),
             ),
             child: (_calendarDays[i] == '')
                 ? const Text('')
@@ -410,7 +462,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
                                             GeolocDialog(
                                               context: context,
-                                              widget: DailyGeolocMapAlert(
+                                              widget: GeolocMapAlert(
                                                 geolocStateList: geolocStateMap[generateYmd] ?? <GeolocModel>[],
                                               ),
                                             );

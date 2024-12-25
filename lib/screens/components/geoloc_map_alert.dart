@@ -12,18 +12,20 @@ import '../../extensions/extensions.dart';
 import '../../models/geoloc_model.dart';
 import '../../utilities/tile_provider.dart';
 
-class DailyGeolocMapAlert extends ConsumerStatefulWidget {
-  const DailyGeolocMapAlert({super.key, required this.geolocStateList, this.displayTempMap});
+class GeolocMapAlert extends ConsumerStatefulWidget {
+  const GeolocMapAlert({super.key, required this.geolocStateList, this.displayTempMap, this.displayMonthMap});
 
   final List<GeolocModel> geolocStateList;
 
   final bool? displayTempMap;
 
+  final bool? displayMonthMap;
+
   @override
-  ConsumerState<DailyGeolocMapAlert> createState() => _DailyGeolocMapAlertState();
+  ConsumerState<GeolocMapAlert> createState() => _GeolocMapAlertState();
 }
 
-class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
+class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
   List<double> latList = <double>[];
   List<double> lngList = <double>[];
 
@@ -87,9 +89,11 @@ class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                const SizedBox(height: 10),
-                displayMapHeadTimeSelect(),
-                const SizedBox(height: 10),
+                if (widget.displayMonthMap == false) ...<Widget>[
+                  const SizedBox(height: 10),
+                  displayMapHeadTimeSelect(),
+                  const SizedBox(height: 10),
+                ],
                 Expanded(
                   child: FlutterMap(
                     mapController: mapController,
@@ -111,9 +115,7 @@ class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
                         userAgentPackageName: 'com.example.app',
                       ),
 
-                      if (!isMarkerHide) ...<Widget>[
-                        MarkerLayer(markers: markerList),
-                      ],
+                      if (!isMarkerHide) ...<Widget>[MarkerLayer(markers: markerList)],
 
                       // ignore: always_specify_types
                       PolylineLayer(
@@ -131,18 +133,16 @@ class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
                     ],
                   ),
                 ),
-                displayMapBottomZoomChangeButton(),
+                if (widget.displayMonthMap == false) ...<Widget>[displayMapBottomZoomChangeButton()],
               ],
             ),
           ),
-          SizedBox(
+          if (widget.displayMonthMap == false) ...<Widget>[
+            SizedBox(
               width: 60,
-              child: Column(
-                children: <Widget>[
-                  const SizedBox(height: 10),
-                  Expanded(child: displayTimeCircleAvatar()),
-                ],
-              )),
+              child: Column(children: <Widget>[const SizedBox(height: 10), Expanded(child: displayTimeCircleAvatar())]),
+            ),
+          ],
         ],
       ),
     );
@@ -256,9 +256,7 @@ class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
       children: <Widget>[
         IconButton(
           onPressed: () {
-            setState(() {
-              polylineGeolocList = (!isMarkerHide) ? widget.geolocStateList : <GeolocModel>[];
-            });
+            setState(() => polylineGeolocList = (!isMarkerHide) ? widget.geolocStateList : <GeolocModel>[]);
 
             ref.read(appParamProvider.notifier).setIsMarkerHide(flag: !isMarkerHide);
           },
@@ -286,9 +284,7 @@ class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
                                     widget.geolocStateList[0].longitude.toDouble(),
                                   )
                                 : LatLng(
-                                    selectedTimeGeoloc.latitude.toDouble(),
-                                    selectedTimeGeoloc.longitude.toDouble(),
-                                  ),
+                                    selectedTimeGeoloc.latitude.toDouble(), selectedTimeGeoloc.longitude.toDouble()),
                             currentZoom,
                           );
                         },
@@ -309,9 +305,7 @@ class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
                                     widget.geolocStateList[0].longitude.toDouble(),
                                   )
                                 : LatLng(
-                                    selectedTimeGeoloc.latitude.toDouble(),
-                                    selectedTimeGeoloc.longitude.toDouble(),
-                                  ),
+                                    selectedTimeGeoloc.latitude.toDouble(), selectedTimeGeoloc.longitude.toDouble()),
                             currentZoom,
                           );
                         },
@@ -360,19 +354,22 @@ class _DailyGeolocMapAlertState extends ConsumerState<DailyGeolocMapAlert> {
           point: LatLng(element.latitude.toDouble(), element.longitude.toDouble()),
           width: 40,
           height: 40,
-          child: CircleAvatar(
-            // ignore: use_if_null_to_convert_nulls_to_bools
-            backgroundColor: (selectedTimeGeoloc != null && selectedTimeGeoloc.time == element.time)
-                ? Colors.redAccent.withOpacity(0.5)
-                // ignore: use_if_null_to_convert_nulls_to_bools
-                : (element.time.split(':')[0] == selectedHour)
-                    ? Colors.lime
-                    // ignore: use_if_null_to_convert_nulls_to_bools
-                    : (widget.displayTempMap == true)
-                        ? Colors.orangeAccent.withOpacity(0.5)
-                        : Colors.green[900]?.withOpacity(0.5),
-            child: Text(element.time, style: const TextStyle(color: Colors.white, fontSize: 10)),
-          ),
+          // ignore: use_if_null_to_convert_nulls_to_bools
+          child: (widget.displayMonthMap == true)
+              ? const Icon(Icons.ac_unit, size: 20, color: Colors.redAccent)
+              : CircleAvatar(
+                  // ignore: use_if_null_to_convert_nulls_to_bools
+                  backgroundColor: (selectedTimeGeoloc != null && selectedTimeGeoloc.time == element.time)
+                      ? Colors.redAccent.withOpacity(0.5)
+                      // ignore: use_if_null_to_convert_nulls_to_bools
+                      : (element.time.split(':')[0] == selectedHour)
+                          ? Colors.lime
+                          // ignore: use_if_null_to_convert_nulls_to_bools
+                          : (widget.displayTempMap == true)
+                              ? Colors.orangeAccent.withOpacity(0.5)
+                              : Colors.green[900]?.withOpacity(0.5),
+                  child: Text(element.time, style: const TextStyle(color: Colors.white, fontSize: 10)),
+                ),
         ),
       );
     }

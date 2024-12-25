@@ -9,7 +9,7 @@ import '../../models/geoloc_model.dart';
 import '../../utilities/utilities.dart';
 import '../home_screen.dart';
 import '../parts/geoloc_dialog.dart';
-import 'daily_geoloc_map_alert.dart';
+import 'geoloc_map_alert.dart';
 
 class PickupGeolocDisplayAlert extends ConsumerStatefulWidget {
   const PickupGeolocDisplayAlert({super.key, required this.pickupGeolocList, required this.date});
@@ -64,7 +64,7 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
 
                           GeolocDialog(
                             context: context,
-                            widget: DailyGeolocMapAlert(geolocStateList: list, displayTempMap: true),
+                            widget: GeolocMapAlert(geolocStateList: list, displayTempMap: true),
                           );
                         },
                         child: const Column(
@@ -152,10 +152,8 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
     return CustomScrollView(
       slivers: <Widget>[
         SliverList(
-          delegate: SliverChildBuilderDelegate(
-            (BuildContext context, int index) => list[index],
-            childCount: list.length,
-          ),
+          delegate:
+              SliverChildBuilderDelegate((BuildContext context, int index) => list[index], childCount: list.length),
         ),
       ],
     );
@@ -224,9 +222,7 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
       Navigator.pushReplacement(
         context,
         // ignore: inference_failure_on_instance_creation, always_specify_types
-        MaterialPageRoute(
-          builder: (BuildContext context) => HomeScreen(baseYm: widget.date.yyyymm),
-        ),
+        MaterialPageRoute(builder: (BuildContext context) => HomeScreen(baseYm: widget.date.yyyymm)),
       );
     }
   }
