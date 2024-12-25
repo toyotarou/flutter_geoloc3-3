@@ -216,8 +216,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ),
         actions: <Widget>[
           IconButton(
-            onPressed: () => GeolocDialog(context: context, widget: const HistoryGeolocListAlert()),
-            icon: const Icon(Icons.list),
+            onPressed: () {
+              Navigator.pushReplacement(
+                context,
+                // ignore: inference_failure_on_instance_creation, always_specify_types
+                MaterialPageRoute(
+                  builder: (BuildContext context) => HomeScreen(baseYm: DateTime.now().yyyymm),
+                ),
+              );
+            },
+            icon: const Icon(Icons.square, color: Colors.yellowAccent),
           ),
           IconButton(
             onPressed: () {
@@ -272,54 +280,64 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           Positioned(
             bottom: 10,
             right: 10,
-            child: ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
-                onPressed: () {
-                  final List<GeolocModel> list = <GeolocModel>[];
+            child: Row(
+              children: <Widget>[
+                IconButton(
+                  onPressed: () => GeolocDialog(context: context, widget: const HistoryGeolocListAlert()),
+                  icon: const Icon(Icons.list),
+                ),
+                ElevatedButton(
+                    style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
+                    onPressed: () {
+                      final List<GeolocModel> list = <GeolocModel>[];
 
-                  int i = 0;
-                  String keepLat = '';
-                  String keepLng = '';
-                  ref.watch(geolocControllerProvider.select((GeolocControllerState value) => value.geolocList)).toList()
-                    ..sort((GeolocModel a, GeolocModel b) => a.latitude.compareTo(b.latitude))
-                    ..sort((GeolocModel a, GeolocModel b) => a.longitude.compareTo(b.longitude))
-                    ..forEach((GeolocModel element) {
-                      String distance = '';
+                      int i = 0;
+                      String keepLat = '';
+                      String keepLng = '';
+                      ref
+                          .watch(geolocControllerProvider.select((GeolocControllerState value) => value.geolocList))
+                          .toList()
+                        ..sort((GeolocModel a, GeolocModel b) => a.latitude.compareTo(b.latitude))
+                        ..sort((GeolocModel a, GeolocModel b) => a.longitude.compareTo(b.longitude))
+                        ..forEach((GeolocModel element) {
+                          String distance = '';
 
-                      if (i == 0) {
-                        list.add(element);
-                      } else {
-                        final String di = utility.calcDistance(
-                          originLat: keepLat.toDouble(),
-                          originLng: keepLng.toDouble(),
-                          destLat: element.latitude.toDouble(),
-                          destLng: element.longitude.toDouble(),
-                        );
+                          if (i == 0) {
+                            list.add(element);
+                          } else {
+                            final String di = utility.calcDistance(
+                              originLat: keepLat.toDouble(),
+                              originLng: keepLng.toDouble(),
+                              destLat: element.latitude.toDouble(),
+                              destLng: element.longitude.toDouble(),
+                            );
 
-                        final double dis = di.toDouble() * 1000;
+                            final double dis = di.toDouble() * 1000;
 
-                        final List<String> exDis = dis.toString().split('.');
+                            final List<String> exDis = dis.toString().split('.');
 
-                        distance = exDis[0];
+                            distance = exDis[0];
 
-                        final int? dist = int.tryParse(distance);
+                            final int? dist = int.tryParse(distance);
 
-                        if (dist != null && dist > 1000) {
-                          list.add(element);
-                        }
-                      }
+                            if (dist != null && dist > 1000) {
+                              list.add(element);
+                            }
+                          }
 
-                      keepLat = element.latitude;
-                      keepLng = element.longitude;
-                      i++;
-                    });
+                          keepLat = element.latitude;
+                          keepLng = element.longitude;
+                          i++;
+                        });
 
-                  GeolocDialog(
-                    context: context,
-                    widget: GeolocMapAlert(geolocStateList: list, displayMonthMap: true),
-                  );
-                },
-                child: const Text('month')),
+                      GeolocDialog(
+                        context: context,
+                        widget: GeolocMapAlert(geolocStateList: list, displayMonthMap: true),
+                      );
+                    },
+                    child: const Text('month')),
+              ],
+            ),
           ),
         ],
       ),
@@ -464,6 +482,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                               context: context,
                                               widget: GeolocMapAlert(
                                                 geolocStateList: geolocStateMap[generateYmd] ?? <GeolocModel>[],
+                                                displayMonthMap: false,
                                               ),
                                             );
                                           },

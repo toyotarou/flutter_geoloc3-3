@@ -13,13 +13,13 @@ import '../../models/geoloc_model.dart';
 import '../../utilities/tile_provider.dart';
 
 class GeolocMapAlert extends ConsumerStatefulWidget {
-  const GeolocMapAlert({super.key, required this.geolocStateList, this.displayTempMap, this.displayMonthMap});
+  const GeolocMapAlert({super.key, required this.geolocStateList, this.displayTempMap, required this.displayMonthMap});
 
   final List<GeolocModel> geolocStateList;
 
   final bool? displayTempMap;
 
-  final bool? displayMonthMap;
+  final bool displayMonthMap;
 
   @override
   ConsumerState<GeolocMapAlert> createState() => _GeolocMapAlertState();
@@ -89,7 +89,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                if (widget.displayMonthMap == false) ...<Widget>[
+                if (!widget.displayMonthMap) ...<Widget>[
                   const SizedBox(height: 10),
                   displayMapHeadTimeSelect(),
                   const SizedBox(height: 10),
@@ -133,11 +133,11 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                     ],
                   ),
                 ),
-                if (widget.displayMonthMap == false) ...<Widget>[displayMapBottomZoomChangeButton()],
+                if (!widget.displayMonthMap) ...<Widget>[displayMapBottomZoomChangeButton()],
               ],
             ),
           ),
-          if (widget.displayMonthMap == false) ...<Widget>[
+          if (!widget.displayMonthMap) ...<Widget>[
             SizedBox(
               width: 60,
               child: Column(children: <Widget>[const SizedBox(height: 10), Expanded(child: displayTimeCircleAvatar())]),
@@ -355,7 +355,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
           width: 40,
           height: 40,
           // ignore: use_if_null_to_convert_nulls_to_bools
-          child: (widget.displayMonthMap == true)
+          child: (widget.displayMonthMap)
               ? const Icon(Icons.ac_unit, size: 20, color: Colors.redAccent)
               : CircleAvatar(
                   // ignore: use_if_null_to_convert_nulls_to_bools
