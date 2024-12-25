@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../controllers/geoloc/geoloc.dart';
 import '../../extensions/extensions.dart';
+import '../home_screen.dart';
 
 class HistoryGeolocListAlert extends ConsumerStatefulWidget {
   const HistoryGeolocListAlert({super.key});
@@ -46,27 +47,56 @@ class _HistoryGeolocListAlertState extends ConsumerState<HistoryGeolocListAlert>
     final GeolocControllerState geolocControllerState = ref.watch(geolocControllerProvider);
 
     if (geolocControllerState.oldestGeolocModel != null) {
-      final DateTime startDate = DateTime(
-        geolocControllerState.oldestGeolocModel!.year.toInt(),
-        geolocControllerState.oldestGeolocModel!.month.toInt(),
-        geolocControllerState.oldestGeolocModel!.day.toInt(),
-      );
+      if (geolocControllerState.recentGeolocList.isNotEmpty) {
+        final DateTime startDate = DateTime(
+          geolocControllerState.oldestGeolocModel!.year.toInt(),
+          geolocControllerState.oldestGeolocModel!.month.toInt(),
+          geolocControllerState.oldestGeolocModel!.day.toInt(),
+        );
 
-      final DateTime endDate = DateTime(
-        geolocControllerState.recentGeolocList[0].year.toInt(),
-        geolocControllerState.recentGeolocList[0].month.toInt(),
-        geolocControllerState.recentGeolocList[0].day.toInt(),
-      );
+        final DateTime endDate = DateTime(
+          geolocControllerState.recentGeolocList[0].year.toInt(),
+          geolocControllerState.recentGeolocList[0].month.toInt(),
+          geolocControllerState.recentGeolocList[0].day.toInt(),
+        );
 
-      final List<DateTime> dateList = generateDateList(startDate, endDate);
+        final List<DateTime> dateList = generateDateList(startDate, endDate);
 
-      final List<String> yearmonth = <String>[];
-      for (final DateTime date in dateList) {
-        if (!yearmonth.contains(date.yyyymm)) {
-          list.add(Text(date.yyyymm));
+        final List<String> yearmonth = <String>[];
+        for (final DateTime date in dateList) {
+          if (!yearmonth.contains(date.yyyymm)) {
+            list.add(Container(
+              padding: const EdgeInsets.symmetric(vertical: 3),
+              decoration: BoxDecoration(
+                border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
+              ),
+              child: Row(
+                children: <Widget>[
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.pop(context);
+
+                      Navigator.pushReplacement(
+                        context,
+                        // ignore: inference_failure_on_instance_creation, always_specify_types
+                        MaterialPageRoute(builder: (BuildContext context) => HomeScreen(baseYm: date.yyyymm)),
+                      );
+                    },
+                    child: CircleAvatar(
+                      radius: 15,
+                      backgroundColor: Colors.white.withOpacity(0.3),
+                      child: const Text('', style: TextStyle(fontSize: 12)),
+                    ),
+                  ),
+                  const SizedBox(width: 20),
+                  Text(date.yyyymm),
+                ],
+              ),
+            ));
+          }
+
+          yearmonth.add(date.yyyymm);
         }
-
-        yearmonth.add(date.yyyymm);
       }
     }
 
