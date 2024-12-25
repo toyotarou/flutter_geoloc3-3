@@ -18,6 +18,8 @@ class GeolocControllerState with _$GeolocControllerState {
     @Default(<GeolocModel>[]) List<GeolocModel> geolocList,
     @Default(<String, List<GeolocModel>>{}) Map<String, List<GeolocModel>> geolocMap,
     GeolocModel? oldestGeolocModel,
+    @Default(<GeolocModel>[]) List<GeolocModel> recentGeolocList,
+    @Default(<String, List<GeolocModel>>{}) Map<String, List<GeolocModel>> recentGeolocMap,
   }) = _GeolocControllerState;
 }
 
@@ -133,7 +135,7 @@ class GeolocController extends _$GeolocController {
         map['${val.year}-${val.month}-${val.day}']?.add(val);
       }
 
-      state = state.copyWith(geolocList: list, geolocMap: map);
+      state = state.copyWith(recentGeolocList: list, recentGeolocMap: map);
       // ignore: always_specify_types
     }).catchError((error, _) {
       utility.showError('予期せぬエラーが発生しました');

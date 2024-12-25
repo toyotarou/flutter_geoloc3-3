@@ -53,9 +53,9 @@ class _HistoryGeolocListAlertState extends ConsumerState<HistoryGeolocListAlert>
       );
 
       final DateTime endDate = DateTime(
-        geolocControllerState.geolocList[0].year.toInt(),
-        geolocControllerState.geolocList[0].month.toInt(),
-        geolocControllerState.geolocList[0].day.toInt(),
+        geolocControllerState.recentGeolocList[0].year.toInt(),
+        geolocControllerState.recentGeolocList[0].month.toInt(),
+        geolocControllerState.recentGeolocList[0].day.toInt(),
       );
 
       final List<DateTime> dateList = generateDateList(startDate, endDate);

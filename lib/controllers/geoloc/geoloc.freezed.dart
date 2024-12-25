@@ -20,6 +20,9 @@ mixin _$GeolocControllerState {
   Map<String, List<GeolocModel>> get geolocMap =>
       throw _privateConstructorUsedError;
   GeolocModel? get oldestGeolocModel => throw _privateConstructorUsedError;
+  List<GeolocModel> get recentGeolocList => throw _privateConstructorUsedError;
+  Map<String, List<GeolocModel>> get recentGeolocMap =>
+      throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $GeolocControllerStateCopyWith<GeolocControllerState> get copyWith =>
@@ -35,7 +38,9 @@ abstract class $GeolocControllerStateCopyWith<$Res> {
   $Res call(
       {List<GeolocModel> geolocList,
       Map<String, List<GeolocModel>> geolocMap,
-      GeolocModel? oldestGeolocModel});
+      GeolocModel? oldestGeolocModel,
+      List<GeolocModel> recentGeolocList,
+      Map<String, List<GeolocModel>> recentGeolocMap});
 }
 
 /// @nodoc
@@ -55,6 +60,8 @@ class _$GeolocControllerStateCopyWithImpl<$Res,
     Object? geolocList = null,
     Object? geolocMap = null,
     Object? oldestGeolocModel = freezed,
+    Object? recentGeolocList = null,
+    Object? recentGeolocMap = null,
   }) {
     return _then(_value.copyWith(
       geolocList: null == geolocList
@@ -69,6 +76,14 @@ class _$GeolocControllerStateCopyWithImpl<$Res,
           ? _value.oldestGeolocModel
           : oldestGeolocModel // ignore: cast_nullable_to_non_nullable
               as GeolocModel?,
+      recentGeolocList: null == recentGeolocList
+          ? _value.recentGeolocList
+          : recentGeolocList // ignore: cast_nullable_to_non_nullable
+              as List<GeolocModel>,
+      recentGeolocMap: null == recentGeolocMap
+          ? _value.recentGeolocMap
+          : recentGeolocMap // ignore: cast_nullable_to_non_nullable
+              as Map<String, List<GeolocModel>>,
     ) as $Val);
   }
 }
@@ -85,7 +100,9 @@ abstract class _$$GeolocControllerStateImplCopyWith<$Res>
   $Res call(
       {List<GeolocModel> geolocList,
       Map<String, List<GeolocModel>> geolocMap,
-      GeolocModel? oldestGeolocModel});
+      GeolocModel? oldestGeolocModel,
+      List<GeolocModel> recentGeolocList,
+      Map<String, List<GeolocModel>> recentGeolocMap});
 }
 
 /// @nodoc
@@ -103,6 +120,8 @@ class __$$GeolocControllerStateImplCopyWithImpl<$Res>
     Object? geolocList = null,
     Object? geolocMap = null,
     Object? oldestGeolocModel = freezed,
+    Object? recentGeolocList = null,
+    Object? recentGeolocMap = null,
   }) {
     return _then(_$GeolocControllerStateImpl(
       geolocList: null == geolocList
@@ -117,6 +136,14 @@ class __$$GeolocControllerStateImplCopyWithImpl<$Res>
           ? _value.oldestGeolocModel
           : oldestGeolocModel // ignore: cast_nullable_to_non_nullable
               as GeolocModel?,
+      recentGeolocList: null == recentGeolocList
+          ? _value._recentGeolocList
+          : recentGeolocList // ignore: cast_nullable_to_non_nullable
+              as List<GeolocModel>,
+      recentGeolocMap: null == recentGeolocMap
+          ? _value._recentGeolocMap
+          : recentGeolocMap // ignore: cast_nullable_to_non_nullable
+              as Map<String, List<GeolocModel>>,
     ));
   }
 }
@@ -128,9 +155,14 @@ class _$GeolocControllerStateImpl implements _GeolocControllerState {
       {final List<GeolocModel> geolocList = const <GeolocModel>[],
       final Map<String, List<GeolocModel>> geolocMap =
           const <String, List<GeolocModel>>{},
-      this.oldestGeolocModel})
+      this.oldestGeolocModel,
+      final List<GeolocModel> recentGeolocList = const <GeolocModel>[],
+      final Map<String, List<GeolocModel>> recentGeolocMap =
+          const <String, List<GeolocModel>>{}})
       : _geolocList = geolocList,
-        _geolocMap = geolocMap;
+        _geolocMap = geolocMap,
+        _recentGeolocList = recentGeolocList,
+        _recentGeolocMap = recentGeolocMap;
 
   final List<GeolocModel> _geolocList;
   @override
@@ -152,10 +184,28 @@ class _$GeolocControllerStateImpl implements _GeolocControllerState {
 
   @override
   final GeolocModel? oldestGeolocModel;
+  final List<GeolocModel> _recentGeolocList;
+  @override
+  @JsonKey()
+  List<GeolocModel> get recentGeolocList {
+    if (_recentGeolocList is EqualUnmodifiableListView)
+      return _recentGeolocList;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_recentGeolocList);
+  }
+
+  final Map<String, List<GeolocModel>> _recentGeolocMap;
+  @override
+  @JsonKey()
+  Map<String, List<GeolocModel>> get recentGeolocMap {
+    if (_recentGeolocMap is EqualUnmodifiableMapView) return _recentGeolocMap;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_recentGeolocMap);
+  }
 
   @override
   String toString() {
-    return 'GeolocControllerState(geolocList: $geolocList, geolocMap: $geolocMap, oldestGeolocModel: $oldestGeolocModel)';
+    return 'GeolocControllerState(geolocList: $geolocList, geolocMap: $geolocMap, oldestGeolocModel: $oldestGeolocModel, recentGeolocList: $recentGeolocList, recentGeolocMap: $recentGeolocMap)';
   }
 
   @override
@@ -168,7 +218,11 @@ class _$GeolocControllerStateImpl implements _GeolocControllerState {
             const DeepCollectionEquality()
                 .equals(other._geolocMap, _geolocMap) &&
             (identical(other.oldestGeolocModel, oldestGeolocModel) ||
-                other.oldestGeolocModel == oldestGeolocModel));
+                other.oldestGeolocModel == oldestGeolocModel) &&
+            const DeepCollectionEquality()
+                .equals(other._recentGeolocList, _recentGeolocList) &&
+            const DeepCollectionEquality()
+                .equals(other._recentGeolocMap, _recentGeolocMap));
   }
 
   @override
@@ -176,7 +230,9 @@ class _$GeolocControllerStateImpl implements _GeolocControllerState {
       runtimeType,
       const DeepCollectionEquality().hash(_geolocList),
       const DeepCollectionEquality().hash(_geolocMap),
-      oldestGeolocModel);
+      oldestGeolocModel,
+      const DeepCollectionEquality().hash(_recentGeolocList),
+      const DeepCollectionEquality().hash(_recentGeolocMap));
 
   @JsonKey(ignore: true)
   @override
@@ -188,9 +244,12 @@ class _$GeolocControllerStateImpl implements _GeolocControllerState {
 
 abstract class _GeolocControllerState implements GeolocControllerState {
   const factory _GeolocControllerState(
-      {final List<GeolocModel> geolocList,
-      final Map<String, List<GeolocModel>> geolocMap,
-      final GeolocModel? oldestGeolocModel}) = _$GeolocControllerStateImpl;
+          {final List<GeolocModel> geolocList,
+          final Map<String, List<GeolocModel>> geolocMap,
+          final GeolocModel? oldestGeolocModel,
+          final List<GeolocModel> recentGeolocList,
+          final Map<String, List<GeolocModel>> recentGeolocMap}) =
+      _$GeolocControllerStateImpl;
 
   @override
   List<GeolocModel> get geolocList;
@@ -198,6 +257,10 @@ abstract class _GeolocControllerState implements GeolocControllerState {
   Map<String, List<GeolocModel>> get geolocMap;
   @override
   GeolocModel? get oldestGeolocModel;
+  @override
+  List<GeolocModel> get recentGeolocList;
+  @override
+  Map<String, List<GeolocModel>> get recentGeolocMap;
   @override
   @JsonKey(ignore: true)
   _$$GeolocControllerStateImplCopyWith<_$GeolocControllerStateImpl>

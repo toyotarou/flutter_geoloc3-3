@@ -6,7 +6,7 @@ part of 'geoloc.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$geolocControllerHash() => r'f5dd27edbc85284cc6660d9770b126a85a476397';
+String _$geolocControllerHash() => r'309adf8e159cbe521a86efe9e4e31acfb346568a';
 
 /// See also [GeolocController].
 @ProviderFor(GeolocController)
