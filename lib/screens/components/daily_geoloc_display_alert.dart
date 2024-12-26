@@ -65,11 +65,6 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
                         bool errFlg = false;
                         String contentStr = '';
 
-                        if (geolocMap[widget.date.yyyymmdd] == null) {
-                          errFlg = true;
-                          contentStr = 'isarデータがありません。';
-                        }
-
                         if (widget.geolocStateList.isEmpty) {
                           errFlg = true;
                           contentStr = 'mysqlデータがありません。';
@@ -94,12 +89,8 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
                       child: Column(
                         children: <Widget>[
                           const Text('delete'),
-                          Icon(
-                            Icons.delete,
-                            color: (geolocMap[widget.date.yyyymmdd] == null || widget.geolocStateList.isEmpty)
-                                ? Colors.grey
-                                : Colors.lightBlueAccent,
-                          ),
+                          Icon(Icons.delete,
+                              color: (widget.geolocStateList.isEmpty) ? Colors.grey : Colors.lightBlueAccent),
                           const Text('isar'),
                         ],
                       ),
