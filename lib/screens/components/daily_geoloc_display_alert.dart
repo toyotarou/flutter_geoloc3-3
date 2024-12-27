@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../collections/geoloc.dart';
 import '../../extensions/extensions.dart';
 import '../../models/geoloc_model.dart';
+import '../../models/walk_record_model.dart';
 import '../../ripository/geolocs_repository.dart';
 import '../../utilities/utilities.dart';
 import '../parts/error_dialog.dart';
@@ -10,10 +11,12 @@ import '../parts/geoloc_dialog.dart';
 import 'pickup_geoloc_display_alert.dart';
 
 class DailyGeolocDisplayAlert extends StatefulWidget {
-  const DailyGeolocDisplayAlert({super.key, required this.date, required this.geolocStateList});
+  const DailyGeolocDisplayAlert(
+      {super.key, required this.date, required this.geolocStateList, required this.walkRecord});
 
   final DateTime date;
   final List<GeolocModel> geolocStateList;
+  final WalkRecordModel walkRecord;
 
   @override
   State<DailyGeolocDisplayAlert> createState() => _DailyGeolocDisplayAlertState();
@@ -101,7 +104,11 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
                         GeolocDialog(
                           // ignore: use_build_context_synchronously
                           context: context,
-                          widget: PickupGeolocDisplayAlert(date: widget.date, pickupGeolocList: pickupGeolocList),
+                          widget: PickupGeolocDisplayAlert(
+                            date: widget.date,
+                            pickupGeolocList: pickupGeolocList,
+                            walkRecord: widget.walkRecord,
+                          ),
                         );
                       },
                       child: const Column(children: <Widget>[Text('select'), Icon(Icons.list), Text('list')]),

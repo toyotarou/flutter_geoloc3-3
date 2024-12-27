@@ -6,16 +6,19 @@ import '../../controllers/app_params/app_params_notifier.dart';
 import '../../controllers/geoloc/geoloc.dart';
 import '../../extensions/extensions.dart';
 import '../../models/geoloc_model.dart';
+import '../../models/walk_record_model.dart';
 import '../../utilities/utilities.dart';
 import '../home_screen.dart';
 import '../parts/geoloc_dialog.dart';
 import 'geoloc_map_alert.dart';
 
 class PickupGeolocDisplayAlert extends ConsumerStatefulWidget {
-  const PickupGeolocDisplayAlert({super.key, required this.pickupGeolocList, required this.date});
+  const PickupGeolocDisplayAlert(
+      {super.key, required this.pickupGeolocList, required this.date, required this.walkRecord});
 
   final DateTime date;
   final List<Geoloc> pickupGeolocList;
+  final WalkRecordModel walkRecord;
 
   @override
   ConsumerState<PickupGeolocDisplayAlert> createState() => _PickupGeolocDisplayAlertState();
@@ -64,7 +67,12 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
 
                           GeolocDialog(
                             context: context,
-                            widget: GeolocMapAlert(geolocStateList: list, displayTempMap: true, displayMonthMap: false),
+                            widget: GeolocMapAlert(
+                              geolocStateList: list,
+                              displayTempMap: true,
+                              displayMonthMap: false,
+                              walkRecord: widget.walkRecord,
+                            ),
                           );
                         },
                         child: const Column(

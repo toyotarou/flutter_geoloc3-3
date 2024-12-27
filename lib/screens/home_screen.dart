@@ -14,8 +14,10 @@ import '../controllers/calendars/calendars_response_state.dart';
 import '../controllers/geoloc/geoloc.dart';
 import '../controllers/holidays/holidays_notifier.dart';
 import '../controllers/holidays/holidays_response_state.dart';
+import '../controllers/walk_record/walk_record.dart';
 import '../extensions/extensions.dart';
 import '../models/geoloc_model.dart';
+import '../models/walk_record_model.dart';
 import '../ripository/geolocs_repository.dart';
 import '../ripository/isar_repository.dart';
 import '../utilities/utilities.dart';
@@ -161,6 +163,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     ref
         .read(geolocControllerProvider.notifier)
         .getYearMonthGeoloc(yearmonth: (widget.baseYm != null) ? widget.baseYm! : DateTime.now().yyyymm);
+
+    ref
+        .read(walkRecordControllerProvider.notifier)
+        .getYearWalkRecord(yearmonth: (widget.baseYm != null) ? widget.baseYm! : DateTime.now().yyyymm);
   }
 
   ///
@@ -273,7 +279,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
                   GeolocDialog(
                     context: context,
-                    widget: GeolocMapAlert(geolocStateList: list, displayMonthMap: true),
+                    widget: GeolocMapAlert(
+                      geolocStateList: list,
+                      displayMonthMap: true,
+                      walkRecord: WalkRecordModel(
+                        id: 0,
+                        year: '',
+                        month: '',
+                        day: '',
+                        step: 0,
+                        distance: 0,
+                      ),
+                    ),
                   );
                 },
                 child: const Text('month')),
@@ -434,6 +451,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final Map<String, List<GeolocModel>> geolocStateMap =
         ref.watch(geolocControllerProvider.select((GeolocControllerState value) => value.geolocMap));
 
+    final Map<String, WalkRecordModel> walkRecordMap =
+        ref.watch(walkRecordControllerProvider.select((WalkRecordControllerState value) => value.walkRecordMap));
+
     for (int i = week * 7; i < ((week + 1) * 7); i++) {
       final String generateYmd = (_calendarDays[i] == '')
           ? ''
@@ -470,7 +490,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     children: <Widget>[
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[Text(_calendarDays[i].padLeft(2, '0')), Container()],
+                        children: <Widget>[
+                          Text(_calendarDays[i].padLeft(2, '0')),
+                          Icon(
+                            Icons.directions_walk,
+                            size: 12,
+                            color: (walkRecordMap[generateYmd] != null)
+                                ? Colors.yellowAccent.withOpacity(0.4)
+                                : Colors.grey.withOpacity(0.4),
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 5),
                       ConstrainedBox(
@@ -495,6 +524,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                               widget: DailyGeolocDisplayAlert(
                                                 date: DateTime.parse('$generateYmd 00:00:00'),
                                                 geolocStateList: geolocStateMap[generateYmd] ?? <GeolocModel>[],
+                                                walkRecord: walkRecordMap[generateYmd] ??
+                                                    WalkRecordModel(
+                                                      id: 0,
+                                                      year: '',
+                                                      month: '',
+                                                      day: '',
+                                                      step: 0,
+                                                      distance: 0,
+                                                    ),
                                               ),
                                             );
                                           },
@@ -523,6 +561,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                               widget: GeolocMapAlert(
                                                 geolocStateList: geolocStateMap[generateYmd] ?? <GeolocModel>[],
                                                 displayMonthMap: false,
+                                                walkRecord: walkRecordMap[generateYmd] ??
+                                                    WalkRecordModel(
+                                                      id: 0,
+                                                      year: '',
+                                                      month: '',
+                                                      day: '',
+                                                      step: 0,
+                                                      distance: 0,
+                                                    ),
                                               ),
                                             );
                                           },
