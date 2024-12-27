@@ -273,17 +273,19 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
               },
               icon: const Icon(Icons.stacked_line_chart),
             ),
-            const SizedBox(width: 20),
-            DefaultTextStyle(
-              style: const TextStyle(fontSize: 12),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: <Widget>[
-                  Text('${widget.walkRecord.step.toString().toCurrency()} step.'),
-                  Text('${widget.walkRecord.distance.toString().toCurrency()} m.'),
-                ],
+            if (widget.walkRecord.step != 0 && widget.walkRecord.distance != 0) ...<Widget>[
+              const SizedBox(width: 20),
+              DefaultTextStyle(
+                style: const TextStyle(fontSize: 12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: <Widget>[
+                    Text('${widget.walkRecord.step.toString().toCurrency()} step.'),
+                    Text('${widget.walkRecord.distance.toString().toCurrency()} m.'),
+                  ],
+                ),
               ),
-            ),
+            ],
           ],
         ),
         Column(
