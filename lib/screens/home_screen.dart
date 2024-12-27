@@ -203,21 +203,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  GestureDetector(
-                    onTap: () => _goPrevMonth(),
-                    child: Icon(Icons.arrow_back_ios, color: Colors.white.withOpacity(0.8), size: 14),
-                  ),
-                  GestureDetector(
-                    onTap: () => Navigator.pushReplacement(
-                      context,
-                      // ignore: inference_failure_on_instance_creation, always_specify_types
-                      MaterialPageRoute(builder: (BuildContext context) => HomeScreen(baseYm: DateTime.now().yyyymm)),
-                    ),
-                    child: Icon(Icons.square_outlined, color: Colors.white.withOpacity(0.8), size: 14),
-                  ),
-                  GestureDetector(
-                    onTap: () => (DateTime.now().yyyymm == calendarState.baseYearMonth) ? null : _goNextMonth(),
-                    child: Icon(Icons.arrow_forward_ios,
+                  IconButton(
+                      onPressed: () => _goPrevMonth(),
+                      icon: Icon(Icons.arrow_back_ios, color: Colors.white.withOpacity(0.8), size: 14)),
+                  IconButton(
+                    onPressed: () => (DateTime.now().yyyymm == calendarState.baseYearMonth) ? null : _goNextMonth(),
+                    icon: Icon(Icons.arrow_forward_ios,
                         size: 14,
                         color: (DateTime.now().yyyymm == calendarState.baseYearMonth)
                             ? Colors.grey.withOpacity(0.6)
@@ -228,56 +219,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             ),
           ],
         ),
-        actions: <Widget>[
-          IconButton(
-            onPressed: () => GeolocDialog(context: context, widget: const HistoryGeolocListAlert()),
-            icon: const Icon(Icons.list),
-          ),
-          IconButton(
-            onPressed: () {
-              Navigator.pushReplacement(
-                context,
-                // ignore: inference_failure_on_instance_creation, always_specify_types
-                MaterialPageRoute(
-                  builder: (BuildContext context) =>
-                      HomeScreen(baseYm: (widget.baseYm != null) ? widget.baseYm : DateTime.now().yyyymm),
-                ),
-              );
-            },
-            icon: const Icon(Icons.refresh, color: Colors.yellowAccent),
-          ),
-          IconButton(
-            onPressed: () async {
-              final bool isRunning = await BackgroundTask.instance.isRunning;
-
-              if (context.mounted) {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text('isRunning: $isRunning'),
-                    action: SnackBarAction(
-                      label: 'close',
-                      onPressed: () => ScaffoldMessenger.of(context).clearSnackBars(),
-                    ),
-                  ),
-                );
-              }
-            },
-            icon: const Icon(Icons.signal_wifi_statusbar_4_bar),
-          ),
-          IconButton(
-            onPressed: () async {
-              final PermissionStatus status = await Permission.location.request();
-              final PermissionStatus statusAlways = await Permission.locationAlways.request();
-
-              if (status.isGranted && statusAlways.isGranted) {
-                await BackgroundTask.instance.start(isEnabledEvenIfKilled: isEnabledEvenIfKilled);
-                setState(() => bgText = 'start');
-              }
-            },
-            icon: const Icon(Icons.play_arrow),
-          ),
-        ],
       ),
+      endDrawer: _dispDrawer(),
       body: Stack(
         fit: StackFit.expand,
         children: <Widget>[
@@ -340,6 +283,107 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     );
   }
 
+  ///
+  Widget _dispDrawer() {
+    return Drawer(
+      backgroundColor: Colors.blueGrey.withOpacity(0.2),
+      child: SingleChildScrollView(
+        child: Container(
+          padding: const EdgeInsets.only(left: 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              const SizedBox(height: 60),
+              GestureDetector(
+                onTap: () async {
+                  final PermissionStatus status = await Permission.location.request();
+                  final PermissionStatus statusAlways = await Permission.locationAlways.request();
+
+                  if (status.isGranted && statusAlways.isGranted) {
+                    await BackgroundTask.instance.start(isEnabledEvenIfKilled: isEnabledEvenIfKilled);
+                    setState(() => bgText = 'start');
+                  }
+                },
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 3),
+                  margin: const EdgeInsets.all(5),
+                  child: const Text('Start'),
+                ),
+              ),
+              GestureDetector(
+                onTap: () async {
+                  final bool isRunning = await BackgroundTask.instance.isRunning;
+
+                  if (context.mounted) {
+                    // ignore: use_build_context_synchronously
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text('isRunning: $isRunning'),
+                        action: SnackBarAction(
+                          label: 'close',
+                          onPressed: () => ScaffoldMessenger.of(context).clearSnackBars(),
+                        ),
+                      ),
+                    );
+                  }
+                },
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 3),
+                  margin: const EdgeInsets.all(5),
+                  child: const Text('Status'),
+                ),
+              ),
+              Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
+              GestureDetector(
+                onTap: () => Navigator.pushReplacement(
+                  context,
+                  // ignore: inference_failure_on_instance_creation, always_specify_types
+                  MaterialPageRoute(
+                    builder: (BuildContext context) =>
+                        HomeScreen(baseYm: (widget.baseYm != null) ? widget.baseYm : DateTime.now().yyyymm),
+                  ),
+                ),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 3),
+                  margin: const EdgeInsets.all(5),
+                  child: const Text('Reload'),
+                ),
+              ),
+              GestureDetector(
+                onTap: () {
+                  Navigator.pushReplacement(
+                    context,
+                    // ignore: inference_failure_on_instance_creation, always_specify_types
+                    MaterialPageRoute(builder: (BuildContext context) => HomeScreen(baseYm: DateTime.now().yyyymm)),
+                  );
+                },
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 3),
+                  margin: const EdgeInsets.all(5),
+                  child: const Text('Today'),
+                ),
+              ),
+              GestureDetector(
+                onTap: () => GeolocDialog(context: context, widget: const HistoryGeolocListAlert()),
+                child: Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 3),
+                  margin: const EdgeInsets.all(5),
+                  child: const Text('History'),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  ///
   Widget _getCalendar() {
     final HolidaysResponseState holidayState = ref.watch(holidayProvider);
 
