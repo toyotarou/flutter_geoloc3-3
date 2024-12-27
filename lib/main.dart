@@ -43,7 +43,7 @@ class MyApp extends StatelessWidget {
         fontFamily: 'KiwiMaru',
       ),
       themeMode: ThemeMode.dark,
-      title: 'invest note',
+      title: 'geoloc note',
       debugShowCheckedModeBanner: false,
       home: GestureDetector(onTap: () => primaryFocus?.unfocus(), child: HomeScreen()),
     );
