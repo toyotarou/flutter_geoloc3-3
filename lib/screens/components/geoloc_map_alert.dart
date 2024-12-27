@@ -263,13 +263,28 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: <Widget>[
-        IconButton(
-          onPressed: () {
-            setState(() => polylineGeolocList = (!isMarkerHide) ? widget.geolocStateList : <GeolocModel>[]);
+        Row(
+          children: <Widget>[
+            IconButton(
+              onPressed: () {
+                setState(() => polylineGeolocList = (!isMarkerHide) ? widget.geolocStateList : <GeolocModel>[]);
 
-            ref.read(appParamProvider.notifier).setIsMarkerHide(flag: !isMarkerHide);
-          },
-          icon: const Icon(Icons.stacked_line_chart),
+                ref.read(appParamProvider.notifier).setIsMarkerHide(flag: !isMarkerHide);
+              },
+              icon: const Icon(Icons.stacked_line_chart),
+            ),
+            const SizedBox(width: 20),
+            DefaultTextStyle(
+              style: const TextStyle(fontSize: 12),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: <Widget>[
+                  Text('${widget.walkRecord.step.toString().toCurrency()} step.'),
+                  Text('${widget.walkRecord.distance.toString().toCurrency()} m.'),
+                ],
+              ),
+            ),
+          ],
         ),
         Column(
           children: <Widget>[
