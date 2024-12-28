@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:background_task/background_task.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -14,9 +15,11 @@ import '../controllers/calendars/calendars_response_state.dart';
 import '../controllers/geoloc/geoloc.dart';
 import '../controllers/holidays/holidays_notifier.dart';
 import '../controllers/holidays/holidays_response_state.dart';
+import '../controllers/temple/temple.dart';
 import '../controllers/walk_record/walk_record.dart';
 import '../extensions/extensions.dart';
 import '../models/geoloc_model.dart';
+import '../models/temple_latlng_model.dart';
 import '../models/walk_record_model.dart';
 import '../ripository/geolocs_repository.dart';
 import '../ripository/isar_repository.dart';
@@ -167,6 +170,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     ref
         .read(walkRecordControllerProvider.notifier)
         .getYearWalkRecord(yearmonth: (widget.baseYm != null) ? widget.baseYm! : DateTime.now().yyyymm);
+
+    ref.read(templeControllerProvider.notifier).getAllTempleModel();
   }
 
   ///
@@ -402,6 +407,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   ///
   Widget _getCalendar() {
+    final Map<String, List<GeolocModel>> geolocStateMap =
+        ref.watch(geolocControllerProvider.select((GeolocControllerState value) => value.geolocMap));
+
+    final Map<String, WalkRecordModel> walkRecordMap =
+        ref.watch(walkRecordControllerProvider.select((WalkRecordControllerState value) => value.walkRecordMap));
+
+    final Map<String, List<TempleInfoModel>> templeInfoMap =
+        ref.watch(templeControllerProvider.select((TempleControllerState value) => value.templeInfoMap));
+
     final HolidaysResponseState holidayState = ref.watch(holidayProvider);
 
     if (holidayState.holidayMap.value != null) {
@@ -437,7 +451,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     final List<Widget> list = <Widget>[];
     for (int i = 0; i < weekNum; i++) {
-      list.add(_getCalendarRow(week: i));
+      list.add(_getCalendarRow(
+          week: i, geolocStateMap: geolocStateMap, walkRecordMap: walkRecordMap, templeInfoMap: templeInfoMap));
     }
 
     return SingleChildScrollView(
@@ -445,14 +460,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   }
 
   ///
-  Widget _getCalendarRow({required int week}) {
+  Widget _getCalendarRow(
+      {required int week,
+      required Map<String, List<GeolocModel>> geolocStateMap,
+      required Map<String, WalkRecordModel> walkRecordMap,
+      required Map<String, List<TempleInfoModel>> templeInfoMap}) {
     final List<Widget> list = <Widget>[];
-
-    final Map<String, List<GeolocModel>> geolocStateMap =
-        ref.watch(geolocControllerProvider.select((GeolocControllerState value) => value.geolocMap));
-
-    final Map<String, WalkRecordModel> walkRecordMap =
-        ref.watch(walkRecordControllerProvider.select((WalkRecordControllerState value) => value.walkRecordMap));
 
     for (int i = week * 7; i < ((week + 1) * 7); i++) {
       final String generateYmd = (_calendarDays[i] == '')
@@ -465,128 +478,144 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
       list.add(
         Expanded(
-          child: Container(
-            margin: const EdgeInsets.all(1),
-            padding: const EdgeInsets.all(2),
-            decoration: BoxDecoration(
-              border: Border.all(
-                color: (_calendarDays[i] == '')
-                    ? Colors.transparent
-                    : (generateYmd == DateTime.now().yyyymmdd)
-                        ? Colors.orangeAccent.withOpacity(0.4)
-                        : Colors.white.withOpacity(0.1),
-                width: 3,
-              ),
-              color: (_calendarDays[i] == '')
-                  ? Colors.transparent
-                  : (DateTime.parse('$generateYmd 00:00:00').isAfter(DateTime.now()))
-                      ? Colors.white.withOpacity(0.1)
-                      : utility.getYoubiColor(date: generateYmd, youbiStr: youbiStr, holidayMap: _holidayMap),
-            ),
-            child: (_calendarDays[i] == '')
-                ? const Text('')
-                : Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          child: Stack(
+            children: <Widget>[
+              if (templeInfoMap[generateYmd] != null) ...<Widget>[
+                Positioned(
+                  bottom: 10,
+                  right: 10,
+                  child: Icon(FontAwesomeIcons.toriiGate, size: 15, color: Colors.white.withOpacity(0.5)),
+                ),
+              ],
+              Container(
+                margin: const EdgeInsets.all(1),
+                padding: const EdgeInsets.all(2),
+                decoration: BoxDecoration(
+                  border: Border.all(
+                    color: (_calendarDays[i] == '')
+                        ? Colors.transparent
+                        : (generateYmd == DateTime.now().yyyymmdd)
+                            ? Colors.orangeAccent.withOpacity(0.4)
+                            : Colors.white.withOpacity(0.1),
+                    width: 3,
+                  ),
+                  color: (_calendarDays[i] == '')
+                      ? Colors.transparent
+                      : (DateTime.parse('$generateYmd 00:00:00').isAfter(DateTime.now()))
+                          ? Colors.white.withOpacity(0.1)
+                          : utility.getYoubiColor(date: generateYmd, youbiStr: youbiStr, holidayMap: _holidayMap),
+                ),
+                child: (_calendarDays[i] == '')
+                    ? const Text('')
+                    : Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Text(_calendarDays[i].padLeft(2, '0')),
-                          Icon(
-                            Icons.directions_walk,
-                            size: 12,
-                            color: (walkRecordMap[generateYmd] != null)
-                                ? Colors.yellowAccent.withOpacity(0.4)
-                                : Colors.grey.withOpacity(0.4),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Text(_calendarDays[i].padLeft(2, '0')),
+                              Icon(
+                                Icons.directions_walk,
+                                size: 12,
+                                color: (walkRecordMap[generateYmd] != null)
+                                    ? Colors.yellowAccent.withOpacity(0.4)
+                                    : Colors.grey.withOpacity(0.4),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 5),
+                          ConstrainedBox(
+                            constraints: BoxConstraints(minHeight: context.screenSize.height / 9),
+                            child: (DateTime.parse('$generateYmd 00:00:00').isAfter(DateTime.now()))
+                                ? null
+                                : Column(
+                                    children: <Widget>[
+                                      /////
+
+                                      OutlinedButton(
+                                        style: OutlinedButton.styleFrom(
+                                          padding: EdgeInsets.zero,
+                                          backgroundColor: (geolocMap[generateYmd] == null)
+                                              ? null
+                                              : Colors.blueAccent.withOpacity(0.1),
+                                        ),
+                                        onPressed: (geolocMap[generateYmd] == null)
+                                            ? null
+                                            : () {
+                                                GeolocDialog(
+                                                  context: context,
+                                                  widget: DailyGeolocDisplayAlert(
+                                                    date: DateTime.parse('$generateYmd 00:00:00'),
+                                                    geolocStateList: geolocStateMap[generateYmd] ?? <GeolocModel>[],
+                                                    walkRecord: walkRecordMap[generateYmd] ??
+                                                        WalkRecordModel(
+                                                          id: 0,
+                                                          year: '',
+                                                          month: '',
+                                                          day: '',
+                                                          step: 0,
+                                                          distance: 0,
+                                                        ),
+                                                    templeInfoMap: templeInfoMap[generateYmd],
+                                                  ),
+                                                );
+                                              },
+                                        child: Text(
+                                          (geolocMap[generateYmd] != null)
+                                              ? geolocMap[generateYmd]!.length.toString()
+                                              : '',
+                                          style: const TextStyle(fontSize: 8, color: Colors.white),
+                                        ),
+                                      ),
+
+                                      /////
+
+                                      OutlinedButton(
+                                        style: OutlinedButton.styleFrom(
+                                          padding: EdgeInsets.zero,
+                                          backgroundColor: (geolocStateMap[generateYmd] == null)
+                                              ? null
+                                              : Colors.greenAccent.withOpacity(0.1),
+                                        ),
+                                        onPressed: (geolocStateMap[generateYmd] == null)
+                                            ? null
+                                            : () {
+                                                ref.read(appParamProvider.notifier).setIsMarkerHide(flag: false);
+
+                                                GeolocDialog(
+                                                  context: context,
+                                                  widget: GeolocMapAlert(
+                                                    geolocStateList: geolocStateMap[generateYmd] ?? <GeolocModel>[],
+                                                    displayMonthMap: false,
+                                                    walkRecord: walkRecordMap[generateYmd] ??
+                                                        WalkRecordModel(
+                                                          id: 0,
+                                                          year: '',
+                                                          month: '',
+                                                          day: '',
+                                                          step: 0,
+                                                          distance: 0,
+                                                        ),
+                                                    templeInfoMap: templeInfoMap[generateYmd],
+                                                  ),
+                                                );
+                                              },
+                                        child: Text(
+                                          (geolocStateMap[generateYmd] != null)
+                                              ? geolocStateMap[generateYmd]!.length.toString()
+                                              : '',
+                                          style: const TextStyle(fontSize: 8, color: Colors.white),
+                                        ),
+                                      ),
+
+                                      /////
+                                    ],
+                                  ),
                           ),
                         ],
                       ),
-                      const SizedBox(height: 5),
-                      ConstrainedBox(
-                        constraints: BoxConstraints(minHeight: context.screenSize.height / 9),
-                        child: (DateTime.parse('$generateYmd 00:00:00').isAfter(DateTime.now()))
-                            ? null
-                            : Column(
-                                children: <Widget>[
-                                  /////
-
-                                  OutlinedButton(
-                                    style: OutlinedButton.styleFrom(
-                                      padding: EdgeInsets.zero,
-                                      backgroundColor:
-                                          (geolocMap[generateYmd] == null) ? null : Colors.blueAccent.withOpacity(0.1),
-                                    ),
-                                    onPressed: (geolocMap[generateYmd] == null)
-                                        ? null
-                                        : () {
-                                            GeolocDialog(
-                                              context: context,
-                                              widget: DailyGeolocDisplayAlert(
-                                                date: DateTime.parse('$generateYmd 00:00:00'),
-                                                geolocStateList: geolocStateMap[generateYmd] ?? <GeolocModel>[],
-                                                walkRecord: walkRecordMap[generateYmd] ??
-                                                    WalkRecordModel(
-                                                      id: 0,
-                                                      year: '',
-                                                      month: '',
-                                                      day: '',
-                                                      step: 0,
-                                                      distance: 0,
-                                                    ),
-                                              ),
-                                            );
-                                          },
-                                    child: Text(
-                                      (geolocMap[generateYmd] != null) ? geolocMap[generateYmd]!.length.toString() : '',
-                                      style: const TextStyle(fontSize: 8, color: Colors.white),
-                                    ),
-                                  ),
-
-                                  /////
-
-                                  OutlinedButton(
-                                    style: OutlinedButton.styleFrom(
-                                      padding: EdgeInsets.zero,
-                                      backgroundColor: (geolocStateMap[generateYmd] == null)
-                                          ? null
-                                          : Colors.greenAccent.withOpacity(0.1),
-                                    ),
-                                    onPressed: (geolocStateMap[generateYmd] == null)
-                                        ? null
-                                        : () {
-                                            ref.read(appParamProvider.notifier).setIsMarkerHide(flag: false);
-
-                                            GeolocDialog(
-                                              context: context,
-                                              widget: GeolocMapAlert(
-                                                geolocStateList: geolocStateMap[generateYmd] ?? <GeolocModel>[],
-                                                displayMonthMap: false,
-                                                walkRecord: walkRecordMap[generateYmd] ??
-                                                    WalkRecordModel(
-                                                      id: 0,
-                                                      year: '',
-                                                      month: '',
-                                                      day: '',
-                                                      step: 0,
-                                                      distance: 0,
-                                                    ),
-                                              ),
-                                            );
-                                          },
-                                    child: Text(
-                                      (geolocStateMap[generateYmd] != null)
-                                          ? geolocStateMap[generateYmd]!.length.toString()
-                                          : '',
-                                      style: const TextStyle(fontSize: 8, color: Colors.white),
-                                    ),
-                                  ),
-
-                                  /////
-                                ],
-                              ),
-                      ),
-                    ],
-                  ),
+              ),
+            ],
           ),
         ),
       );

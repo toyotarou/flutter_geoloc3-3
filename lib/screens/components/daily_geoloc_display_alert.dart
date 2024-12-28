@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../collections/geoloc.dart';
 import '../../extensions/extensions.dart';
 import '../../models/geoloc_model.dart';
+import '../../models/temple_latlng_model.dart';
 import '../../models/walk_record_model.dart';
 import '../../ripository/geolocs_repository.dart';
 import '../../utilities/utilities.dart';
@@ -12,11 +13,12 @@ import 'pickup_geoloc_display_alert.dart';
 
 class DailyGeolocDisplayAlert extends StatefulWidget {
   const DailyGeolocDisplayAlert(
-      {super.key, required this.date, required this.geolocStateList, required this.walkRecord});
+      {super.key, required this.date, required this.geolocStateList, required this.walkRecord, this.templeInfoMap});
 
   final DateTime date;
   final List<GeolocModel> geolocStateList;
   final WalkRecordModel walkRecord;
+  final List<TempleInfoModel>? templeInfoMap;
 
   @override
   State<DailyGeolocDisplayAlert> createState() => _DailyGeolocDisplayAlertState();
@@ -108,6 +110,7 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
                             date: widget.date,
                             pickupGeolocList: pickupGeolocList,
                             walkRecord: widget.walkRecord,
+                            templeInfoMap: widget.templeInfoMap,
                           ),
                         );
                       },

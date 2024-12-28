@@ -10,25 +10,26 @@ import '../../controllers/app_params/app_params_notifier.dart';
 import '../../controllers/app_params/app_params_response_state.dart';
 import '../../extensions/extensions.dart';
 import '../../models/geoloc_model.dart';
+import '../../models/temple_latlng_model.dart';
 import '../../models/walk_record_model.dart';
 import '../../utilities/tile_provider.dart';
 
+// ignore: must_be_immutable
 class GeolocMapAlert extends ConsumerStatefulWidget {
-  const GeolocMapAlert({
+  GeolocMapAlert({
     super.key,
     required this.geolocStateList,
     this.displayTempMap,
     required this.displayMonthMap,
     required this.walkRecord,
+    this.templeInfoMap,
   });
 
   final List<GeolocModel> geolocStateList;
-
   final bool? displayTempMap;
-
   final bool displayMonthMap;
-
   final WalkRecordModel walkRecord;
+  List<TempleInfoModel>? templeInfoMap;
 
   @override
   ConsumerState<GeolocMapAlert> createState() => _GeolocMapAlertState();
