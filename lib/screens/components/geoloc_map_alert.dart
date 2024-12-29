@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
@@ -13,6 +14,8 @@ import '../../models/geoloc_model.dart';
 import '../../models/temple_latlng_model.dart';
 import '../../models/walk_record_model.dart';
 import '../../utilities/tile_provider.dart';
+import '../parts/geoloc_dialog.dart';
+import 'visited_temple_display_alert.dart';
 
 // ignore: must_be_immutable
 class GeolocMapAlert extends ConsumerStatefulWidget {
@@ -150,7 +153,36 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
           if (!widget.displayMonthMap) ...<Widget>[
             SizedBox(
               width: 60,
-              child: Column(children: <Widget>[const SizedBox(height: 10), Expanded(child: displayTimeCircleAvatar())]),
+              child: Column(
+                children: <Widget>[
+                  // if (widget.templeInfoMap != null) ...<Widget>[
+                  //   const SizedBox(height: 10),
+                  //   Container(
+                  //     height: 60,
+                  //     decoration: BoxDecoration(
+                  //         color: Colors.redAccent.withOpacity(0.3), borderRadius: BorderRadius.circular(10)),
+                  //     child: IconButton(
+                  //       onPressed: () {
+                  //         GeolocDialog(
+                  //           context: context,
+                  //           widget: VisitedTempleDisplayAlert(
+                  //             templeInfoMap: widget.templeInfoMap ?? <TempleInfoModel>[],
+                  //             mapController: mapController,
+                  //           ),
+                  //           paddingTop: context.screenSize.height * 0.1,
+                  //           paddingLeft: context.screenSize.width * 0.4,
+                  //           clearBarrierColor: true,
+                  //         );
+                  //       },
+                  //       icon: Icon(FontAwesomeIcons.toriiGate, color: Colors.white.withOpacity(0.8)),
+                  //     ),
+                  //   ),
+                  // ],
+
+                  const SizedBox(height: 10),
+                  Expanded(child: displayTimeCircleAvatar()),
+                ],
+              ),
             ),
           ],
         ],
