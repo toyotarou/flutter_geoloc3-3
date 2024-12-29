@@ -296,51 +296,41 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Container(),
-                Row(
-                  children: <Widget>[
-                    CircleAvatar(
-                      backgroundColor: Colors.redAccent.withOpacity(0.5),
-                      child: IconButton(
-                        onPressed: () {
-                          setState(() => currentZoom += 1);
+                if (selectedTimeGeoloc != null) ...<Widget>[
+                  Row(
+                    children: <Widget>[
+                      CircleAvatar(
+                        backgroundColor: Colors.redAccent.withOpacity(0.5),
+                        child: IconButton(
+                          onPressed: () {
+                            setState(() => currentZoom += 1);
 
-                          mapController.move(
-                            (selectedTimeGeoloc == null)
-                                ? LatLng(
-                                    widget.geolocStateList[0].latitude.toDouble(),
-                                    widget.geolocStateList[0].longitude.toDouble(),
-                                  )
-                                : LatLng(
-                                    selectedTimeGeoloc.latitude.toDouble(), selectedTimeGeoloc.longitude.toDouble()),
-                            currentZoom,
-                          );
-                        },
-                        icon: const Icon(Icons.plus_one, color: Colors.white),
+                            mapController.move(
+                              LatLng(selectedTimeGeoloc.latitude.toDouble(), selectedTimeGeoloc.longitude.toDouble()),
+                              currentZoom,
+                            );
+                          },
+                          icon: const Icon(Icons.add, color: Colors.white),
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 10),
-                    CircleAvatar(
-                      backgroundColor: Colors.redAccent.withOpacity(0.5),
-                      child: IconButton(
-                        onPressed: () {
-                          setState(() => currentZoom -= 1);
+                      const SizedBox(width: 10),
+                      CircleAvatar(
+                        backgroundColor: Colors.redAccent.withOpacity(0.5),
+                        child: IconButton(
+                          onPressed: () {
+                            setState(() => currentZoom -= 1);
 
-                          mapController.move(
-                            (selectedTimeGeoloc == null)
-                                ? LatLng(
-                                    widget.geolocStateList[0].latitude.toDouble(),
-                                    widget.geolocStateList[0].longitude.toDouble(),
-                                  )
-                                : LatLng(
-                                    selectedTimeGeoloc.latitude.toDouble(), selectedTimeGeoloc.longitude.toDouble()),
-                            currentZoom,
-                          );
-                        },
-                        icon: const Icon(Icons.exposure_minus_1, color: Colors.white),
+                            mapController.move(
+                              LatLng(selectedTimeGeoloc.latitude.toDouble(), selectedTimeGeoloc.longitude.toDouble()),
+                              currentZoom,
+                            );
+                          },
+                          icon: const Icon(Icons.remove, color: Colors.white),
+                        ),
                       ),
-                    ),
-                  ],
-                ),
+                    ],
+                  ),
+                ],
               ],
             ),
             const SizedBox(height: 10),
