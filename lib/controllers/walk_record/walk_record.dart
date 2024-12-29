@@ -44,7 +44,7 @@ class WalkRecordController extends _$WalkRecordController {
 
         list.add(val);
 
-        map['${val.year}-${val.month}-${val.day.padLeft(2, '0')}'] = val;
+        map['${val.year}-${val.month.padLeft(2, '0')}-${val.day.padLeft(2, '0')}'] = val;
       }
 
       state = state.copyWith(walkRecordList: list, walkRecordMap: map);
