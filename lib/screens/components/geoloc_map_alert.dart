@@ -69,6 +69,8 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
   double? calculatedZoom;
   LatLng? calculatedCenter;
 
+  double? fingerChangeZoom;
+
   ///
   @override
   void initState() {
@@ -114,8 +116,16 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
       body: Stack(
         children: <Widget>[
           FlutterMap(
-            options: const MapOptions(initialCenter: LatLng(35.0, 135.0), initialZoom: 5.0),
             mapController: mapController,
+            options: MapOptions(
+              initialCenter: const LatLng(35.0, 135.0),
+              initialZoom: 5.0,
+              onPositionChanged: (MapCamera position, bool isMoving) {
+                if (isMoving) {
+                  setState(() => fingerChangeZoom = position.zoom);
+                }
+              },
+            ),
             children: <Widget>[
               TileLayer(
                 urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -154,6 +164,10 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                     if (calculatedCenter != null) ...<Widget>[
                       Text('${calculatedCenter!.latitude}'),
                       Text('${calculatedCenter!.longitude}'),
+                    ],
+                    if (fingerChangeZoom != null) ...<Widget>[
+                      const Divider(),
+                      Text('$fingerChangeZoom'),
                     ],
                   ],
                 ),
