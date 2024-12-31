@@ -22,14 +22,14 @@ class GeolocMapAlert extends ConsumerStatefulWidget {
     this.displayTempMap,
     required this.displayMonthMap,
     required this.walkRecord,
-    this.templeInfoMap,
+    this.templeInfoList,
   });
 
   final List<GeolocModel> geolocStateList;
   final bool? displayTempMap;
   final bool displayMonthMap;
   final WalkRecordModel walkRecord;
-  List<TempleInfoModel>? templeInfoMap;
+  List<TempleInfoModel>? templeInfoList;
 
   @override
   ConsumerState<GeolocMapAlert> createState() => _GeolocMapAlertState();
@@ -298,6 +298,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                           makePolylineGeolocList(geoloc: widget.geolocStateList[index]);
                         },
                         child: CircleAvatar(
+                          // ignore: use_if_null_to_convert_nulls_to_bools
                           backgroundColor: (widget.displayTempMap == true)
                               ? Colors.orangeAccent.withOpacity(0.5)
                               : Colors.green[900]?.withOpacity(0.5),
@@ -311,6 +312,25 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                   },
                 ),
               ),
+
+              /////
+
+              if (widget.templeInfoList != null) ...<Widget>[
+                SingleChildScrollView(
+                  controller: _scrollController,
+                  scrollDirection: Axis.horizontal,
+                  child: Row(
+                    children: widget.templeInfoList!.map((TempleInfoModel element) {
+                      return Container(
+                        margin: const EdgeInsets.all(5),
+                        padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 15),
+                        decoration: BoxDecoration(color: Colors.redAccent.withOpacity(0.3)),
+                        child: Text(element.temple, style: const TextStyle(fontSize: 12)),
+                      );
+                    }).toList(),
+                  ),
+                ),
+              ],
 
               /////
             ],

@@ -596,7 +596,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                                           step: 0,
                                                           distance: 0,
                                                         ),
-                                                    templeInfoMap: templeInfoMap[generateYmd],
+                                                    templeInfoList: templeInfoMap[generateYmd],
                                                   ),
                                                 );
                                               },

@@ -74,7 +74,7 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
                               displayTempMap: true,
                               displayMonthMap: false,
                               walkRecord: widget.walkRecord,
-                              templeInfoMap: widget.templeInfoMap,
+                              templeInfoList: widget.templeInfoMap,
                             ),
                           );
                         },
