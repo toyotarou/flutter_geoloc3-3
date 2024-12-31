@@ -46,8 +46,6 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
 
   final MapController mapController = MapController();
 
-  double currentZoom = 18;
-
   bool isBottomSheetVisible = false;
 
   List<Marker> markerList = <Marker>[];
@@ -69,7 +67,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
   double? calculatedZoom;
   LatLng? calculatedCenter;
 
-  double? fingerChangeZoom;
+  double? currentZoom;
 
   ///
   @override
@@ -105,9 +103,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
 
     if (!getBoundsZoomValue) {
       WidgetsBinding.instance.addPostFrameCallback((_) async {
-        if (widget.geolocStateList.length > 1) {
-          getBoundsMapZoomValue();
-        }
+        getBoundsMapZoomValue();
       });
     }
 
@@ -118,11 +114,11 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
           FlutterMap(
             mapController: mapController,
             options: MapOptions(
-              initialCenter: const LatLng(35.0, 135.0),
+              initialCenter: const LatLng(35.718532, 139.586639),
               initialZoom: 5.0,
               onPositionChanged: (MapCamera position, bool isMoving) {
                 if (isMoving) {
-                  setState(() => fingerChangeZoom = position.zoom);
+                  setState(() => currentZoom = position.zoom);
                 }
               },
             ),
@@ -165,9 +161,9 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                       Text('${calculatedCenter!.latitude}'),
                       Text('${calculatedCenter!.longitude}'),
                     ],
-                    if (fingerChangeZoom != null) ...<Widget>[
+                    if (currentZoom != null) ...<Widget>[
                       const Divider(),
-                      Text('$fingerChangeZoom'),
+                      Text('$currentZoom'),
                     ],
                   ],
                 ),
@@ -201,21 +197,25 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
 
   ///
   void getBoundsMapZoomValue() {
-    final LatLngBounds bounds = LatLngBounds.fromPoints(<LatLng>[LatLng(minLat, maxLng), LatLng(maxLat, minLng)]);
+    if (widget.geolocStateList.length > 1) {
+      final LatLngBounds bounds = LatLngBounds.fromPoints(<LatLng>[LatLng(minLat, maxLng), LatLng(maxLat, minLng)]);
 
-    final CameraFit cameraFit = CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(50));
+      final CameraFit cameraFit = CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(50));
 
-    mapController.fitCamera(cameraFit);
+      mapController.fitCamera(cameraFit);
 
-    final LatLng newCenter = mapController.camera.center;
-    final double newZoom = mapController.camera.zoom;
+      final LatLng newCenter = mapController.camera.center;
+      final double newZoom = mapController.camera.zoom;
 
-    setState(() {
-      calculatedCenter = newCenter;
-      calculatedZoom = newZoom;
-    });
+      setState(() {
+        calculatedCenter = newCenter;
+        calculatedZoom = newZoom;
 
-    getBoundsZoomValue = true;
+        currentZoom = newZoom;
+      });
+
+      getBoundsZoomValue = true;
+    }
   }
 
   ///
@@ -344,7 +344,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                               widget.geolocStateList[index].latitude.toDouble(),
                               widget.geolocStateList[index].longitude.toDouble(),
                             ),
-                            currentZoom,
+                            currentZoom ?? 18,
                           );
 
                           makePolylineGeolocList(geoloc: widget.geolocStateList[index]);
