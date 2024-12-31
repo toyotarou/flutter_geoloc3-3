@@ -66,6 +66,9 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
 
   String selectedHour = '';
 
+  double? calculatedZoom;
+  LatLng? calculatedCenter;
+
   ///
   @override
   void initState() {
@@ -87,6 +90,8 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
   //   _scrollController.animateTo(0, duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
   // }
 
+  bool getBoundsZoomValue = false;
+
   ///
   @override
   Widget build(BuildContext context) {
@@ -96,25 +101,21 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
 
     makeMarker();
 
+    if (!getBoundsZoomValue) {
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        if (widget.geolocStateList.length > 1) {
+          getBoundsMapZoomValue();
+        }
+      });
+    }
+
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Stack(
         children: <Widget>[
           FlutterMap(
+            options: const MapOptions(initialCenter: LatLng(35.0, 135.0), initialZoom: 5.0),
             mapController: mapController,
-            options: (widget.geolocStateList.length == 1)
-                ? MapOptions(
-                    initialCenter: LatLng(
-                      widget.geolocStateList[0].latitude.toDouble(),
-                      widget.geolocStateList[0].longitude.toDouble(),
-                    ),
-                    initialZoom: currentZoom)
-                : MapOptions(
-                    initialCameraFit: CameraFit.bounds(
-                      bounds: LatLngBounds.fromPoints(<LatLng>[LatLng(minLat, maxLng), LatLng(maxLat, minLng)]),
-                      padding: const EdgeInsets.all(50),
-                    ),
-                  ),
             children: <Widget>[
               TileLayer(
                 urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -142,9 +143,26 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
           Positioned(
             top: 5,
             right: 5,
-            child: Container(
-              decoration: BoxDecoration(color: Colors.black.withOpacity(0.3), borderRadius: BorderRadius.circular(10)),
-              child: IconButton(onPressed: () => showBottomSheet(context), icon: const Icon(Icons.info)),
+            child: Row(
+              children: <Widget>[
+                Column(
+                  children: <Widget>[
+                    if (calculatedZoom != null) ...<Widget>[
+                      Text('$calculatedZoom'),
+                      const Divider(),
+                    ],
+                    if (calculatedCenter != null) ...<Widget>[
+                      Text('${calculatedCenter!.latitude}'),
+                      Text('${calculatedCenter!.longitude}'),
+                    ],
+                  ],
+                ),
+                Container(
+                  decoration:
+                      BoxDecoration(color: Colors.black.withOpacity(0.3), borderRadius: BorderRadius.circular(10)),
+                  child: IconButton(onPressed: () => showBottomSheet(context), icon: const Icon(Icons.info)),
+                ),
+              ],
             ),
           ),
         ],
@@ -168,6 +186,25 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
   }
 
   ///
+  void getBoundsMapZoomValue() {
+    final LatLngBounds bounds = LatLngBounds.fromPoints(<LatLng>[LatLng(minLat, maxLng), LatLng(maxLat, minLng)]);
+
+    final CameraFit cameraFit = CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(50));
+
+    mapController.fitCamera(cameraFit);
+
+    final LatLng newCenter = mapController.camera.center;
+    final double newZoom = mapController.camera.zoom;
+
+    setState(() {
+      calculatedCenter = newCenter;
+      calculatedZoom = newZoom;
+    });
+
+    getBoundsZoomValue = true;
+  }
+
+  ///
   void showBottomSheet(BuildContext context) {
     final List<String> timeList = <String>[];
     for (final GeolocModel element in widget.geolocStateList) {
@@ -188,6 +225,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
           width: double.infinity,
           padding: const EdgeInsets.all(16.0),
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
               /////
