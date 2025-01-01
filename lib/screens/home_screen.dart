@@ -330,7 +330,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 child: Row(
                   children: <Widget>[
                     const MenuHeadIcon(),
-                    const SizedBox(width: 20),
+                    const SizedBox(width: 10),
                     Expanded(
                       child: Container(
                         width: double.infinity,
@@ -362,7 +362,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 child: Row(
                   children: <Widget>[
                     const MenuHeadIcon(),
-                    const SizedBox(width: 20),
+                    const SizedBox(width: 10),
                     Expanded(
                       child: Container(
                         width: double.infinity,
@@ -387,7 +387,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 child: Row(
                   children: <Widget>[
                     const MenuHeadIcon(),
-                    const SizedBox(width: 20),
+                    const SizedBox(width: 10),
                     Expanded(
                       child: Container(
                         width: double.infinity,
@@ -410,7 +410,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 child: Row(
                   children: <Widget>[
                     const MenuHeadIcon(),
-                    const SizedBox(width: 20),
+                    const SizedBox(width: 10),
                     Expanded(
                       child: Container(
                         width: double.infinity,
@@ -427,7 +427,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 child: Row(
                   children: <Widget>[
                     const MenuHeadIcon(),
-                    const SizedBox(width: 20),
+                    const SizedBox(width: 10),
                     Expanded(
                       child: Container(
                         width: double.infinity,
