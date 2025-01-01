@@ -75,6 +75,11 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
                           contentStr = 'mysqlデータがありません。';
                         }
 
+                        if (geolocMap.isEmpty) {
+                          errFlg = true;
+                          contentStr = 'geolocMapが作成されていません。';
+                        }
+
                         if (errFlg) {
                           // ignore: always_specify_types
                           Future.delayed(
