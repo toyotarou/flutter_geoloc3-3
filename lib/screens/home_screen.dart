@@ -28,6 +28,7 @@ import 'components/daily_geoloc_display_alert.dart';
 import 'components/geoloc_map_alert.dart';
 import 'components/history_geoloc_list_alert.dart';
 import 'parts/geoloc_dialog.dart';
+import 'parts/menu_head_icon.dart';
 
 @pragma('vm:entry-point')
 void backgroundHandler(Location data) {
@@ -326,11 +327,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     setState(() => bgText = 'start');
                   }
                 },
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 3),
-                  margin: const EdgeInsets.all(5),
-                  child: const Text('Start'),
+                child: Row(
+                  children: <Widget>[
+                    const MenuHeadIcon(),
+                    const SizedBox(width: 20),
+                    Expanded(
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 3),
+                        margin: const EdgeInsets.all(5),
+                        child: const Text('Start'),
+                      ),
+                    ),
+                  ],
                 ),
               ),
               GestureDetector(
@@ -350,11 +359,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     );
                   }
                 },
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 3),
-                  margin: const EdgeInsets.all(5),
-                  child: const Text('Status'),
+                child: Row(
+                  children: <Widget>[
+                    const MenuHeadIcon(),
+                    const SizedBox(width: 20),
+                    Expanded(
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 3),
+                        margin: const EdgeInsets.all(5),
+                        child: const Text('Status'),
+                      ),
+                    ),
+                  ],
                 ),
               ),
               Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
@@ -367,11 +384,19 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         HomeScreen(baseYm: (widget.baseYm != null) ? widget.baseYm : DateTime.now().yyyymm),
                   ),
                 ),
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 3),
-                  margin: const EdgeInsets.all(5),
-                  child: const Text('Reload'),
+                child: Row(
+                  children: <Widget>[
+                    const MenuHeadIcon(),
+                    const SizedBox(width: 20),
+                    Expanded(
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 3),
+                        margin: const EdgeInsets.all(5),
+                        child: const Text('Reload'),
+                      ),
+                    ),
+                  ],
                 ),
               ),
               GestureDetector(
@@ -382,20 +407,36 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     MaterialPageRoute(builder: (BuildContext context) => HomeScreen(baseYm: DateTime.now().yyyymm)),
                   );
                 },
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 3),
-                  margin: const EdgeInsets.all(5),
-                  child: const Text('Today'),
+                child: Row(
+                  children: <Widget>[
+                    const MenuHeadIcon(),
+                    const SizedBox(width: 20),
+                    Expanded(
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 3),
+                        margin: const EdgeInsets.all(5),
+                        child: const Text('Today'),
+                      ),
+                    ),
+                  ],
                 ),
               ),
               GestureDetector(
                 onTap: () => GeolocDialog(context: context, widget: const HistoryGeolocListAlert()),
-                child: Container(
-                  width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 3),
-                  margin: const EdgeInsets.all(5),
-                  child: const Text('History'),
+                child: Row(
+                  children: <Widget>[
+                    const MenuHeadIcon(),
+                    const SizedBox(width: 20),
+                    Expanded(
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 3),
+                        margin: const EdgeInsets.all(5),
+                        child: const Text('History'),
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ],
