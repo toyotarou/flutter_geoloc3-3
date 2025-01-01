@@ -64,9 +64,6 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
 
   String selectedHour = '';
 
-  double? calculatedZoom;
-  LatLng? calculatedCenter;
-
   double? currentZoom;
 
   ///
@@ -102,9 +99,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
     makeMarker();
 
     if (!getBoundsZoomValue) {
-      WidgetsBinding.instance.addPostFrameCallback((_) async {
-        getBoundsMapZoomValue();
-      });
+      WidgetsBinding.instance.addPostFrameCallback((_) async => setDefaultBoundsMap());
     }
 
     return Scaffold(
@@ -149,30 +144,9 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
           Positioned(
             top: 5,
             right: 5,
-            child: Row(
-              children: <Widget>[
-                Column(
-                  children: <Widget>[
-                    if (calculatedZoom != null) ...<Widget>[
-                      Text('$calculatedZoom'),
-                      const Divider(),
-                    ],
-                    if (calculatedCenter != null) ...<Widget>[
-                      Text('${calculatedCenter!.latitude}'),
-                      Text('${calculatedCenter!.longitude}'),
-                    ],
-                    if (currentZoom != null) ...<Widget>[
-                      const Divider(),
-                      Text('$currentZoom'),
-                    ],
-                  ],
-                ),
-                Container(
-                  decoration:
-                      BoxDecoration(color: Colors.black.withOpacity(0.3), borderRadius: BorderRadius.circular(10)),
-                  child: IconButton(onPressed: () => showBottomSheet(context), icon: const Icon(Icons.info)),
-                ),
-              ],
+            child: Container(
+              decoration: BoxDecoration(color: Colors.black.withOpacity(0.3), borderRadius: BorderRadius.circular(10)),
+              child: IconButton(onPressed: () => showBottomSheet(context), icon: const Icon(Icons.info)),
             ),
           ),
         ],
@@ -196,7 +170,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
   }
 
   ///
-  void getBoundsMapZoomValue() {
+  void setDefaultBoundsMap() {
     if (widget.geolocStateList.length > 1) {
       final LatLngBounds bounds = LatLngBounds.fromPoints(<LatLng>[LatLng(minLat, maxLng), LatLng(maxLat, minLng)]);
 
@@ -204,15 +178,12 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
 
       mapController.fitCamera(cameraFit);
 
-      final LatLng newCenter = mapController.camera.center;
+      /// これは残しておく
+      // final LatLng newCenter = mapController.camera.center;
+
       final double newZoom = mapController.camera.zoom;
 
-      setState(() {
-        calculatedCenter = newCenter;
-        calculatedZoom = newZoom;
-
-        currentZoom = newZoom;
-      });
+      setState(() => currentZoom = newZoom);
 
       getBoundsZoomValue = true;
     }
@@ -247,21 +218,76 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[
-                  GestureDetector(
-                    onTap: () {
-                      setState(() {
-                        isMarkerShow = !isMarkerShow;
+                  Row(
+                    children: <Widget>[
+                      GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            isMarkerShow = !isMarkerShow;
 
-                        polylineGeolocList = (!isMarkerShow) ? widget.geolocStateList : <GeolocModel>[];
+                            polylineGeolocList = (!isMarkerShow) ? widget.geolocStateList : <GeolocModel>[];
 
-                        selectedHour = '';
+                            selectedHour = '';
 
-                        selectedTimeGeoloc = null;
-                      });
-                    },
-                    child: const Icon(Icons.stacked_line_chart),
+                            selectedTimeGeoloc = null;
+                          });
+                        },
+                        child: const Icon(Icons.stacked_line_chart),
+                      ),
+                      const SizedBox(width: 20),
+                      GestureDetector(
+                        onTap: () => setDefaultBoundsMap(),
+                        child: const Icon(Icons.center_focus_strong),
+                      ),
+                    ],
                   ),
-                  Container(),
+                  Row(
+                    children: <Widget>[
+                      GestureDetector(
+                        onTap: () {
+                          if (currentZoom != null) {
+                            setState(() => currentZoom = currentZoom! + 1.0);
+
+                            mapController.move(
+                              (selectedTimeGeoloc == null || currentZoom == null)
+                                  ? LatLng(
+                                      widget.geolocStateList[0].latitude.toDouble(),
+                                      widget.geolocStateList[0].longitude.toDouble(),
+                                    )
+                                  : LatLng(
+                                      selectedTimeGeoloc!.latitude.toDouble(),
+                                      selectedTimeGeoloc!.longitude.toDouble(),
+                                    ),
+                              currentZoom!,
+                            );
+                          }
+                        },
+                        child: const Icon(Icons.add),
+                      ),
+                      const SizedBox(width: 20),
+                      GestureDetector(
+                        onTap: () {
+                          if (currentZoom != null) {
+                            setState(() => currentZoom = currentZoom! - 1.0);
+
+                            mapController.move(
+                              (selectedTimeGeoloc == null || currentZoom == null)
+                                  ? LatLng(
+                                      widget.geolocStateList[0].latitude.toDouble(),
+                                      widget.geolocStateList[0].longitude.toDouble(),
+                                    )
+                                  : LatLng(
+                                      selectedTimeGeoloc!.latitude.toDouble(),
+                                      selectedTimeGeoloc!.longitude.toDouble(),
+                                    ),
+                              currentZoom!,
+                            );
+                          }
+                        },
+                        child: const Icon(Icons.remove),
+                      ),
+                    ],
+                  ),
                 ],
               ),
 
