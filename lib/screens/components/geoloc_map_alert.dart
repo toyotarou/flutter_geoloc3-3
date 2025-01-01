@@ -66,6 +66,8 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
 
   double? currentZoom;
 
+  int currentPaddingIndex = 5;
+
   ///
   @override
   void initState() {
@@ -174,7 +176,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
     if (widget.geolocStateList.length > 1) {
       final LatLngBounds bounds = LatLngBounds.fromPoints(<LatLng>[LatLng(minLat, maxLng), LatLng(maxLat, minLng)]);
 
-      final CameraFit cameraFit = CameraFit.bounds(bounds: bounds, padding: const EdgeInsets.all(50));
+      final CameraFit cameraFit = CameraFit.bounds(bounds: bounds, padding: EdgeInsets.all(currentPaddingIndex * 10));
 
       mapController.fitCamera(cameraFit);
 
@@ -227,8 +229,10 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
 
                             polylineGeolocList = (!isMarkerShow) ? widget.geolocStateList : <GeolocModel>[];
 
+                            /// ここでConsumerStatefulWidgetの変数を変更（セレクテッドアワー）
                             selectedHour = '';
 
+                            /// ここでConsumerStatefulWidgetの変数を変更（セレクテッドタイムジオロック）
                             selectedTimeGeoloc = null;
                           });
                         },
@@ -236,7 +240,17 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                       ),
                       const SizedBox(width: 20),
                       GestureDetector(
-                        onTap: () => setDefaultBoundsMap(),
+                        onTap: () {
+                          setState(() {
+                            /// ここでConsumerStatefulWidgetの変数を変更（セレクテッドアワー）
+                            selectedHour = '';
+
+                            /// ここでConsumerStatefulWidgetの変数を変更（セレクテッドタイムジオロック）
+                            selectedTimeGeoloc = null;
+                          });
+
+                          setDefaultBoundsMap();
+                        },
                         child: const Icon(Icons.center_focus_strong),
                       ),
                     ],
@@ -245,44 +259,71 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                     children: <Widget>[
                       GestureDetector(
                         onTap: () {
-                          if (currentZoom != null) {
-                            setState(() => currentZoom = currentZoom! + 1.0);
+                          ///
 
-                            mapController.move(
-                              (selectedTimeGeoloc == null || currentZoom == null)
-                                  ? LatLng(
-                                      widget.geolocStateList[0].latitude.toDouble(),
-                                      widget.geolocStateList[0].longitude.toDouble(),
-                                    )
-                                  : LatLng(
-                                      selectedTimeGeoloc!.latitude.toDouble(),
-                                      selectedTimeGeoloc!.longitude.toDouble(),
-                                    ),
-                              currentZoom!,
-                            );
+                          if (widget.geolocStateList.length == 1 || selectedTimeGeoloc != null) {
+                            if (currentZoom != null) {
+                              setState(() => currentZoom = currentZoom! + 5);
+
+                              mapController.move(
+                                (selectedTimeGeoloc == null || currentZoom == null)
+                                    ? LatLng(
+                                        widget.geolocStateList[0].latitude.toDouble(),
+                                        widget.geolocStateList[0].longitude.toDouble(),
+                                      )
+                                    : LatLng(
+                                        selectedTimeGeoloc!.latitude.toDouble(),
+                                        selectedTimeGeoloc!.longitude.toDouble(),
+                                      ),
+                                currentZoom!,
+                              );
+                            }
+                          } else {
+                            setState(() {
+                              currentPaddingIndex = currentPaddingIndex + 1;
+                            });
+
+                            setDefaultBoundsMap();
                           }
+
+                          ///
                         },
                         child: const Icon(Icons.add),
                       ),
                       const SizedBox(width: 20),
                       GestureDetector(
                         onTap: () {
-                          if (currentZoom != null) {
-                            setState(() => currentZoom = currentZoom! - 1.0);
+                          ///
 
-                            mapController.move(
-                              (selectedTimeGeoloc == null || currentZoom == null)
-                                  ? LatLng(
-                                      widget.geolocStateList[0].latitude.toDouble(),
-                                      widget.geolocStateList[0].longitude.toDouble(),
-                                    )
-                                  : LatLng(
-                                      selectedTimeGeoloc!.latitude.toDouble(),
-                                      selectedTimeGeoloc!.longitude.toDouble(),
-                                    ),
-                              currentZoom!,
-                            );
+                          if (widget.geolocStateList.length == 1 || selectedTimeGeoloc != null) {
+                            if (currentZoom != null) {
+                              setState(() => currentZoom = currentZoom! - 1);
+
+                              mapController.move(
+                                (selectedTimeGeoloc == null || currentZoom == null)
+                                    ? LatLng(
+                                        widget.geolocStateList[0].latitude.toDouble(),
+                                        widget.geolocStateList[0].longitude.toDouble(),
+                                      )
+                                    : LatLng(
+                                        selectedTimeGeoloc!.latitude.toDouble(),
+                                        selectedTimeGeoloc!.longitude.toDouble(),
+                                      ),
+                                currentZoom!,
+                              );
+                            }
+                          } else {
+                            setState(() {
+                              currentPaddingIndex = currentPaddingIndex - 5;
+                              if (currentPaddingIndex < 5) {
+                                currentPaddingIndex = 5;
+                              }
+                            });
+
+                            setDefaultBoundsMap();
                           }
+
+                          ///
                         },
                         child: const Icon(Icons.remove),
                       ),
@@ -307,14 +348,18 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                       child: GestureDetector(
                         onTap: () {
                           setState(() {
+                            /// ここでConsumerStatefulWidgetの変数を変更（セレクテッドアワー）
                             selectedHour = e;
 
+                            /// ここでConsumerStatefulWidgetの変数を変更（セレクテッドタイムジオロック）
                             selectedTimeGeoloc = widget.geolocStateList
                                 .firstWhere((GeolocModel e2) => e2.time == selectedHourMap[e]?[0]);
                           });
 
+                          /// ここでappParamProviderの変数を変更（セレクテッドアワー）
                           ref.read(appParamProvider.notifier).setSelectedHour(hour: e);
 
+                          /// ここでappParamProviderの変数を変更（セレクテッドタイムジオロック）
                           ref.read(appParamProvider.notifier).setSelectedTimeGeoloc(
                               geoloc: widget.geolocStateList
                                   .firstWhere((GeolocModel e2) => e2.time == selectedHourMap[e]?[0]));
@@ -352,15 +397,19 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                           ref.read(appParamProvider.notifier).setIsMarkerHide(flag: false);
 
                           setState(() {
+                            /// ここでConsumerStatefulWidgetの変数を変更（セレクテッドアワー）
                             selectedHour = widget.geolocStateList[index].time.split(':')[0];
 
+                            /// ここでConsumerStatefulWidgetの変数を変更（セレクテッドタイムジオロック）
                             selectedTimeGeoloc = widget.geolocStateList[index];
                           });
 
+                          /// ここでappParamProviderの変数を変更（セレクテッドアワー）
                           ref
                               .read(appParamProvider.notifier)
                               .setSelectedHour(hour: widget.geolocStateList[index].time.split(':')[0]);
 
+                          /// ここでappParamProviderの変数を変更（セレクテッドタイムジオロック）
                           ref
                               .read(appParamProvider.notifier)
                               .setSelectedTimeGeoloc(geoloc: widget.geolocStateList[index]);
