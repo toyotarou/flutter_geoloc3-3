@@ -68,6 +68,12 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
 
   int currentPaddingIndex = 5;
 
+  final double circleRadiusMeters = 100.0;
+
+  LatLng center = const LatLng(35.718532, 139.586639);
+
+  bool isTempleCircleShow = false;
+
   ///
   @override
   void initState() {
@@ -141,6 +147,20 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                   ),
                 ],
               ),
+
+              if (isTempleCircleShow)
+                // ignore: always_specify_types
+                PolygonLayer(
+                  polygons: <Polygon<Object>>[
+                    // ignore: always_specify_types
+                    Polygon(
+                      points: calculateCirclePoints(center, circleRadiusMeters),
+                      color: Colors.redAccent.withOpacity(0.1),
+                      borderStrokeWidth: 2.0,
+                      borderColor: Colors.redAccent.withOpacity(0.5),
+                    ),
+                  ],
+                ),
             ],
           ),
           Positioned(
@@ -448,11 +468,38 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: widget.templeInfoList!.map((TempleInfoModel element) {
-                      return Container(
-                        margin: const EdgeInsets.all(5),
-                        padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 15),
-                        decoration: BoxDecoration(color: Colors.redAccent.withOpacity(0.3)),
-                        child: Text(element.temple, style: const TextStyle(fontSize: 12)),
+                      return GestureDetector(
+                        onTap: () {
+                          setState(() {
+                            /// ここでConsumerStatefulWidgetの変数を変更（セレクテッドタイムジオロック）
+                            selectedTimeGeoloc = GeolocModel(
+                              id: 0,
+                              year: widget.geolocStateList[0].year,
+                              month: widget.geolocStateList[0].month,
+                              day: widget.geolocStateList[0].day,
+                              time: '',
+                              latitude: element.latitude,
+                              longitude: element.longitude,
+                            );
+
+                            currentZoom = 17;
+
+                            isTempleCircleShow = true;
+
+                            center = LatLng(element.latitude.toDouble(), element.longitude.toDouble());
+                          });
+
+                          mapController.move(
+                            LatLng(element.latitude.toDouble(), element.longitude.toDouble()),
+                            currentZoom ?? 18,
+                          );
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.all(5),
+                          padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 15),
+                          decoration: BoxDecoration(color: Colors.redAccent.withOpacity(0.3)),
+                          child: Text(element.temple, style: const TextStyle(fontSize: 12)),
+                        ),
                       );
                     }).toList(),
                   ),
@@ -530,5 +577,31 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
       polylineGeolocList.add(widget.geolocStateList[pos - 1]);
       polylineGeolocList.add(geoloc);
     }
+  }
+
+  ///
+  List<LatLng> calculateCirclePoints(LatLng center, double radiusMeters) {
+    const int points = 64;
+
+    const double earthRadius = 6378137.0;
+
+    final double lat = center.latitude * pi / 180.0;
+
+    final double lng = center.longitude * pi / 180.0;
+
+    final double d = radiusMeters / earthRadius;
+
+    final List<LatLng> circlePoints = <LatLng>[];
+
+    for (int i = 0; i <= points; i++) {
+      final double angle = 2 * pi * i / points;
+
+      final double latOffset = asin(sin(lat) * cos(d) + cos(lat) * sin(d) * cos(angle));
+
+      final double lngOffset = lng + atan2(sin(angle) * sin(d) * cos(lat), cos(d) - sin(lat) * sin(latOffset));
+
+      circlePoints.add(LatLng(latOffset * 180.0 / pi, lngOffset * 180.0 / pi));
+    }
+    return circlePoints;
   }
 }
