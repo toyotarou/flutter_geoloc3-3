@@ -97,6 +97,8 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
 
   bool getBoundsZoomValue = false;
 
+  bool showFirstMap = false;
+
   ///
   @override
   Widget build(BuildContext context) {
@@ -166,9 +168,34 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
           Positioned(
             top: 5,
             right: 5,
-            child: Container(
-              decoration: BoxDecoration(color: Colors.black.withOpacity(0.3), borderRadius: BorderRadius.circular(10)),
-              child: IconButton(onPressed: () => showBottomSheet(context), icon: const Icon(Icons.info)),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: <Widget>[
+                Container(
+                  decoration:
+                      BoxDecoration(color: Colors.black.withOpacity(0.3), borderRadius: BorderRadius.circular(10)),
+                  child: IconButton(onPressed: () => showBottomSheet(context), icon: const Icon(Icons.info)),
+                ),
+                if (!showFirstMap) ...<Widget>[
+                  const SizedBox(height: 10),
+                  IconButton(
+                    onPressed: () {
+                      setState(() {
+                        /// ここでConsumerStatefulWidgetの変数を変更（セレクテッドアワー）
+                        selectedHour = '';
+
+                        /// ここでConsumerStatefulWidgetの変数を変更（セレクテッドタイムジオロック）
+                        selectedTimeGeoloc = null;
+
+                        showFirstMap = true;
+                      });
+
+                      setDefaultBoundsMap();
+                    },
+                    icon: const Icon(Icons.map, color: Colors.black),
+                  ),
+                ],
+              ],
             ),
           ),
         ],
