@@ -50,9 +50,9 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
 
   List<Marker> markerList = <Marker>[];
 
-  late ScrollController _scrollController;
-  final ItemScrollController controller = ItemScrollController();
-  final ItemPositionsListener listener = ItemPositionsListener.create();
+  late ScrollController scrollController;
+  final ItemScrollController itemScrollController = ItemScrollController();
+  final ItemPositionsListener itemPositionsListener = ItemPositionsListener.create();
 
   List<GeolocModel> polylineGeolocList = <GeolocModel>[];
 
@@ -66,11 +66,13 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
 
   double? currentZoom;
 
+  double currentZoomEightTeen = 18;
+
   int currentPaddingIndex = 5;
 
   final double circleRadiusMeters = 100.0;
 
-  LatLng center = const LatLng(35.718532, 139.586639);
+  LatLng currentCenter = const LatLng(35.718532, 139.586639);
 
   bool isTempleCircleShow = false;
 
@@ -79,13 +81,13 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
   void initState() {
     super.initState();
 
-    _scrollController = ScrollController();
+    scrollController = ScrollController();
   }
 
   ///
   @override
   void dispose() {
-    _scrollController.dispose();
+    scrollController.dispose();
 
     super.dispose();
   }
@@ -119,8 +121,9 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
           FlutterMap(
             mapController: mapController,
             options: MapOptions(
-              initialCenter: const LatLng(35.718532, 139.586639),
-              initialZoom: 5.0,
+              initialCenter:
+                  LatLng(widget.geolocStateList[0].latitude.toDouble(), widget.geolocStateList[0].longitude.toDouble()),
+              initialZoom: currentZoomEightTeen,
               onPositionChanged: (MapCamera position, bool isMoving) {
                 if (isMoving) {
                   setState(() => currentZoom = position.zoom);
@@ -156,7 +159,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                   polygons: <Polygon<Object>>[
                     // ignore: always_specify_types
                     Polygon(
-                      points: calculateCirclePoints(center, circleRadiusMeters),
+                      points: calculateCirclePoints(currentCenter, circleRadiusMeters),
                       color: Colors.redAccent.withOpacity(0.1),
                       borderStrokeWidth: 2.0,
                       borderColor: Colors.redAccent.withOpacity(0.5),
@@ -171,10 +174,48 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
-                Container(
-                  decoration:
-                      BoxDecoration(color: Colors.black.withOpacity(0.3), borderRadius: BorderRadius.circular(10)),
-                  child: IconButton(onPressed: () => showBottomSheet(context), icon: const Icon(Icons.info)),
+                Row(
+                  children: <Widget>[
+                    DefaultTextStyle(
+                      style: const TextStyle(color: Colors.black),
+                      child: Column(
+                        children: <Widget>[
+                          Row(
+                            children: <Widget>[
+                              const SizedBox(width: 70, child: Text('size: ')),
+                              Container(
+                                width: 60,
+                                alignment: Alignment.topRight,
+                                child: Text(
+                                  (currentZoom != null) ? currentZoom!.toStringAsFixed(2) : '',
+                                  style: const TextStyle(fontSize: 20, color: Colors.black),
+                                ),
+                              ),
+                            ],
+                          ),
+                          Row(
+                            children: <Widget>[
+                              const SizedBox(width: 70, child: Text('padding: ')),
+                              Container(
+                                width: 60,
+                                alignment: Alignment.topRight,
+                                child: Text(
+                                  currentPaddingIndex.toString(),
+                                  style: const TextStyle(fontSize: 20, color: Colors.black),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 20),
+                    Container(
+                      decoration:
+                          BoxDecoration(color: Colors.black.withOpacity(0.3), borderRadius: BorderRadius.circular(10)),
+                      child: IconButton(onPressed: () => showBottomSheet(context), icon: const Icon(Icons.info)),
+                    ),
+                  ],
                 ),
                 if (!showFirstMap) ...<Widget>[
                   const SizedBox(height: 10),
@@ -310,7 +351,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
 
                           if (widget.geolocStateList.length == 1 || selectedTimeGeoloc != null) {
                             if (currentZoom != null) {
-                              setState(() => currentZoom = currentZoom! + 5);
+                              setState(() => currentZoom = currentZoom! + 1);
 
                               mapController.move(
                                 (selectedTimeGeoloc == null || currentZoom == null)
@@ -327,7 +368,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                             }
                           } else {
                             setState(() {
-                              currentPaddingIndex = currentPaddingIndex + 1;
+                              currentPaddingIndex = currentPaddingIndex + 5;
                             });
 
                             setDefaultBoundsMap();
@@ -386,7 +427,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
               /////
 
               SingleChildScrollView(
-                controller: _scrollController,
+                controller: scrollController,
                 scrollDirection: Axis.horizontal,
                 child: Row(
                   children: timeList.map((String e) {
@@ -411,7 +452,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                               geoloc: widget.geolocStateList
                                   .firstWhere((GeolocModel e2) => e2.time == selectedHourMap[e]?[0]));
 
-                          controller.jumpTo(
+                          itemScrollController.jumpTo(
                             index: widget.geolocStateList
                                 .indexWhere((GeolocModel element) => element.time.split(':')[0] == e),
                           );
@@ -434,8 +475,8 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                 child: ScrollablePositionedList.builder(
                   scrollDirection: Axis.horizontal,
                   itemCount: widget.geolocStateList.length,
-                  itemScrollController: controller,
-                  itemPositionsListener: listener,
+                  itemScrollController: itemScrollController,
+                  itemPositionsListener: itemPositionsListener,
                   itemBuilder: (BuildContext context, int index) {
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 5),
@@ -466,7 +507,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                               widget.geolocStateList[index].latitude.toDouble(),
                               widget.geolocStateList[index].longitude.toDouble(),
                             ),
-                            currentZoom ?? 18,
+                            currentZoom ?? currentZoomEightTeen,
                           );
 
                           makePolylineGeolocList(geoloc: widget.geolocStateList[index]);
@@ -491,7 +532,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
 
               if (widget.templeInfoList != null) ...<Widget>[
                 SingleChildScrollView(
-                  controller: _scrollController,
+                  controller: scrollController,
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: widget.templeInfoList!.map((TempleInfoModel element) {
@@ -513,12 +554,12 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
 
                             isTempleCircleShow = true;
 
-                            center = LatLng(element.latitude.toDouble(), element.longitude.toDouble());
+                            currentCenter = LatLng(element.latitude.toDouble(), element.longitude.toDouble());
                           });
 
                           mapController.move(
                             LatLng(element.latitude.toDouble(), element.longitude.toDouble()),
-                            currentZoom ?? 18,
+                            currentZoom ?? currentZoomEightTeen,
                           );
                         },
                         child: Container(
