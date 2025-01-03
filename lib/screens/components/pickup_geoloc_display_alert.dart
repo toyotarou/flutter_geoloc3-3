@@ -50,7 +50,11 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
                     if (widget.pickupGeolocList.length > 1) ...<Widget>[
                       GestureDetector(
                         onTap: () {
-                          ref.read(appParamProvider.notifier).setIsMarkerShow(flag: false);
+                          ref.read(appParamProvider.notifier).setIsMarkerShow(flag: true);
+
+                          ref.read(appParamProvider.notifier).setSelectedTimeGeoloc();
+
+                          ref.read(appParamProvider.notifier).setSelectedHour(hour: '');
 
                           final List<GeolocModel> list = <GeolocModel>[];
                           for (final Geoloc element in widget.pickupGeolocList) {

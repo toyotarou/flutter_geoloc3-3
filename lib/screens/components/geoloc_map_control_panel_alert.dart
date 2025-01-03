@@ -269,6 +269,50 @@ class _GeolocMapControlPanelAlertState extends ConsumerState<GeolocMapControlPan
                 ),
 
                 /////
+
+                if (widget.templeInfoList != null) ...<Widget>[
+                  SingleChildScrollView(
+                    controller: scrollController,
+                    scrollDirection: Axis.horizontal,
+                    child: Row(
+                      children: widget.templeInfoList!.map((TempleInfoModel element) {
+                        return GestureDetector(
+                          onTap: () {
+                            ref.read(appParamProvider.notifier).setSelectedTimeGeoloc(
+                                  geoloc: GeolocModel(
+                                    id: 0,
+                                    year: widget.geolocStateList[0].year,
+                                    month: widget.geolocStateList[0].month,
+                                    day: widget.geolocStateList[0].day,
+                                    time: '',
+                                    latitude: element.latitude,
+                                    longitude: element.longitude,
+                                  ),
+                                );
+
+                            ref.read(appParamProvider.notifier).setCurrentZoom(zoom: 17);
+
+                            ref.read(appParamProvider.notifier).setIsTempleCircleShow(flag: true);
+
+                            ref.read(appParamProvider.notifier).setCurrentCenter(
+                                latLng: LatLng(element.latitude.toDouble(), element.longitude.toDouble()));
+
+                            widget.mapController
+                                .move(LatLng(element.latitude.toDouble(), element.longitude.toDouble()), 17);
+                          },
+                          child: Container(
+                            margin: const EdgeInsets.all(5),
+                            padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 15),
+                            decoration: BoxDecoration(color: Colors.redAccent.withOpacity(0.3)),
+                            child: Text(element.temple, style: const TextStyle(fontSize: 12)),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ),
+                ],
+
+                /////
               ],
             ),
           ),

@@ -283,6 +283,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       i++;
                     });
 
+                  ref.read(appParamProvider.notifier).setIsMarkerShow(flag: true);
+
+                  ref.read(appParamProvider.notifier).setSelectedTimeGeoloc();
+
+                  ref.read(appParamProvider.notifier).setSelectedHour(hour: '');
+
                   GeolocDialog(
                     context: context,
                     widget: GeolocMapAlert(
