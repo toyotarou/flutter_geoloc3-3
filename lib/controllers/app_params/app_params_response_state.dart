@@ -15,5 +15,6 @@ class AppParamsResponseState with _$AppParamsResponseState {
     @Default(0) double currentZoom,
     @Default(5) int currentPaddingIndex,
     LatLng? currentCenter,
+    @Default(false) bool isTempleCircleShow,
   }) = _AppParamsResponseState;
 }

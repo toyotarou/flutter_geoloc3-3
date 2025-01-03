@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
 import '../../controllers/app_params/app_params_notifier.dart';
 import '../../controllers/app_params/app_params_response_state.dart';
@@ -13,6 +12,8 @@ import '../../models/geoloc_model.dart';
 import '../../models/temple_latlng_model.dart';
 import '../../models/walk_record_model.dart';
 import '../../utilities/tile_provider.dart';
+import '../parts/geoloc_dialog.dart';
+import 'geoloc_map_control_panel_alert.dart';
 
 class GeolocMapAlert extends ConsumerStatefulWidget {
   const GeolocMapAlert(
@@ -44,42 +45,19 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
 
   final MapController mapController = MapController();
 
-  //
-  // bool isBottomSheetVisible = false;
-  //
   List<Marker> markerList = <Marker>[];
 
-  //
   late ScrollController scrollController;
 
-  // final ItemScrollController itemScrollController = ItemScrollController();
-  // final ItemPositionsListener itemPositionsListener = ItemPositionsListener.create();
-  //
   List<GeolocModel> polylineGeolocList = <GeolocModel>[];
 
-  //
   Map<String, List<String>> selectedHourMap = <String, List<String>>{};
 
-  //
-  // bool isMarkerShow = true;
-  //
-  // GeolocModel? selectedTimeGeoloc;
-  //
-  // String selectedHour = '';
-  //
   double? currentZoom;
 
-  //
   double currentZoomEightTeen = 18;
 
-  //
-  // int currentPaddingIndex = 5;
-  //
-  // final double circleRadiusMeters = 100.0;
-  //
-  // LatLng currentCenter = const LatLng(35.718532, 139.586639);
-  //
-  // bool isTempleCircleShow = false;
+  final double circleRadiusMeters = 100.0;
 
   ///
   @override
@@ -123,6 +101,10 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
 
     final int currentPaddingIndex =
         ref.watch(appParamProvider.select((AppParamsResponseState value) => value.currentPaddingIndex));
+
+    final LatLng? currentCenter = ref.watch(appParamProvider.select((AppParamsResponseState value) => value.currentCenter));
+
+    final bool isTempleCircleShow = ref.watch(appParamProvider.select((AppParamsResponseState value) => value.isTempleCircleShow));
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -169,24 +151,19 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                 ],
               ),
 
-              // if (isTempleCircleShow)
-              //   // ignore: always_specify_types
-              //   PolygonLayer(
-              //     polygons: <Polygon<Object>>[
-              //       // ignore: always_specify_types
-              //       Polygon(
-              //         points: calculateCirclePoints(currentCenter, circleRadiusMeters),
-              //         color: Colors.redAccent.withOpacity(0.1),
-              //         borderStrokeWidth: 2.0,
-              //         borderColor: Colors.redAccent.withOpacity(0.5),
-              //       ),
-              //     ],
-              //   ),
-              //
-              //
-              //
-              //
-              //
+              if (isTempleCircleShow && currentCenter != null)
+                // ignore: always_specify_types
+                PolygonLayer(
+                  polygons: <Polygon<Object>>[
+                    // ignore: always_specify_types
+                    Polygon(
+                      points: calculateCirclePoints(currentCenter, circleRadiusMeters),
+                      color: Colors.redAccent.withOpacity(0.1),
+                      borderStrokeWidth: 2.0,
+                      borderColor: Colors.redAccent.withOpacity(0.5),
+                    ),
+                  ],
+                ),
             ],
           ),
           Positioned(
@@ -236,35 +213,26 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                           BoxDecoration(color: Colors.black.withOpacity(0.3), borderRadius: BorderRadius.circular(10)),
                       child: IconButton(
                         onPressed: () {
-                          // showBottomSheet(context);
-                          //
+                          GeolocDialog(
+                            context: context,
+                            widget: GeolocMapControlPanelAlert(
+                              geolocStateList: widget.geolocStateList,
+                              templeInfoList: widget.templeInfoList,
+                              mapController: mapController,
+                              currentZoomEightTeen: currentZoomEightTeen,
 
-                          // GeolocDialog(
-                          //   context: context,
-                          //   widget: GeolocMapControlPanelAlert(
-                          //     geolocStateList: widget.geolocStateList,
-                          //     displayTempMap: widget.displayTempMap,
-                          //     templeInfoList: widget.templeInfoList,
-                          //     mapController: mapController,
-                          //     currentZoom: currentZoom,
-                          //     currentZoomEightTeen: currentZoomEightTeen,
-                          //     minMaxLatLngMap: <String, double>{
-                          //       'minLat': minLat,
-                          //       'maxLng': maxLng,
-                          //       'maxLat': maxLat,
-                          //       'minLng': minLng,
-                          //     },
-                          //     currentPaddingIndex: currentPaddingIndex,
-                          //     selectedHourMap: selectedHourMap,
-                          //   ),
-                          //   paddingTop: context.screenSize.height * 0.65,
-                          //   clearBarrierColor: true,
-                          // );
-                          //
-                          //
-                          //
-                          //
-                          //
+                              selectedHourMap: selectedHourMap,
+
+                              // minMaxLatLngMap: <String, double>{
+                              //   'minLat': minLat,
+                              //   'maxLng': maxLng,
+                              //   'maxLat': maxLat,
+                              //   'minLng': minLng,
+                              // },
+                            ),
+                            paddingTop: context.screenSize.height * 0.65,
+                            clearBarrierColor: true,
+                          );
                         },
                         icon: const Icon(Icons.info),
                       ),
@@ -378,5 +346,31 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
         ),
       );
     }
+  }
+
+  ///
+  List<LatLng> calculateCirclePoints(LatLng center, double radiusMeters) {
+    const int points = 64;
+
+    const double earthRadius = 6378137.0;
+
+    final double lat = center.latitude * pi / 180.0;
+
+    final double lng = center.longitude * pi / 180.0;
+
+    final double d = radiusMeters / earthRadius;
+
+    final List<LatLng> circlePoints = <LatLng>[];
+
+    for (int i = 0; i <= points; i++) {
+      final double angle = 2 * pi * i / points;
+
+      final double latOffset = asin(sin(lat) * cos(d) + cos(lat) * sin(d) * cos(angle));
+
+      final double lngOffset = lng + atan2(sin(angle) * sin(d) * cos(lat), cos(d) - sin(lat) * sin(latOffset));
+
+      circlePoints.add(LatLng(latOffset * 180.0 / pi, lngOffset * 180.0 / pi));
+    }
+    return circlePoints;
   }
 }

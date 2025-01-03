@@ -32,4 +32,7 @@ class AppParamNotifier extends StateNotifier<AppParamsResponseState> {
 
   ///
   void setCurrentCenter({required LatLng latLng}) => state = state.copyWith(currentCenter: latLng);
+
+  ///
+  void setIsTempleCircleShow({required bool flag}) => state = state.copyWith(isTempleCircleShow: flag);
 }

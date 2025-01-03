@@ -23,6 +23,7 @@ mixin _$AppParamsResponseState {
   double get currentZoom => throw _privateConstructorUsedError;
   int get currentPaddingIndex => throw _privateConstructorUsedError;
   LatLng? get currentCenter => throw _privateConstructorUsedError;
+  bool get isTempleCircleShow => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $AppParamsResponseStateCopyWith<AppParamsResponseState> get copyWith =>
@@ -42,7 +43,8 @@ abstract class $AppParamsResponseStateCopyWith<$Res> {
       String selectedHour,
       double currentZoom,
       int currentPaddingIndex,
-      LatLng? currentCenter});
+      LatLng? currentCenter,
+      bool isTempleCircleShow});
 }
 
 /// @nodoc
@@ -66,6 +68,7 @@ class _$AppParamsResponseStateCopyWithImpl<$Res,
     Object? currentZoom = null,
     Object? currentPaddingIndex = null,
     Object? currentCenter = freezed,
+    Object? isTempleCircleShow = null,
   }) {
     return _then(_value.copyWith(
       calendarSelectedDate: freezed == calendarSelectedDate
@@ -96,6 +99,10 @@ class _$AppParamsResponseStateCopyWithImpl<$Res,
           ? _value.currentCenter
           : currentCenter // ignore: cast_nullable_to_non_nullable
               as LatLng?,
+      isTempleCircleShow: null == isTempleCircleShow
+          ? _value.isTempleCircleShow
+          : isTempleCircleShow // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -116,7 +123,8 @@ abstract class _$$AppParamsResponseStateImplCopyWith<$Res>
       String selectedHour,
       double currentZoom,
       int currentPaddingIndex,
-      LatLng? currentCenter});
+      LatLng? currentCenter,
+      bool isTempleCircleShow});
 }
 
 /// @nodoc
@@ -139,6 +147,7 @@ class __$$AppParamsResponseStateImplCopyWithImpl<$Res>
     Object? currentZoom = null,
     Object? currentPaddingIndex = null,
     Object? currentCenter = freezed,
+    Object? isTempleCircleShow = null,
   }) {
     return _then(_$AppParamsResponseStateImpl(
       calendarSelectedDate: freezed == calendarSelectedDate
@@ -169,6 +178,10 @@ class __$$AppParamsResponseStateImplCopyWithImpl<$Res>
           ? _value.currentCenter
           : currentCenter // ignore: cast_nullable_to_non_nullable
               as LatLng?,
+      isTempleCircleShow: null == isTempleCircleShow
+          ? _value.isTempleCircleShow
+          : isTempleCircleShow // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -183,7 +196,8 @@ class _$AppParamsResponseStateImpl implements _AppParamsResponseState {
       this.selectedHour = '',
       this.currentZoom = 0,
       this.currentPaddingIndex = 5,
-      this.currentCenter});
+      this.currentCenter,
+      this.isTempleCircleShow = false});
 
   @override
   final DateTime? calendarSelectedDate;
@@ -203,10 +217,13 @@ class _$AppParamsResponseStateImpl implements _AppParamsResponseState {
   final int currentPaddingIndex;
   @override
   final LatLng? currentCenter;
+  @override
+  @JsonKey()
+  final bool isTempleCircleShow;
 
   @override
   String toString() {
-    return 'AppParamsResponseState(calendarSelectedDate: $calendarSelectedDate, selectedTimeGeoloc: $selectedTimeGeoloc, isMarkerShow: $isMarkerShow, selectedHour: $selectedHour, currentZoom: $currentZoom, currentPaddingIndex: $currentPaddingIndex, currentCenter: $currentCenter)';
+    return 'AppParamsResponseState(calendarSelectedDate: $calendarSelectedDate, selectedTimeGeoloc: $selectedTimeGeoloc, isMarkerShow: $isMarkerShow, selectedHour: $selectedHour, currentZoom: $currentZoom, currentPaddingIndex: $currentPaddingIndex, currentCenter: $currentCenter, isTempleCircleShow: $isTempleCircleShow)';
   }
 
   @override
@@ -227,7 +244,9 @@ class _$AppParamsResponseStateImpl implements _AppParamsResponseState {
             (identical(other.currentPaddingIndex, currentPaddingIndex) ||
                 other.currentPaddingIndex == currentPaddingIndex) &&
             (identical(other.currentCenter, currentCenter) ||
-                other.currentCenter == currentCenter));
+                other.currentCenter == currentCenter) &&
+            (identical(other.isTempleCircleShow, isTempleCircleShow) ||
+                other.isTempleCircleShow == isTempleCircleShow));
   }
 
   @override
@@ -239,7 +258,8 @@ class _$AppParamsResponseStateImpl implements _AppParamsResponseState {
       selectedHour,
       currentZoom,
       currentPaddingIndex,
-      currentCenter);
+      currentCenter,
+      isTempleCircleShow);
 
   @JsonKey(ignore: true)
   @override
@@ -257,7 +277,8 @@ abstract class _AppParamsResponseState implements AppParamsResponseState {
       final String selectedHour,
       final double currentZoom,
       final int currentPaddingIndex,
-      final LatLng? currentCenter}) = _$AppParamsResponseStateImpl;
+      final LatLng? currentCenter,
+      final bool isTempleCircleShow}) = _$AppParamsResponseStateImpl;
 
   @override
   DateTime? get calendarSelectedDate;
@@ -273,6 +294,8 @@ abstract class _AppParamsResponseState implements AppParamsResponseState {
   int get currentPaddingIndex;
   @override
   LatLng? get currentCenter;
+  @override
+  bool get isTempleCircleShow;
   @override
   @JsonKey(ignore: true)
   _$$AppParamsResponseStateImplCopyWith<_$AppParamsResponseStateImpl>
