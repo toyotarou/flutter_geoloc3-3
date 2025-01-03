@@ -14,22 +14,20 @@ import '../../models/temple_latlng_model.dart';
 import '../../models/walk_record_model.dart';
 import '../../utilities/tile_provider.dart';
 
-// ignore: must_be_immutable
 class GeolocMapAlert extends ConsumerStatefulWidget {
-  GeolocMapAlert({
-    super.key,
-    required this.geolocStateList,
-    this.displayTempMap,
-    required this.displayMonthMap,
-    required this.walkRecord,
-    this.templeInfoList,
-  });
+  const GeolocMapAlert(
+      {super.key,
+      required this.geolocStateList,
+      this.displayTempMap,
+      required this.displayMonthMap,
+      required this.walkRecord,
+      this.templeInfoList});
 
   final List<GeolocModel> geolocStateList;
   final bool? displayTempMap;
   final bool displayMonthMap;
   final WalkRecordModel walkRecord;
-  List<TempleInfoModel>? templeInfoList;
+  final List<TempleInfoModel>? templeInfoList;
 
   @override
   ConsumerState<GeolocMapAlert> createState() => _GeolocMapAlertState();
@@ -46,35 +44,42 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
 
   final MapController mapController = MapController();
 
-  bool isBottomSheetVisible = false;
-
+  //
+  // bool isBottomSheetVisible = false;
+  //
   List<Marker> markerList = <Marker>[];
 
+  //
   late ScrollController scrollController;
-  final ItemScrollController itemScrollController = ItemScrollController();
-  final ItemPositionsListener itemPositionsListener = ItemPositionsListener.create();
 
+  // final ItemScrollController itemScrollController = ItemScrollController();
+  // final ItemPositionsListener itemPositionsListener = ItemPositionsListener.create();
+  //
   List<GeolocModel> polylineGeolocList = <GeolocModel>[];
 
+  //
   Map<String, List<String>> selectedHourMap = <String, List<String>>{};
 
-  bool isMarkerShow = true;
-
-  GeolocModel? selectedTimeGeoloc;
-
-  String selectedHour = '';
-
+  //
+  // bool isMarkerShow = true;
+  //
+  // GeolocModel? selectedTimeGeoloc;
+  //
+  // String selectedHour = '';
+  //
   double? currentZoom;
 
+  //
   double currentZoomEightTeen = 18;
 
-  int currentPaddingIndex = 5;
-
-  final double circleRadiusMeters = 100.0;
-
-  LatLng currentCenter = const LatLng(35.718532, 139.586639);
-
-  bool isTempleCircleShow = false;
+  //
+  // int currentPaddingIndex = 5;
+  //
+  // final double circleRadiusMeters = 100.0;
+  //
+  // LatLng currentCenter = const LatLng(35.718532, 139.586639);
+  //
+  // bool isTempleCircleShow = false;
 
   ///
   @override
@@ -114,6 +119,11 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
       WidgetsBinding.instance.addPostFrameCallback((_) async => setDefaultBoundsMap());
     }
 
+    final bool isMarkerShow = ref.watch(appParamProvider.select((AppParamsResponseState value) => value.isMarkerShow));
+
+    final int currentPaddingIndex =
+        ref.watch(appParamProvider.select((AppParamsResponseState value) => value.currentPaddingIndex));
+
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Stack(
@@ -126,7 +136,13 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
               initialZoom: currentZoomEightTeen,
               onPositionChanged: (MapCamera position, bool isMoving) {
                 if (isMoving) {
-                  setState(() => currentZoom = position.zoom);
+                  // setState(() => currentZoom = position.zoom);
+                  //
+                  //
+                  //
+                  //
+
+                  ref.read(appParamProvider.notifier).setCurrentZoom(zoom: position.zoom);
                 }
               },
             ),
@@ -153,19 +169,24 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                 ],
               ),
 
-              if (isTempleCircleShow)
-                // ignore: always_specify_types
-                PolygonLayer(
-                  polygons: <Polygon<Object>>[
-                    // ignore: always_specify_types
-                    Polygon(
-                      points: calculateCirclePoints(currentCenter, circleRadiusMeters),
-                      color: Colors.redAccent.withOpacity(0.1),
-                      borderStrokeWidth: 2.0,
-                      borderColor: Colors.redAccent.withOpacity(0.5),
-                    ),
-                  ],
-                ),
+              // if (isTempleCircleShow)
+              //   // ignore: always_specify_types
+              //   PolygonLayer(
+              //     polygons: <Polygon<Object>>[
+              //       // ignore: always_specify_types
+              //       Polygon(
+              //         points: calculateCirclePoints(currentCenter, circleRadiusMeters),
+              //         color: Colors.redAccent.withOpacity(0.1),
+              //         borderStrokeWidth: 2.0,
+              //         borderColor: Colors.redAccent.withOpacity(0.5),
+              //       ),
+              //     ],
+              //   ),
+              //
+              //
+              //
+              //
+              //
             ],
           ),
           Positioned(
@@ -186,10 +207,14 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                               Container(
                                 width: 60,
                                 alignment: Alignment.topRight,
-                                child: Text(
-                                  (currentZoom != null) ? currentZoom!.toStringAsFixed(2) : '',
-                                  style: const TextStyle(fontSize: 20, color: Colors.black),
-                                ),
+                                // child: Text(
+                                //   (currentZoom != null) ? currentZoom!.toStringAsFixed(2) : '',
+                                //   style: const TextStyle(fontSize: 20, color: Colors.black),
+                                // ),
+                                //
+                                //
+                                //
+                                //
                               ),
                             ],
                           ),
@@ -213,7 +238,40 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                     Container(
                       decoration:
                           BoxDecoration(color: Colors.black.withOpacity(0.3), borderRadius: BorderRadius.circular(10)),
-                      child: IconButton(onPressed: () => showBottomSheet(context), icon: const Icon(Icons.info)),
+                      child: IconButton(
+                        onPressed: () {
+                          // showBottomSheet(context);
+                          //
+
+                          // GeolocDialog(
+                          //   context: context,
+                          //   widget: GeolocMapControlPanelAlert(
+                          //     geolocStateList: widget.geolocStateList,
+                          //     displayTempMap: widget.displayTempMap,
+                          //     templeInfoList: widget.templeInfoList,
+                          //     mapController: mapController,
+                          //     currentZoom: currentZoom,
+                          //     currentZoomEightTeen: currentZoomEightTeen,
+                          //     minMaxLatLngMap: <String, double>{
+                          //       'minLat': minLat,
+                          //       'maxLng': maxLng,
+                          //       'maxLat': maxLat,
+                          //       'minLng': minLng,
+                          //     },
+                          //     currentPaddingIndex: currentPaddingIndex,
+                          //     selectedHourMap: selectedHourMap,
+                          //   ),
+                          //   paddingTop: context.screenSize.height * 0.65,
+                          //   clearBarrierColor: true,
+                          // );
+                          //
+                          //
+                          //
+                          //
+                          //
+                        },
+                        icon: const Icon(Icons.info),
+                      ),
                     ),
                   ],
                 ),
@@ -221,15 +279,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                   const SizedBox(height: 10),
                   IconButton(
                     onPressed: () {
-                      setState(() {
-                        /// ここでConsumerStatefulWidgetの変数を変更（セレクテッドアワー）
-                        selectedHour = '';
-
-                        /// ここでConsumerStatefulWidgetの変数を変更（セレクテッドタイムジオロック）
-                        selectedTimeGeoloc = null;
-
-                        showFirstMap = true;
-                      });
+                      setState(() => showFirstMap = true);
 
                       setDefaultBoundsMap();
                     },
@@ -242,6 +292,19 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
         ],
       ),
     );
+  }
+
+  ///
+  void makeSelectedHourMap() {
+    selectedHourMap = <String, List<String>>{};
+
+    for (final GeolocModel element in widget.geolocStateList) {
+      selectedHourMap[element.time.split(':')[0]] = <String>[];
+    }
+
+    for (final GeolocModel element in widget.geolocStateList) {
+      selectedHourMap[element.time.split(':')[0]]?.add(element.time);
+    }
   }
 
   ///
@@ -262,6 +325,9 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
   ///
   void setDefaultBoundsMap() {
     if (widget.geolocStateList.length > 1) {
+      final int currentPaddingIndex =
+          ref.watch(appParamProvider.select((AppParamsResponseState value) => value.currentPaddingIndex));
+
       final LatLngBounds bounds = LatLngBounds.fromPoints(<LatLng>[LatLng(minLat, maxLng), LatLng(maxLat, minLng)]);
 
       final CameraFit cameraFit = CameraFit.bounds(bounds: bounds, padding: EdgeInsets.all(currentPaddingIndex * 10));
@@ -275,326 +341,9 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
 
       setState(() => currentZoom = newZoom);
 
+      ref.read(appParamProvider.notifier).setCurrentZoom(zoom: newZoom);
+
       getBoundsZoomValue = true;
-    }
-  }
-
-  ///
-  void showBottomSheet(BuildContext context) {
-    final List<String> timeList = <String>[];
-    for (final GeolocModel element in widget.geolocStateList) {
-      final List<String> exTime = element.time.split(':');
-      if (!timeList.contains(exTime[0])) {
-        timeList.add(exTime[0]);
-      }
-    }
-
-    // ignore: inference_failure_on_function_invocation
-    showModalBottomSheet(
-      context: context,
-      barrierColor: Colors.transparent,
-      backgroundColor: Colors.black.withOpacity(0.6),
-
-      builder: (BuildContext context) {
-        return Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              /////
-
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            isMarkerShow = !isMarkerShow;
-
-                            polylineGeolocList = (!isMarkerShow) ? widget.geolocStateList : <GeolocModel>[];
-
-                            /// ここでConsumerStatefulWidgetの変数を変更（セレクテッドアワー）
-                            selectedHour = '';
-
-                            /// ここでConsumerStatefulWidgetの変数を変更（セレクテッドタイムジオロック）
-                            selectedTimeGeoloc = null;
-                          });
-                        },
-                        child: const Icon(Icons.stacked_line_chart),
-                      ),
-                      const SizedBox(width: 20),
-                      GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            /// ここでConsumerStatefulWidgetの変数を変更（セレクテッドアワー）
-                            selectedHour = '';
-
-                            /// ここでConsumerStatefulWidgetの変数を変更（セレクテッドタイムジオロック）
-                            selectedTimeGeoloc = null;
-                          });
-
-                          setDefaultBoundsMap();
-                        },
-                        child: const Icon(Icons.center_focus_strong),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: <Widget>[
-                      GestureDetector(
-                        onTap: () {
-                          ///
-
-                          if (widget.geolocStateList.length == 1 || selectedTimeGeoloc != null) {
-                            if (currentZoom != null) {
-                              setState(() => currentZoom = currentZoom! + 1);
-
-                              mapController.move(
-                                (selectedTimeGeoloc == null || currentZoom == null)
-                                    ? LatLng(
-                                        widget.geolocStateList[0].latitude.toDouble(),
-                                        widget.geolocStateList[0].longitude.toDouble(),
-                                      )
-                                    : LatLng(
-                                        selectedTimeGeoloc!.latitude.toDouble(),
-                                        selectedTimeGeoloc!.longitude.toDouble(),
-                                      ),
-                                currentZoom!,
-                              );
-                            }
-                          } else {
-                            setState(() {
-                              currentPaddingIndex = currentPaddingIndex + 5;
-                            });
-
-                            setDefaultBoundsMap();
-                          }
-
-                          ///
-                        },
-                        child: const Icon(Icons.add),
-                      ),
-                      const SizedBox(width: 20),
-                      GestureDetector(
-                        onTap: () {
-                          ///
-
-                          if (widget.geolocStateList.length == 1 || selectedTimeGeoloc != null) {
-                            if (currentZoom != null) {
-                              setState(() => currentZoom = currentZoom! - 1);
-
-                              mapController.move(
-                                (selectedTimeGeoloc == null || currentZoom == null)
-                                    ? LatLng(
-                                        widget.geolocStateList[0].latitude.toDouble(),
-                                        widget.geolocStateList[0].longitude.toDouble(),
-                                      )
-                                    : LatLng(
-                                        selectedTimeGeoloc!.latitude.toDouble(),
-                                        selectedTimeGeoloc!.longitude.toDouble(),
-                                      ),
-                                currentZoom!,
-                              );
-                            }
-                          } else {
-                            setState(() {
-                              currentPaddingIndex = currentPaddingIndex - 5;
-                              if (currentPaddingIndex < 5) {
-                                currentPaddingIndex = 5;
-                              }
-                            });
-
-                            setDefaultBoundsMap();
-                          }
-
-                          ///
-                        },
-                        child: const Icon(Icons.remove),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-
-              /////
-
-              const SizedBox(height: 20),
-
-              /////
-
-              SingleChildScrollView(
-                controller: scrollController,
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  children: timeList.map((String e) {
-                    return Padding(
-                      padding: const EdgeInsets.only(right: 10),
-                      child: GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            /// ここでConsumerStatefulWidgetの変数を変更（セレクテッドアワー）
-                            selectedHour = e;
-
-                            /// ここでConsumerStatefulWidgetの変数を変更（セレクテッドタイムジオロック）
-                            selectedTimeGeoloc = widget.geolocStateList
-                                .firstWhere((GeolocModel e2) => e2.time == selectedHourMap[e]?[0]);
-                          });
-
-                          /// ここでappParamProviderの変数を変更（セレクテッドアワー）
-                          ref.read(appParamProvider.notifier).setSelectedHour(hour: e);
-
-                          /// ここでappParamProviderの変数を変更（セレクテッドタイムジオロック）
-                          ref.read(appParamProvider.notifier).setSelectedTimeGeoloc(
-                              geoloc: widget.geolocStateList
-                                  .firstWhere((GeolocModel e2) => e2.time == selectedHourMap[e]?[0]));
-
-                          itemScrollController.jumpTo(
-                            index: widget.geolocStateList
-                                .indexWhere((GeolocModel element) => element.time.split(':')[0] == e),
-                          );
-                        },
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 15),
-                          decoration: BoxDecoration(color: Colors.white.withOpacity(0.3)),
-                          child: Text(e, style: const TextStyle(fontSize: 12)),
-                        ),
-                      ),
-                    );
-                  }).toList(),
-                ),
-              ),
-
-              /////
-
-              SizedBox(
-                height: 60,
-                child: ScrollablePositionedList.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: widget.geolocStateList.length,
-                  itemScrollController: itemScrollController,
-                  itemPositionsListener: itemPositionsListener,
-                  itemBuilder: (BuildContext context, int index) {
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 5),
-                      child: GestureDetector(
-                        onTap: () {
-                          ref.read(appParamProvider.notifier).setIsMarkerHide(flag: false);
-
-                          setState(() {
-                            /// ここでConsumerStatefulWidgetの変数を変更（セレクテッドアワー）
-                            selectedHour = widget.geolocStateList[index].time.split(':')[0];
-
-                            /// ここでConsumerStatefulWidgetの変数を変更（セレクテッドタイムジオロック）
-                            selectedTimeGeoloc = widget.geolocStateList[index];
-                          });
-
-                          /// ここでappParamProviderの変数を変更（セレクテッドアワー）
-                          ref
-                              .read(appParamProvider.notifier)
-                              .setSelectedHour(hour: widget.geolocStateList[index].time.split(':')[0]);
-
-                          /// ここでappParamProviderの変数を変更（セレクテッドタイムジオロック）
-                          ref
-                              .read(appParamProvider.notifier)
-                              .setSelectedTimeGeoloc(geoloc: widget.geolocStateList[index]);
-
-                          mapController.move(
-                            LatLng(
-                              widget.geolocStateList[index].latitude.toDouble(),
-                              widget.geolocStateList[index].longitude.toDouble(),
-                            ),
-                            currentZoom ?? currentZoomEightTeen,
-                          );
-
-                          makePolylineGeolocList(geoloc: widget.geolocStateList[index]);
-                        },
-                        child: CircleAvatar(
-                          // ignore: use_if_null_to_convert_nulls_to_bools
-                          backgroundColor: (widget.displayTempMap == true)
-                              ? Colors.orangeAccent.withOpacity(0.5)
-                              : Colors.green[900]?.withOpacity(0.5),
-                          child: Text(
-                            widget.geolocStateList[index].time,
-                            style: const TextStyle(color: Colors.white, fontSize: 10),
-                          ),
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              ),
-
-              /////
-
-              if (widget.templeInfoList != null) ...<Widget>[
-                SingleChildScrollView(
-                  controller: scrollController,
-                  scrollDirection: Axis.horizontal,
-                  child: Row(
-                    children: widget.templeInfoList!.map((TempleInfoModel element) {
-                      return GestureDetector(
-                        onTap: () {
-                          setState(() {
-                            /// ここでConsumerStatefulWidgetの変数を変更（セレクテッドタイムジオロック）
-                            selectedTimeGeoloc = GeolocModel(
-                              id: 0,
-                              year: widget.geolocStateList[0].year,
-                              month: widget.geolocStateList[0].month,
-                              day: widget.geolocStateList[0].day,
-                              time: '',
-                              latitude: element.latitude,
-                              longitude: element.longitude,
-                            );
-
-                            currentZoom = 17;
-
-                            isTempleCircleShow = true;
-
-                            currentCenter = LatLng(element.latitude.toDouble(), element.longitude.toDouble());
-                          });
-
-                          mapController.move(
-                            LatLng(element.latitude.toDouble(), element.longitude.toDouble()),
-                            currentZoom ?? currentZoomEightTeen,
-                          );
-                        },
-                        child: Container(
-                          margin: const EdgeInsets.all(5),
-                          padding: const EdgeInsets.symmetric(vertical: 3, horizontal: 15),
-                          decoration: BoxDecoration(color: Colors.redAccent.withOpacity(0.3)),
-                          child: Text(element.temple, style: const TextStyle(fontSize: 12)),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                ),
-              ],
-
-              /////
-            ],
-          ),
-        );
-      },
-      // ignore: always_specify_types
-    ).then((value) => setState(() => isBottomSheetVisible = false));
-
-    setState(() => isBottomSheetVisible = true);
-  }
-
-  ///
-  void makeSelectedHourMap() {
-    selectedHourMap = <String, List<String>>{};
-
-    for (final GeolocModel element in widget.geolocStateList) {
-      selectedHourMap[element.time.split(':')[0]] = <String>[];
-    }
-
-    for (final GeolocModel element in widget.geolocStateList) {
-      selectedHourMap[element.time.split(':')[0]]?.add(element.time);
     }
   }
 
@@ -633,43 +382,5 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
         ),
       );
     }
-  }
-
-  ///
-  void makePolylineGeolocList({required GeolocModel geoloc}) {
-    polylineGeolocList = <GeolocModel>[];
-
-    final int pos = widget.geolocStateList.indexWhere((GeolocModel element) => element.time == geoloc.time);
-
-    if (pos > 0) {
-      polylineGeolocList.add(widget.geolocStateList[pos - 1]);
-      polylineGeolocList.add(geoloc);
-    }
-  }
-
-  ///
-  List<LatLng> calculateCirclePoints(LatLng center, double radiusMeters) {
-    const int points = 64;
-
-    const double earthRadius = 6378137.0;
-
-    final double lat = center.latitude * pi / 180.0;
-
-    final double lng = center.longitude * pi / 180.0;
-
-    final double d = radiusMeters / earthRadius;
-
-    final List<LatLng> circlePoints = <LatLng>[];
-
-    for (int i = 0; i <= points; i++) {
-      final double angle = 2 * pi * i / points;
-
-      final double latOffset = asin(sin(lat) * cos(d) + cos(lat) * sin(d) * cos(angle));
-
-      final double lngOffset = lng + atan2(sin(angle) * sin(d) * cos(lat), cos(d) - sin(lat) * sin(latOffset));
-
-      circlePoints.add(LatLng(latOffset * 180.0 / pi, lngOffset * 180.0 / pi));
-    }
-    return circlePoints;
   }
 }

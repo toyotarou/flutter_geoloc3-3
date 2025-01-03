@@ -621,7 +621,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                         onPressed: (geolocStateMap[generateYmd] == null)
                                             ? null
                                             : () {
-                                                ref.read(appParamProvider.notifier).setIsMarkerHide(flag: false);
+                                                ref.read(appParamProvider.notifier).setIsMarkerShow(flag: false);
 
                                                 GeolocDialog(
                                                   context: context,

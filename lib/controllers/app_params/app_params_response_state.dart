@@ -1,4 +1,5 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:latlong2/latlong.dart';
 
 import '../../models/geoloc_model.dart';
 
@@ -9,7 +10,10 @@ class AppParamsResponseState with _$AppParamsResponseState {
   const factory AppParamsResponseState({
     DateTime? calendarSelectedDate,
     GeolocModel? selectedTimeGeoloc,
-    @Default(false) bool isMarkerHide,
+    @Default(true) bool isMarkerShow,
     @Default('') String selectedHour,
+    @Default(0) double currentZoom,
+    @Default(5) int currentPaddingIndex,
+    LatLng? currentCenter,
   }) = _AppParamsResponseState;
 }
