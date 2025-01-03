@@ -207,14 +207,10 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                               Container(
                                 width: 60,
                                 alignment: Alignment.topRight,
-                                // child: Text(
-                                //   (currentZoom != null) ? currentZoom!.toStringAsFixed(2) : '',
-                                //   style: const TextStyle(fontSize: 20, color: Colors.black),
-                                // ),
-                                //
-                                //
-                                //
-                                //
+                                child: Text(
+                                  (currentZoom != null) ? currentZoom!.toStringAsFixed(2) : '',
+                                  style: const TextStyle(fontSize: 20, color: Colors.black),
+                                ),
                               ),
                             ],
                           ),
