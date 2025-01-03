@@ -24,6 +24,7 @@ mixin _$AppParamsResponseState {
   int get currentPaddingIndex => throw _privateConstructorUsedError;
   LatLng? get currentCenter => throw _privateConstructorUsedError;
   bool get isTempleCircleShow => throw _privateConstructorUsedError;
+  GeolocModel? get polylineGeolocModel => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $AppParamsResponseStateCopyWith<AppParamsResponseState> get copyWith =>
@@ -44,7 +45,8 @@ abstract class $AppParamsResponseStateCopyWith<$Res> {
       double currentZoom,
       int currentPaddingIndex,
       LatLng? currentCenter,
-      bool isTempleCircleShow});
+      bool isTempleCircleShow,
+      GeolocModel? polylineGeolocModel});
 }
 
 /// @nodoc
@@ -69,6 +71,7 @@ class _$AppParamsResponseStateCopyWithImpl<$Res,
     Object? currentPaddingIndex = null,
     Object? currentCenter = freezed,
     Object? isTempleCircleShow = null,
+    Object? polylineGeolocModel = freezed,
   }) {
     return _then(_value.copyWith(
       calendarSelectedDate: freezed == calendarSelectedDate
@@ -103,6 +106,10 @@ class _$AppParamsResponseStateCopyWithImpl<$Res,
           ? _value.isTempleCircleShow
           : isTempleCircleShow // ignore: cast_nullable_to_non_nullable
               as bool,
+      polylineGeolocModel: freezed == polylineGeolocModel
+          ? _value.polylineGeolocModel
+          : polylineGeolocModel // ignore: cast_nullable_to_non_nullable
+              as GeolocModel?,
     ) as $Val);
   }
 }
@@ -124,7 +131,8 @@ abstract class _$$AppParamsResponseStateImplCopyWith<$Res>
       double currentZoom,
       int currentPaddingIndex,
       LatLng? currentCenter,
-      bool isTempleCircleShow});
+      bool isTempleCircleShow,
+      GeolocModel? polylineGeolocModel});
 }
 
 /// @nodoc
@@ -148,6 +156,7 @@ class __$$AppParamsResponseStateImplCopyWithImpl<$Res>
     Object? currentPaddingIndex = null,
     Object? currentCenter = freezed,
     Object? isTempleCircleShow = null,
+    Object? polylineGeolocModel = freezed,
   }) {
     return _then(_$AppParamsResponseStateImpl(
       calendarSelectedDate: freezed == calendarSelectedDate
@@ -182,6 +191,10 @@ class __$$AppParamsResponseStateImplCopyWithImpl<$Res>
           ? _value.isTempleCircleShow
           : isTempleCircleShow // ignore: cast_nullable_to_non_nullable
               as bool,
+      polylineGeolocModel: freezed == polylineGeolocModel
+          ? _value.polylineGeolocModel
+          : polylineGeolocModel // ignore: cast_nullable_to_non_nullable
+              as GeolocModel?,
     ));
   }
 }
@@ -197,7 +210,8 @@ class _$AppParamsResponseStateImpl implements _AppParamsResponseState {
       this.currentZoom = 0,
       this.currentPaddingIndex = 5,
       this.currentCenter,
-      this.isTempleCircleShow = false});
+      this.isTempleCircleShow = false,
+      this.polylineGeolocModel});
 
   @override
   final DateTime? calendarSelectedDate;
@@ -220,10 +234,12 @@ class _$AppParamsResponseStateImpl implements _AppParamsResponseState {
   @override
   @JsonKey()
   final bool isTempleCircleShow;
+  @override
+  final GeolocModel? polylineGeolocModel;
 
   @override
   String toString() {
-    return 'AppParamsResponseState(calendarSelectedDate: $calendarSelectedDate, selectedTimeGeoloc: $selectedTimeGeoloc, isMarkerShow: $isMarkerShow, selectedHour: $selectedHour, currentZoom: $currentZoom, currentPaddingIndex: $currentPaddingIndex, currentCenter: $currentCenter, isTempleCircleShow: $isTempleCircleShow)';
+    return 'AppParamsResponseState(calendarSelectedDate: $calendarSelectedDate, selectedTimeGeoloc: $selectedTimeGeoloc, isMarkerShow: $isMarkerShow, selectedHour: $selectedHour, currentZoom: $currentZoom, currentPaddingIndex: $currentPaddingIndex, currentCenter: $currentCenter, isTempleCircleShow: $isTempleCircleShow, polylineGeolocModel: $polylineGeolocModel)';
   }
 
   @override
@@ -246,7 +262,9 @@ class _$AppParamsResponseStateImpl implements _AppParamsResponseState {
             (identical(other.currentCenter, currentCenter) ||
                 other.currentCenter == currentCenter) &&
             (identical(other.isTempleCircleShow, isTempleCircleShow) ||
-                other.isTempleCircleShow == isTempleCircleShow));
+                other.isTempleCircleShow == isTempleCircleShow) &&
+            (identical(other.polylineGeolocModel, polylineGeolocModel) ||
+                other.polylineGeolocModel == polylineGeolocModel));
   }
 
   @override
@@ -259,7 +277,8 @@ class _$AppParamsResponseStateImpl implements _AppParamsResponseState {
       currentZoom,
       currentPaddingIndex,
       currentCenter,
-      isTempleCircleShow);
+      isTempleCircleShow,
+      polylineGeolocModel);
 
   @JsonKey(ignore: true)
   @override
@@ -278,7 +297,8 @@ abstract class _AppParamsResponseState implements AppParamsResponseState {
       final double currentZoom,
       final int currentPaddingIndex,
       final LatLng? currentCenter,
-      final bool isTempleCircleShow}) = _$AppParamsResponseStateImpl;
+      final bool isTempleCircleShow,
+      final GeolocModel? polylineGeolocModel}) = _$AppParamsResponseStateImpl;
 
   @override
   DateTime? get calendarSelectedDate;
@@ -296,6 +316,8 @@ abstract class _AppParamsResponseState implements AppParamsResponseState {
   LatLng? get currentCenter;
   @override
   bool get isTempleCircleShow;
+  @override
+  GeolocModel? get polylineGeolocModel;
   @override
   @JsonKey(ignore: true)
   _$$AppParamsResponseStateImplCopyWith<_$AppParamsResponseStateImpl>

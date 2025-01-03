@@ -97,14 +97,13 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
       WidgetsBinding.instance.addPostFrameCallback((_) async => setDefaultBoundsMap());
     }
 
-    final bool isMarkerShow = ref.watch(appParamProvider.select((AppParamsResponseState value) => value.isMarkerShow));
+    final AppParamsResponseState appParamState = ref.watch(appParamProvider);
 
-    final int currentPaddingIndex =
-        ref.watch(appParamProvider.select((AppParamsResponseState value) => value.currentPaddingIndex));
+    polylineGeolocList = (!appParamState.isMarkerShow) ? widget.geolocStateList : <GeolocModel>[];
 
-    final LatLng? currentCenter = ref.watch(appParamProvider.select((AppParamsResponseState value) => value.currentCenter));
-
-    final bool isTempleCircleShow = ref.watch(appParamProvider.select((AppParamsResponseState value) => value.isTempleCircleShow));
+    if (appParamState.polylineGeolocModel != null) {
+      makePolylineGeolocList(geoloc: appParamState.polylineGeolocModel!);
+    }
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -118,12 +117,6 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
               initialZoom: currentZoomEightTeen,
               onPositionChanged: (MapCamera position, bool isMoving) {
                 if (isMoving) {
-                  // setState(() => currentZoom = position.zoom);
-                  //
-                  //
-                  //
-                  //
-
                   ref.read(appParamProvider.notifier).setCurrentZoom(zoom: position.zoom);
                 }
               },
@@ -135,7 +128,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                 userAgentPackageName: 'com.example.app',
               ),
 
-              if (isMarkerShow) ...<Widget>[MarkerLayer(markers: markerList)],
+              if (appParamState.isMarkerShow) ...<Widget>[MarkerLayer(markers: markerList)],
 
               // ignore: always_specify_types
               PolylineLayer(
@@ -151,13 +144,13 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                 ],
               ),
 
-              if (isTempleCircleShow && currentCenter != null)
+              if (appParamState.isTempleCircleShow && appParamState.currentCenter != null)
                 // ignore: always_specify_types
                 PolygonLayer(
                   polygons: <Polygon<Object>>[
                     // ignore: always_specify_types
                     Polygon(
-                      points: calculateCirclePoints(currentCenter, circleRadiusMeters),
+                      points: calculateCirclePoints(appParamState.currentCenter!, circleRadiusMeters),
                       color: Colors.redAccent.withOpacity(0.1),
                       borderStrokeWidth: 2.0,
                       borderColor: Colors.redAccent.withOpacity(0.5),
@@ -198,7 +191,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                                 width: 60,
                                 alignment: Alignment.topRight,
                                 child: Text(
-                                  currentPaddingIndex.toString(),
+                                  appParamState.currentPaddingIndex.toString(),
                                   style: const TextStyle(fontSize: 20, color: Colors.black),
                                 ),
                               ),
@@ -220,15 +213,14 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                               templeInfoList: widget.templeInfoList,
                               mapController: mapController,
                               currentZoomEightTeen: currentZoomEightTeen,
-
                               selectedHourMap: selectedHourMap,
-
-                              // minMaxLatLngMap: <String, double>{
-                              //   'minLat': minLat,
-                              //   'maxLng': maxLng,
-                              //   'maxLat': maxLat,
-                              //   'minLng': minLng,
-                              // },
+                              minMaxLatLngMap: <String, double>{
+                                'minLat': minLat,
+                                'maxLng': maxLng,
+                                'maxLat': maxLat,
+                                'minLng': minLng,
+                              },
+                              displayTempMap: widget.displayTempMap,
                             ),
                             paddingTop: context.screenSize.height * 0.65,
                             clearBarrierColor: true,
@@ -372,5 +364,17 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
       circlePoints.add(LatLng(latOffset * 180.0 / pi, lngOffset * 180.0 / pi));
     }
     return circlePoints;
+  }
+
+  ///
+  void makePolylineGeolocList({required GeolocModel geoloc}) {
+    polylineGeolocList = <GeolocModel>[];
+
+    final int pos = widget.geolocStateList.indexWhere((GeolocModel element) => element.time == geoloc.time);
+
+    if (pos > 0) {
+      polylineGeolocList.add(widget.geolocStateList[pos - 1]);
+      polylineGeolocList.add(geoloc);
+    }
   }
 }

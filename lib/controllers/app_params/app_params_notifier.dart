@@ -35,4 +35,7 @@ class AppParamNotifier extends StateNotifier<AppParamsResponseState> {
 
   ///
   void setIsTempleCircleShow({required bool flag}) => state = state.copyWith(isTempleCircleShow: flag);
+
+  ///
+  void setPolylineGeolocModel({required GeolocModel model}) => state = state.copyWith(polylineGeolocModel: model);
 }

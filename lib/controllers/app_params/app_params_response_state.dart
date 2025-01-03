@@ -16,5 +16,6 @@ class AppParamsResponseState with _$AppParamsResponseState {
     @Default(5) int currentPaddingIndex,
     LatLng? currentCenter,
     @Default(false) bool isTempleCircleShow,
+    GeolocModel? polylineGeolocModel,
   }) = _AppParamsResponseState;
 }
