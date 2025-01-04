@@ -9,6 +9,8 @@ import '../../controllers/app_params/app_params_response_state.dart';
 import '../../extensions/extensions.dart';
 import '../../models/geoloc_model.dart';
 import '../../models/temple_latlng_model.dart';
+import '../parts/geoloc_dialog.dart';
+import 'visited_temple_time_circle_alert.dart';
 
 class GeolocMapControlPanelAlert extends ConsumerStatefulWidget {
   const GeolocMapControlPanelAlert({
@@ -365,6 +367,19 @@ class _GeolocMapControlPanelAlertState
                                 LatLng(element.latitude.toDouble(),
                                     element.longitude.toDouble()),
                                 17);
+
+                            GeolocDialog(
+                              context: context,
+                              widget: VisitedTempleTimeCircleAlert(
+                                temple: element,
+                                geolocStateList: widget.geolocStateList,
+                                displayTempMap: widget.displayTempMap,
+                              ),
+                              paddingTop: context.screenSize.height * 0.1,
+                              paddingBottom: context.screenSize.height * 0.25,
+                              paddingLeft: context.screenSize.width * 0.5,
+                              clearBarrierColor: true,
+                            );
                           },
                           child: Container(
                             margin: const EdgeInsets.all(5),
