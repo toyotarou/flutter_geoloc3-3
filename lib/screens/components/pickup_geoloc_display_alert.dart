@@ -229,6 +229,7 @@ class _PickupGeolocDisplayAlertState
     ref
         .read(geolocControllerProvider.notifier)
         .deleteGeoloc(date: widget.date.yyyymmdd)
+        // ignore: always_specify_types
         .then((value) {
       if (mounted) {
         Navigator.pop(context);

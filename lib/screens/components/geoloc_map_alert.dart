@@ -177,74 +177,100 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
               crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    DefaultTextStyle(
-                      style: const TextStyle(color: Colors.black),
-                      child: Column(
-                        children: <Widget>[
-                          Row(
-                            children: <Widget>[
-                              const SizedBox(width: 70, child: Text('size: ')),
-                              Container(
-                                width: 60,
-                                alignment: Alignment.topRight,
-                                child: Text(
-                                  (currentZoom != null)
-                                      ? currentZoom!.toStringAsFixed(2)
-                                      : '',
-                                  style: const TextStyle(
-                                      fontSize: 20, color: Colors.black),
-                                ),
-                              ),
-                            ],
-                          ),
-                          Row(
-                            children: <Widget>[
-                              const SizedBox(
-                                  width: 70, child: Text('padding: ')),
-                              Container(
-                                width: 60,
-                                alignment: Alignment.topRight,
-                                child: Text(
-                                  appParamState.currentPaddingIndex.toString(),
-                                  style: const TextStyle(
-                                      fontSize: 20, color: Colors.black),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 20),
                     Container(
-                      decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.3),
-                          borderRadius: BorderRadius.circular(10)),
-                      child: IconButton(
-                        onPressed: () {
-                          GeolocDialog(
-                            context: context,
-                            widget: GeolocMapControlPanelAlert(
-                              geolocStateList: widget.geolocStateList,
-                              templeInfoList: widget.templeInfoList,
-                              mapController: mapController,
-                              currentZoomEightTeen: currentZoomEightTeen,
-                              selectedHourMap: selectedHourMap,
-                              minMaxLatLngMap: <String, double>{
-                                'minLat': minLat,
-                                'maxLng': maxLng,
-                                'maxLat': maxLat,
-                                'minLng': minLng,
-                              },
-                              displayTempMap: widget.displayTempMap,
-                            ),
-                            paddingTop: context.screenSize.height * 0.65,
-                            clearBarrierColor: true,
-                          );
-                        },
-                        icon: const Icon(Icons.info),
-                      ),
+                      alignment: Alignment.topLeft,
+                      child: (appParamState.selectedTimeGeoloc != null)
+                          ? Row(
+                              children: <Widget>[
+                                Text(
+                                  appParamState.selectedTimeGeoloc!.time,
+                                  style: const TextStyle(
+                                      color: Colors.black, fontSize: 20),
+                                ),
+                                const SizedBox(width: 20),
+                              ],
+                            )
+                          : null,
+                    ),
+                    Row(
+                      children: <Widget>[
+                        DefaultTextStyle(
+                          style: const TextStyle(color: Colors.black),
+                          child: Column(
+                            children: <Widget>[
+                              Row(
+                                children: <Widget>[
+                                  const SizedBox(
+                                      width: 70, child: Text('size: ')),
+                                  Container(
+                                    width: 60,
+                                    alignment: Alignment.topRight,
+                                    child: Text(
+                                      // (currentZoom != null)
+                                      //     ? currentZoom!.toStringAsFixed(2)
+                                      //     : '',
+
+                                      appParamState.currentZoom
+                                          .toStringAsFixed(2),
+
+                                      style: const TextStyle(
+                                          fontSize: 20, color: Colors.black),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: <Widget>[
+                                  const SizedBox(
+                                      width: 70, child: Text('padding: ')),
+                                  Container(
+                                    width: 60,
+                                    alignment: Alignment.topRight,
+                                    child: Text(
+                                      appParamState.currentPaddingIndex
+                                          .toString(),
+                                      style: const TextStyle(
+                                          fontSize: 20, color: Colors.black),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 20),
+                        Container(
+                          decoration: BoxDecoration(
+                              color: Colors.black.withOpacity(0.3),
+                              borderRadius: BorderRadius.circular(10)),
+                          child: IconButton(
+                            onPressed: () {
+                              GeolocDialog(
+                                context: context,
+                                widget: GeolocMapControlPanelAlert(
+                                  geolocStateList: widget.geolocStateList,
+                                  templeInfoList: widget.templeInfoList,
+                                  mapController: mapController,
+                                  currentZoomEightTeen: currentZoomEightTeen,
+                                  selectedHourMap: selectedHourMap,
+                                  minMaxLatLngMap: <String, double>{
+                                    'minLat': minLat,
+                                    'maxLng': maxLng,
+                                    'maxLat': maxLat,
+                                    'minLng': minLng,
+                                  },
+                                  displayTempMap: widget.displayTempMap,
+                                ),
+                                paddingTop: context.screenSize.height * 0.65,
+                                clearBarrierColor: true,
+                              );
+                            },
+                            icon: const Icon(Icons.info),
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
