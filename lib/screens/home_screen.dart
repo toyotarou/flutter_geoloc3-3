@@ -83,7 +83,8 @@ void backgroundHandler(Location data) {
         // debugPrint('---------');
 
         await IsarRepository.configure();
-        IsarRepository.isar.writeTxnSync(() => IsarRepository.isar.geolocs.putSync(geoloc));
+        IsarRepository.isar
+            .writeTxnSync(() => IsarRepository.isar.geolocs.putSync(geoloc));
       }
     });
   });
@@ -158,19 +159,21 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
       }
     });
 
-    _statusDisposer = BackgroundTask.instance.status.listen((StatusEvent event) {
-      final String message = 'status: ${event.status.value}, message: ${event.message}';
+    _statusDisposer =
+        BackgroundTask.instance.status.listen((StatusEvent event) {
+      final String message =
+          'status: ${event.status.value}, message: ${event.message}';
 
       setState(() => statusText = message);
     });
 
-    ref
-        .read(geolocControllerProvider.notifier)
-        .getYearMonthGeoloc(yearmonth: (widget.baseYm != null) ? widget.baseYm! : DateTime.now().yyyymm);
+    ref.read(geolocControllerProvider.notifier).getYearMonthGeoloc(
+        yearmonth:
+            (widget.baseYm != null) ? widget.baseYm! : DateTime.now().yyyymm);
 
-    ref
-        .read(walkRecordControllerProvider.notifier)
-        .getYearWalkRecord(yearmonth: (widget.baseYm != null) ? widget.baseYm! : DateTime.now().yyyymm);
+    ref.read(walkRecordControllerProvider.notifier).getYearWalkRecord(
+        yearmonth:
+            (widget.baseYm != null) ? widget.baseYm! : DateTime.now().yyyymm);
 
     ref.read(templeControllerProvider.notifier).getAllTempleModel();
   }
@@ -196,7 +199,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     if (widget.baseYm != null && !baseYmSetFlag) {
       // ignore: always_specify_types
-      Future(() => ref.read(calendarProvider.notifier).setCalendarYearMonth(baseYm: widget.baseYm));
+      Future(() => ref
+          .read(calendarProvider.notifier)
+          .setCalendarYearMonth(baseYm: widget.baseYm));
 
       baseYmSetFlag = true;
     }
@@ -217,12 +222,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 children: <Widget>[
                   IconButton(
                       onPressed: () => _goPrevMonth(),
-                      icon: Icon(Icons.arrow_back_ios, color: Colors.white.withOpacity(0.8), size: 14)),
+                      icon: Icon(Icons.arrow_back_ios,
+                          color: Colors.white.withOpacity(0.8), size: 14)),
                   IconButton(
-                    onPressed: () => (DateTime.now().yyyymm == calendarState.baseYearMonth) ? null : _goNextMonth(),
+                    onPressed: () =>
+                        (DateTime.now().yyyymm == calendarState.baseYearMonth)
+                            ? null
+                            : _goNextMonth(),
                     icon: Icon(Icons.arrow_forward_ios,
                         size: 14,
-                        color: (DateTime.now().yyyymm == calendarState.baseYearMonth)
+                        color: (DateTime.now().yyyymm ==
+                                calendarState.baseYearMonth)
                             ? Colors.grey.withOpacity(0.6)
                             : Colors.white.withOpacity(0.8)),
                   ),
@@ -242,16 +252,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             bottom: 10,
             right: 10,
             child: ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
+                style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
                 onPressed: () {
                   final List<GeolocModel> list = <GeolocModel>[];
 
                   int i = 0;
                   String keepLat = '';
                   String keepLng = '';
-                  ref.watch(geolocControllerProvider.select((GeolocControllerState value) => value.geolocList)).toList()
-                    ..sort((GeolocModel a, GeolocModel b) => a.latitude.compareTo(b.latitude))
-                    ..sort((GeolocModel a, GeolocModel b) => a.longitude.compareTo(b.longitude))
+                  ref
+                      .watch(geolocControllerProvider.select(
+                          (GeolocControllerState value) => value.geolocList))
+                      .toList()
+                    ..sort((GeolocModel a, GeolocModel b) =>
+                        a.latitude.compareTo(b.latitude))
+                    ..sort((GeolocModel a, GeolocModel b) =>
+                        a.longitude.compareTo(b.longitude))
                     ..forEach((GeolocModel element) {
                       String distance = '';
 
@@ -283,11 +299,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       i++;
                     });
 
-                  ref.read(appParamProvider.notifier).setIsMarkerShow(flag: true);
+                  ref
+                      .read(appParamProvider.notifier)
+                      .setIsMarkerShow(flag: true);
 
                   ref.read(appParamProvider.notifier).setSelectedTimeGeoloc();
 
-                  ref.read(appParamProvider.notifier).setSelectedHour(hour: '');
+//                  ref.read(appParamProvider.notifier).setSelectedHour(hour: '');
 
                   GeolocDialog(
                     context: context,
@@ -325,11 +343,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               const SizedBox(height: 60),
               GestureDetector(
                 onTap: () async {
-                  final PermissionStatus status = await Permission.location.request();
-                  final PermissionStatus statusAlways = await Permission.locationAlways.request();
+                  final PermissionStatus status =
+                      await Permission.location.request();
+                  final PermissionStatus statusAlways =
+                      await Permission.locationAlways.request();
 
                   if (status.isGranted && statusAlways.isGranted) {
-                    await BackgroundTask.instance.start(isEnabledEvenIfKilled: isEnabledEvenIfKilled);
+                    await BackgroundTask.instance
+                        .start(isEnabledEvenIfKilled: isEnabledEvenIfKilled);
                     setState(() => bgText = 'start');
                   }
                 },
@@ -340,7 +361,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     Expanded(
                       child: Container(
                         width: double.infinity,
-                        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 3),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 5, horizontal: 3),
                         margin: const EdgeInsets.all(5),
                         child: const Text('Start'),
                       ),
@@ -350,7 +372,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
               ),
               GestureDetector(
                 onTap: () async {
-                  final bool isRunning = await BackgroundTask.instance.isRunning;
+                  final bool isRunning =
+                      await BackgroundTask.instance.isRunning;
 
                   if (context.mounted) {
                     // ignore: use_build_context_synchronously
@@ -359,7 +382,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         content: Text('isRunning: $isRunning'),
                         action: SnackBarAction(
                           label: 'close',
-                          onPressed: () => ScaffoldMessenger.of(context).clearSnackBars(),
+                          onPressed: () =>
+                              ScaffoldMessenger.of(context).clearSnackBars(),
                         ),
                       ),
                     );
@@ -372,7 +396,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     Expanded(
                       child: Container(
                         width: double.infinity,
-                        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 3),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 5, horizontal: 3),
                         margin: const EdgeInsets.all(5),
                         child: const Text('Status'),
                       ),
@@ -386,8 +411,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   context,
                   // ignore: inference_failure_on_instance_creation, always_specify_types
                   MaterialPageRoute(
-                    builder: (BuildContext context) =>
-                        HomeScreen(baseYm: (widget.baseYm != null) ? widget.baseYm : DateTime.now().yyyymm),
+                    builder: (BuildContext context) => HomeScreen(
+                        baseYm: (widget.baseYm != null)
+                            ? widget.baseYm
+                            : DateTime.now().yyyymm),
                   ),
                 ),
                 child: Row(
@@ -397,7 +424,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     Expanded(
                       child: Container(
                         width: double.infinity,
-                        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 3),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 5, horizontal: 3),
                         margin: const EdgeInsets.all(5),
                         child: const Text('Reload'),
                       ),
@@ -410,7 +438,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   Navigator.pushReplacement(
                     context,
                     // ignore: inference_failure_on_instance_creation, always_specify_types
-                    MaterialPageRoute(builder: (BuildContext context) => HomeScreen(baseYm: DateTime.now().yyyymm)),
+                    MaterialPageRoute(
+                        builder: (BuildContext context) =>
+                            HomeScreen(baseYm: DateTime.now().yyyymm)),
                   );
                 },
                 child: Row(
@@ -420,7 +450,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     Expanded(
                       child: Container(
                         width: double.infinity,
-                        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 3),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 5, horizontal: 3),
                         margin: const EdgeInsets.all(5),
                         child: const Text('Today'),
                       ),
@@ -429,7 +460,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 ),
               ),
               GestureDetector(
-                onTap: () => GeolocDialog(context: context, widget: const HistoryGeolocListAlert()),
+                onTap: () => GeolocDialog(
+                    context: context, widget: const HistoryGeolocListAlert()),
                 child: Row(
                   children: <Widget>[
                     const MenuHeadIcon(),
@@ -437,7 +469,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     Expanded(
                       child: Container(
                         width: double.infinity,
-                        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 3),
+                        padding: const EdgeInsets.symmetric(
+                            vertical: 5, horizontal: 3),
                         margin: const EdgeInsets.all(5),
                         child: const Text('History'),
                       ),
@@ -454,14 +487,17 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   ///
   Widget _getCalendar() {
-    final Map<String, List<GeolocModel>> geolocStateMap =
-        ref.watch(geolocControllerProvider.select((GeolocControllerState value) => value.geolocMap));
+    final Map<String, List<GeolocModel>> geolocStateMap = ref.watch(
+        geolocControllerProvider
+            .select((GeolocControllerState value) => value.geolocMap));
 
-    final Map<String, WalkRecordModel> walkRecordMap =
-        ref.watch(walkRecordControllerProvider.select((WalkRecordControllerState value) => value.walkRecordMap));
+    final Map<String, WalkRecordModel> walkRecordMap = ref.watch(
+        walkRecordControllerProvider
+            .select((WalkRecordControllerState value) => value.walkRecordMap));
 
-    final Map<String, List<TempleInfoModel>> templeInfoMap =
-        ref.watch(templeControllerProvider.select((TempleControllerState value) => value.templeInfoMap));
+    final Map<String, List<TempleInfoModel>> templeInfoMap = ref.watch(
+        templeControllerProvider
+            .select((TempleControllerState value) => value.templeInfoMap));
 
     final HolidaysResponseState holidayState = ref.watch(holidayProvider);
 
@@ -471,15 +507,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     final CalendarsResponseState calendarState = ref.watch(calendarProvider);
 
-    _calendarMonthFirst = DateTime.parse('${calendarState.baseYearMonth}-01 00:00:00');
+    _calendarMonthFirst =
+        DateTime.parse('${calendarState.baseYearMonth}-01 00:00:00');
 
-    final DateTime monthEnd = DateTime.parse('${calendarState.nextYearMonth}-00 00:00:00');
+    final DateTime monthEnd =
+        DateTime.parse('${calendarState.nextYearMonth}-00 00:00:00');
 
     final int diff = monthEnd.difference(_calendarMonthFirst).inDays;
     final int monthDaysNum = diff + 1;
 
     final String youbi = _calendarMonthFirst.youbiStr;
-    final int youbiNum = _youbiList.indexWhere((String element) => element == youbi);
+    final int youbiNum =
+        _youbiList.indexWhere((String element) => element == youbi);
 
     final int weekNum = ((monthDaysNum + youbiNum) <= 35) ? 5 : 6;
 
@@ -488,7 +527,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     for (int i = 0; i < (weekNum * 7); i++) {
       if (i >= youbiNum) {
-        final DateTime gendate = _calendarMonthFirst.add(Duration(days: i - youbiNum));
+        final DateTime gendate =
+            _calendarMonthFirst.add(Duration(days: i - youbiNum));
 
         if (_calendarMonthFirst.month == gendate.month) {
           _calendarDays[i] = gendate.day.toString();
@@ -499,11 +539,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final List<Widget> list = <Widget>[];
     for (int i = 0; i < weekNum; i++) {
       list.add(_getCalendarRow(
-          week: i, geolocStateMap: geolocStateMap, walkRecordMap: walkRecordMap, templeInfoMap: templeInfoMap));
+          week: i,
+          geolocStateMap: geolocStateMap,
+          walkRecordMap: walkRecordMap,
+          templeInfoMap: templeInfoMap));
     }
 
     return SingleChildScrollView(
-        child: DefaultTextStyle(style: const TextStyle(fontSize: 10), child: Column(children: list)));
+        child: DefaultTextStyle(
+            style: const TextStyle(fontSize: 10),
+            child: Column(children: list)));
   }
 
   ///
@@ -517,11 +562,15 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     for (int i = week * 7; i < ((week + 1) * 7); i++) {
       final String generateYmd = (_calendarDays[i] == '')
           ? ''
-          : DateTime(_calendarMonthFirst.year, _calendarMonthFirst.month, _calendarDays[i].toInt()).yyyymmdd;
+          : DateTime(_calendarMonthFirst.year, _calendarMonthFirst.month,
+                  _calendarDays[i].toInt())
+              .yyyymmdd;
 
       final String youbiStr = (_calendarDays[i] == '')
           ? ''
-          : DateTime(_calendarMonthFirst.year, _calendarMonthFirst.month, _calendarDays[i].toInt()).youbiStr;
+          : DateTime(_calendarMonthFirst.year, _calendarMonthFirst.month,
+                  _calendarDays[i].toInt())
+              .youbiStr;
 
       list.add(
         Expanded(
@@ -531,7 +580,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                 Positioned(
                   bottom: 10,
                   right: 10,
-                  child: Icon(FontAwesomeIcons.toriiGate, size: 15, color: Colors.white.withOpacity(0.5)),
+                  child: Icon(FontAwesomeIcons.toriiGate,
+                      size: 15, color: Colors.white.withOpacity(0.5)),
                 ),
               ],
               Container(
@@ -548,9 +598,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   ),
                   color: (_calendarDays[i] == '')
                       ? Colors.transparent
-                      : (DateTime.parse('$generateYmd 00:00:00').isAfter(DateTime.now()))
+                      : (DateTime.parse('$generateYmd 00:00:00')
+                              .isAfter(DateTime.now()))
                           ? Colors.white.withOpacity(0.1)
-                          : utility.getYoubiColor(date: generateYmd, youbiStr: youbiStr, holidayMap: _holidayMap),
+                          : utility.getYoubiColor(
+                              date: generateYmd,
+                              youbiStr: youbiStr,
+                              holidayMap: _holidayMap),
                 ),
                 child: (_calendarDays[i] == '')
                     ? const Text('')
@@ -572,8 +626,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                           ),
                           const SizedBox(height: 5),
                           ConstrainedBox(
-                            constraints: BoxConstraints(minHeight: context.screenSize.height / 9),
-                            child: (DateTime.parse('$generateYmd 00:00:00').isAfter(DateTime.now()))
+                            constraints: BoxConstraints(
+                                minHeight: context.screenSize.height / 9),
+                            child: (DateTime.parse('$generateYmd 00:00:00')
+                                    .isAfter(DateTime.now()))
                                 ? null
                                 : Column(
                                     children: <Widget>[
@@ -582,36 +638,50 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                       OutlinedButton(
                                         style: OutlinedButton.styleFrom(
                                           padding: EdgeInsets.zero,
-                                          backgroundColor: (geolocMap[generateYmd] == null)
-                                              ? null
-                                              : Colors.blueAccent.withOpacity(0.1),
+                                          backgroundColor:
+                                              (geolocMap[generateYmd] == null)
+                                                  ? null
+                                                  : Colors.blueAccent
+                                                      .withOpacity(0.1),
                                         ),
-                                        onPressed: (geolocMap[generateYmd] == null)
-                                            ? null
-                                            : () {
-                                                GeolocDialog(
-                                                  context: context,
-                                                  widget: DailyGeolocDisplayAlert(
-                                                    date: DateTime.parse('$generateYmd 00:00:00'),
-                                                    geolocStateList: geolocStateMap[generateYmd] ?? <GeolocModel>[],
-                                                    walkRecord: walkRecordMap[generateYmd] ??
-                                                        WalkRecordModel(
-                                                          id: 0,
-                                                          year: '',
-                                                          month: '',
-                                                          day: '',
-                                                          step: 0,
-                                                          distance: 0,
-                                                        ),
-                                                    templeInfoMap: templeInfoMap[generateYmd],
-                                                  ),
-                                                );
-                                              },
+                                        onPressed:
+                                            (geolocMap[generateYmd] == null)
+                                                ? null
+                                                : () {
+                                                    GeolocDialog(
+                                                      context: context,
+                                                      widget:
+                                                          DailyGeolocDisplayAlert(
+                                                        date: DateTime.parse(
+                                                            '$generateYmd 00:00:00'),
+                                                        geolocStateList:
+                                                            geolocStateMap[
+                                                                    generateYmd] ??
+                                                                <GeolocModel>[],
+                                                        walkRecord: walkRecordMap[
+                                                                generateYmd] ??
+                                                            WalkRecordModel(
+                                                              id: 0,
+                                                              year: '',
+                                                              month: '',
+                                                              day: '',
+                                                              step: 0,
+                                                              distance: 0,
+                                                            ),
+                                                        templeInfoMap:
+                                                            templeInfoMap[
+                                                                generateYmd],
+                                                      ),
+                                                    );
+                                                  },
                                         child: Text(
                                           (geolocMap[generateYmd] != null)
-                                              ? geolocMap[generateYmd]!.length.toString()
+                                              ? geolocMap[generateYmd]!
+                                                  .length
+                                                  .toString()
                                               : '',
-                                          style: const TextStyle(fontSize: 8, color: Colors.white),
+                                          style: const TextStyle(
+                                              fontSize: 8, color: Colors.white),
                                         ),
                                       ),
 
@@ -620,38 +690,56 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                       OutlinedButton(
                                         style: OutlinedButton.styleFrom(
                                           padding: EdgeInsets.zero,
-                                          backgroundColor: (geolocStateMap[generateYmd] == null)
-                                              ? null
-                                              : Colors.greenAccent.withOpacity(0.1),
+                                          backgroundColor:
+                                              (geolocStateMap[generateYmd] ==
+                                                      null)
+                                                  ? null
+                                                  : Colors.greenAccent
+                                                      .withOpacity(0.1),
                                         ),
-                                        onPressed: (geolocStateMap[generateYmd] == null)
-                                            ? null
-                                            : () {
-                                                ref.read(appParamProvider.notifier).setIsMarkerShow(flag: false);
+                                        onPressed:
+                                            (geolocStateMap[generateYmd] ==
+                                                    null)
+                                                ? null
+                                                : () {
+                                                    ref
+                                                        .read(appParamProvider
+                                                            .notifier)
+                                                        .setIsMarkerShow(
+                                                            flag: false);
 
-                                                GeolocDialog(
-                                                  context: context,
-                                                  widget: GeolocMapAlert(
-                                                    geolocStateList: geolocStateMap[generateYmd] ?? <GeolocModel>[],
-                                                    displayMonthMap: false,
-                                                    walkRecord: walkRecordMap[generateYmd] ??
-                                                        WalkRecordModel(
-                                                          id: 0,
-                                                          year: '',
-                                                          month: '',
-                                                          day: '',
-                                                          step: 0,
-                                                          distance: 0,
-                                                        ),
-                                                    templeInfoList: templeInfoMap[generateYmd],
-                                                  ),
-                                                );
-                                              },
+                                                    GeolocDialog(
+                                                      context: context,
+                                                      widget: GeolocMapAlert(
+                                                        geolocStateList:
+                                                            geolocStateMap[
+                                                                    generateYmd] ??
+                                                                <GeolocModel>[],
+                                                        displayMonthMap: false,
+                                                        walkRecord: walkRecordMap[
+                                                                generateYmd] ??
+                                                            WalkRecordModel(
+                                                              id: 0,
+                                                              year: '',
+                                                              month: '',
+                                                              day: '',
+                                                              step: 0,
+                                                              distance: 0,
+                                                            ),
+                                                        templeInfoList:
+                                                            templeInfoMap[
+                                                                generateYmd],
+                                                      ),
+                                                    );
+                                                  },
                                         child: Text(
                                           (geolocStateMap[generateYmd] != null)
-                                              ? geolocStateMap[generateYmd]!.length.toString()
+                                              ? geolocStateMap[generateYmd]!
+                                                  .length
+                                                  .toString()
                                               : '',
-                                          style: const TextStyle(fontSize: 8, color: Colors.white),
+                                          style: const TextStyle(
+                                              fontSize: 8, color: Colors.white),
                                         ),
                                       ),
 
@@ -678,7 +766,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     Navigator.pushReplacement(
       context,
       // ignore: inference_failure_on_instance_creation, always_specify_types
-      MaterialPageRoute(builder: (BuildContext context) => HomeScreen(baseYm: calendarState.prevYearMonth)),
+      MaterialPageRoute(
+          builder: (BuildContext context) =>
+              HomeScreen(baseYm: calendarState.prevYearMonth)),
     );
   }
 
@@ -689,7 +779,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     Navigator.pushReplacement(
       context,
       // ignore: inference_failure_on_instance_creation, always_specify_types
-      MaterialPageRoute(builder: (BuildContext context) => HomeScreen(baseYm: calendarState.nextYearMonth)),
+      MaterialPageRoute(
+          builder: (BuildContext context) =>
+              HomeScreen(baseYm: calendarState.nextYearMonth)),
     );
   }
 

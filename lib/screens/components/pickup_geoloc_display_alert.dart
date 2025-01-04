@@ -15,7 +15,11 @@ import 'geoloc_map_alert.dart';
 
 class PickupGeolocDisplayAlert extends ConsumerStatefulWidget {
   const PickupGeolocDisplayAlert(
-      {super.key, required this.pickupGeolocList, required this.date, required this.walkRecord, this.templeInfoMap});
+      {super.key,
+      required this.pickupGeolocList,
+      required this.date,
+      required this.walkRecord,
+      this.templeInfoMap});
 
   final DateTime date;
   final List<Geoloc> pickupGeolocList;
@@ -23,10 +27,12 @@ class PickupGeolocDisplayAlert extends ConsumerStatefulWidget {
   final List<TempleInfoModel>? templeInfoMap;
 
   @override
-  ConsumerState<PickupGeolocDisplayAlert> createState() => _PickupGeolocDisplayAlertState();
+  ConsumerState<PickupGeolocDisplayAlert> createState() =>
+      _PickupGeolocDisplayAlertState();
 }
 
-class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAlert> {
+class _PickupGeolocDisplayAlertState
+    extends ConsumerState<PickupGeolocDisplayAlert> {
   Utility utility = Utility();
 
   ///
@@ -50,14 +56,19 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
                     if (widget.pickupGeolocList.length > 1) ...<Widget>[
                       GestureDetector(
                         onTap: () {
-                          ref.read(appParamProvider.notifier).setIsMarkerShow(flag: true);
+                          ref
+                              .read(appParamProvider.notifier)
+                              .setIsMarkerShow(flag: true);
 
-                          ref.read(appParamProvider.notifier).setSelectedTimeGeoloc();
+                          ref
+                              .read(appParamProvider.notifier)
+                              .setSelectedTimeGeoloc();
 
-                          ref.read(appParamProvider.notifier).setSelectedHour(hour: '');
+//                          ref.read(appParamProvider.notifier).setSelectedHour(hour: '');
 
                           final List<GeolocModel> list = <GeolocModel>[];
-                          for (final Geoloc element in widget.pickupGeolocList) {
+                          for (final Geoloc element
+                              in widget.pickupGeolocList) {
                             list.add(
                               GeolocModel(
                                 id: 0,
@@ -83,7 +94,11 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
                           );
                         },
                         child: const Column(
-                          children: <Widget>[Text('isar'), Icon(Icons.map, color: Colors.orangeAccent), Text('map')],
+                          children: <Widget>[
+                            Text('isar'),
+                            Icon(Icons.map, color: Colors.orangeAccent),
+                            Text('map')
+                          ],
                         ),
                       ),
                       const SizedBox(width: 30),
@@ -101,7 +116,11 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
                     const SizedBox(width: 30),
                     GestureDetector(
                       onTap: () => inputPickupGeoloc(),
-                      child: const Column(children: <Widget>[Text('input'), Icon(Icons.input), Text('mysql')]),
+                      child: const Column(children: <Widget>[
+                        Text('input'),
+                        Icon(Icons.input),
+                        Text('mysql')
+                      ]),
                     ),
                   ],
                 ),
@@ -112,7 +131,10 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
             Divider(color: Colors.white.withOpacity(0.5), thickness: 5),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[Container(), Text(widget.pickupGeolocList.length.toString())],
+              children: <Widget>[
+                Container(),
+                Text(widget.pickupGeolocList.length.toString())
+              ],
             ),
           ],
         ),
@@ -154,7 +176,10 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
             const SizedBox(width: 30),
             Expanded(child: Text(element.latitude)),
             Expanded(child: Text(element.longitude)),
-            Container(width: 60, alignment: Alignment.topRight, child: Text('$distance m')),
+            Container(
+                width: 60,
+                alignment: Alignment.topRight,
+                child: Text('$distance m')),
           ],
         ),
       ));
@@ -167,8 +192,9 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
     return CustomScrollView(
       slivers: <Widget>[
         SliverList(
-          delegate:
-              SliverChildBuilderDelegate((BuildContext context, int index) => list[index], childCount: list.length),
+          delegate: SliverChildBuilderDelegate(
+              (BuildContext context, int index) => list[index],
+              childCount: list.length),
         ),
       ],
     );
@@ -176,7 +202,8 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
 
   ///
   void _showDeleteDialog() {
-    final Widget cancelButton = TextButton(onPressed: () => Navigator.pop(context), child: const Text('いいえ'));
+    final Widget cancelButton = TextButton(
+        onPressed: () => Navigator.pop(context), child: const Text('いいえ'));
 
     final Widget continueButton = TextButton(
         onPressed: () {
@@ -199,7 +226,10 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
   ///
   Future<void> deletePickupGeoloc() async {
     // ignore: always_specify_types
-    ref.read(geolocControllerProvider.notifier).deleteGeoloc(date: widget.date.yyyymmdd).then((value) {
+    ref
+        .read(geolocControllerProvider.notifier)
+        .deleteGeoloc(date: widget.date.yyyymmdd)
+        .then((value) {
       if (mounted) {
         Navigator.pop(context);
         Navigator.pop(context);
@@ -207,7 +237,9 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
         Navigator.pushReplacement(
           context,
           // ignore: inference_failure_on_instance_creation, always_specify_types
-          MaterialPageRoute(builder: (BuildContext context) => HomeScreen(baseYm: widget.date.yyyymm)),
+          MaterialPageRoute(
+              builder: (BuildContext context) =>
+                  HomeScreen(baseYm: widget.date.yyyymm)),
         );
       }
     });
@@ -237,7 +269,9 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
       Navigator.pushReplacement(
         context,
         // ignore: inference_failure_on_instance_creation, always_specify_types
-        MaterialPageRoute(builder: (BuildContext context) => HomeScreen(baseYm: widget.date.yyyymm)),
+        MaterialPageRoute(
+            builder: (BuildContext context) =>
+                HomeScreen(baseYm: widget.date.yyyymm)),
       );
     }
   }
