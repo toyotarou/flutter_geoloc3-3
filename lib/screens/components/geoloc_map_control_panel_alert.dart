@@ -138,7 +138,7 @@ class _GeolocMapControlPanelAlertState
                                   .read(appParamProvider.notifier)
                                   .setCurrentPaddingIndex(
                                       index: appParamState.currentPaddingIndex +
-                                          5);
+                                          1);
 
                               setDefaultBoundsMap();
                             }
@@ -178,10 +178,10 @@ class _GeolocMapControlPanelAlertState
                                 appParamState.currentZoom - 1,
                               );
                             } else {
-                              int index = appParamState.currentPaddingIndex - 5;
+                              int index = appParamState.currentPaddingIndex - 1;
 
-                              if (index < 5) {
-                                index = 5;
+                              if (index < 1) {
+                                index = 1;
                               }
 
                               ref
@@ -215,12 +215,6 @@ class _GeolocMapControlPanelAlertState
                         padding: const EdgeInsets.only(right: 10),
                         child: GestureDetector(
                           onTap: () {
-                            // /// ここでappParamProviderの変数を変更（セレクテッドアワー）
-                            // ref
-                            //     .read(appParamProvider.notifier)
-                            //     .setSelectedHour(hour: e);
-
-                            /// ここでappParamProviderの変数を変更（セレクテッドタイムジオロック）
                             ref
                                 .read(appParamProvider.notifier)
                                 .setSelectedTimeGeoloc(
@@ -267,12 +261,6 @@ class _GeolocMapControlPanelAlertState
                                 .read(appParamProvider.notifier)
                                 .setIsMarkerShow(flag: true);
 
-                            // /// ここでappParamProviderの変数を変更（セレクテッドアワー）
-                            // ref.read(appParamProvider.notifier).setSelectedHour(
-                            //     hour: widget.geolocStateList[index].time
-                            //         .split(':')[0]);
-
-                            /// ここでappParamProviderの変数を変更（セレクテッドタイムジオロック）
                             ref
                                 .read(appParamProvider.notifier)
                                 .setSelectedTimeGeoloc(
@@ -302,11 +290,6 @@ class _GeolocMapControlPanelAlertState
                                     appParamState.selectedTimeGeoloc!.time ==
                                         widget.geolocStateList[index].time)
                                 ? Colors.redAccent.withOpacity(0.5)
-                                // // ignore: use_if_null_to_convert_nulls_to_bools
-                                // : (widget.geolocStateList[index].time
-                                //             .split(':')[0] ==
-                                //         appParamState.selectedHour)
-                                //     ? Colors.lime
 
                                 // ignore: use_if_null_to_convert_nulls_to_bools
                                 : (widget.displayTempMap == true)

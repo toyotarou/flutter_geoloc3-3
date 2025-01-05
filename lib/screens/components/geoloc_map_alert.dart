@@ -173,116 +173,128 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
           Positioned(
             top: 5,
             right: 5,
+            left: 5,
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
               children: <Widget>[
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Container(
-                      alignment: Alignment.topLeft,
-                      child: (appParamState.selectedTimeGeoloc != null)
-                          ? Row(
-                              children: <Widget>[
-                                Text(
-                                  appParamState.selectedTimeGeoloc!.time,
-                                  style: const TextStyle(
-                                      color: Colors.black, fontSize: 20),
-                                ),
-                                const SizedBox(width: 20),
-                              ],
-                            )
-                          : null,
-                    ),
-                    Row(
-                      children: <Widget>[
-                        DefaultTextStyle(
-                          style: const TextStyle(color: Colors.black),
-                          child: Column(
-                            children: <Widget>[
-                              Row(
+                Container(
+                  width: context.screenSize.width,
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Row(
+                    children: <Widget>[
+                      Container(
+                        width: 100,
+                        alignment: Alignment.topLeft,
+                        child: (appParamState.selectedTimeGeoloc != null)
+                            ? Row(
                                 children: <Widget>[
-                                  const SizedBox(
-                                      width: 70, child: Text('size: ')),
-                                  Container(
-                                    width: 60,
-                                    alignment: Alignment.topRight,
-                                    child: Text(
-                                      // (currentZoom != null)
-                                      //     ? currentZoom!.toStringAsFixed(2)
-                                      //     : '',
-
-                                      appParamState.currentZoom
-                                          .toStringAsFixed(2),
-
-                                      style: const TextStyle(
-                                          fontSize: 20, color: Colors.black),
-                                    ),
+                                  Text(
+                                    appParamState.selectedTimeGeoloc!.time,
+                                    style: const TextStyle(fontSize: 20),
+                                  ),
+                                  const SizedBox(width: 20),
+                                ],
+                              )
+                            : null,
+                      ),
+                      Expanded(
+                        child: Row(
+                          children: <Widget>[
+                            Expanded(
+                              child: Column(
+                                children: <Widget>[
+                                  Row(
+                                    children: <Widget>[
+                                      const SizedBox(
+                                          width: 70, child: Text('size: ')),
+                                      Expanded(
+                                        child: Container(
+                                          alignment: Alignment.topRight,
+                                          child: Text(
+                                            appParamState.currentZoom
+                                                .toStringAsFixed(2),
+                                            style:
+                                                const TextStyle(fontSize: 20),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    children: <Widget>[
+                                      const SizedBox(
+                                          width: 70, child: Text('padding: ')),
+                                      Expanded(
+                                        child: Container(
+                                          alignment: Alignment.topRight,
+                                          child: Text(
+                                            '${appParamState.currentPaddingIndex * 10} px',
+                                            style:
+                                                const TextStyle(fontSize: 20),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ],
                               ),
-                              Row(
-                                children: <Widget>[
-                                  const SizedBox(
-                                      width: 70, child: Text('padding: ')),
-                                  Container(
-                                    width: 60,
-                                    alignment: Alignment.topRight,
-                                    child: Text(
-                                      appParamState.currentPaddingIndex
-                                          .toString(),
-                                      style: const TextStyle(
-                                          fontSize: 20, color: Colors.black),
+                            ),
+                            const SizedBox(width: 20),
+                            Container(
+                              decoration: BoxDecoration(
+                                  color: Colors.black.withOpacity(0.3),
+                                  borderRadius: BorderRadius.circular(10)),
+                              child: IconButton(
+                                onPressed: () {
+                                  GeolocDialog(
+                                    context: context,
+                                    widget: GeolocMapControlPanelAlert(
+                                      geolocStateList: widget.geolocStateList,
+                                      templeInfoList: widget.templeInfoList,
+                                      mapController: mapController,
+                                      currentZoomEightTeen:
+                                          currentZoomEightTeen,
+                                      selectedHourMap: selectedHourMap,
+                                      minMaxLatLngMap: <String, double>{
+                                        'minLat': minLat,
+                                        'maxLng': maxLng,
+                                        'maxLat': maxLat,
+                                        'minLng': minLng,
+                                      },
+                                      displayTempMap: widget.displayTempMap,
                                     ),
-                                  ),
-                                ],
+                                    paddingTop:
+                                        context.screenSize.height * 0.65,
+                                    clearBarrierColor: true,
+                                  );
+                                },
+                                icon: const Icon(Icons.info),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
                         ),
-                        const SizedBox(width: 20),
-                        Container(
-                          decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(0.3),
-                              borderRadius: BorderRadius.circular(10)),
-                          child: IconButton(
-                            onPressed: () {
-                              GeolocDialog(
-                                context: context,
-                                widget: GeolocMapControlPanelAlert(
-                                  geolocStateList: widget.geolocStateList,
-                                  templeInfoList: widget.templeInfoList,
-                                  mapController: mapController,
-                                  currentZoomEightTeen: currentZoomEightTeen,
-                                  selectedHourMap: selectedHourMap,
-                                  minMaxLatLngMap: <String, double>{
-                                    'minLat': minLat,
-                                    'maxLng': maxLng,
-                                    'maxLat': maxLat,
-                                    'minLng': minLng,
-                                  },
-                                  displayTempMap: widget.displayTempMap,
-                                ),
-                                paddingTop: context.screenSize.height * 0.65,
-                                clearBarrierColor: true,
-                              );
-                            },
-                            icon: const Icon(Icons.info),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                      ),
+                    ],
+                  ),
                 ),
                 if (!showFirstMap) ...<Widget>[
                   const SizedBox(height: 10),
-                  IconButton(
-                    onPressed: () {
-                      setState(() => showFirstMap = true);
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      Container(),
+                      IconButton(
+                        onPressed: () {
+                          setState(() => showFirstMap = true);
 
-                      setDefaultBoundsMap();
-                    },
-                    icon: const Icon(Icons.map, color: Colors.black),
+                          setDefaultBoundsMap();
+                        },
+                        icon: const Icon(Icons.map, color: Colors.black),
+                      ),
+                    ],
                   ),
                 ],
               ],
@@ -355,9 +367,6 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
     final GeolocModel? selectedTimeGeoloc = ref.watch(appParamProvider
         .select((AppParamsResponseState value) => value.selectedTimeGeoloc));
 
-    // final String selectedHour =
-    //     ref.watch(appParamProvider.select((AppParamsResponseState value) => value.selectedHour));
-
     for (final GeolocModel element in widget.geolocStateList) {
       markerList.add(
         Marker(
@@ -373,9 +382,6 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                   backgroundColor: (selectedTimeGeoloc != null &&
                           selectedTimeGeoloc.time == element.time)
                       ? Colors.redAccent.withOpacity(0.5)
-                      // ignore: use_if_null_to_convert_nulls_to_bools
-                      // : (element.time.split(':')[0] == selectedHour)
-                      //     ? Colors.lime
 
                       // ignore: use_if_null_to_convert_nulls_to_bools
                       : (widget.displayTempMap == true)
