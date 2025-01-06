@@ -59,12 +59,31 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
 
   final double circleRadiusMeters = 100.0;
 
+  // bool isLoading = false;
+  //
+  //
+  //
+
   ///
   @override
   void initState() {
     super.initState();
 
     scrollController = ScrollController();
+
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   setState(() => isLoading = true);
+    //
+    //   Future.delayed(const Duration(seconds: 5), () {
+    //     setDefaultBoundsMap();
+    //
+    //     setState(() {
+    //       showFirstMap = false;
+    //
+    //       isLoading = false;
+    //     });
+    //   });
+    // });
   }
 
   ///
@@ -82,7 +101,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
 
   bool getBoundsZoomValue = false;
 
-  bool showFirstMap = false;
+  bool showFirstMap = true;
 
   ///
   @override
@@ -280,7 +299,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                     ],
                   ),
                 ),
-                if (!showFirstMap) ...<Widget>[
+                if (showFirstMap) ...<Widget>[
                   const SizedBox(height: 10),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -288,7 +307,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                       Container(),
                       IconButton(
                         onPressed: () {
-                          setState(() => showFirstMap = true);
+                          setState(() => showFirstMap = false);
 
                           setDefaultBoundsMap();
                         },
