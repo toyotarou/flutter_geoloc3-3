@@ -255,6 +255,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                                   GeolocDialog(
                                     context: context,
                                     widget: GeolocMapControlPanelAlert(
+                                      date: widget.date,
                                       geolocStateList: widget.geolocStateList,
                                       templeInfoList: widget.templeInfoList,
                                       mapController: mapController,

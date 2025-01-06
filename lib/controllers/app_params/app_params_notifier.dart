@@ -1,6 +1,7 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 import '../../models/geoloc_model.dart';
+import '../../models/temple_latlng_model.dart';
 import 'app_params_response_state.dart';
 
 final AutoDisposeStateNotifierProvider<AppParamNotifier, AppParamsResponseState> appParamProvider =
@@ -38,4 +39,7 @@ class AppParamNotifier extends StateNotifier<AppParamsResponseState> {
 
   ///
   void setPolylineGeolocModel({required GeolocModel model}) => state = state.copyWith(polylineGeolocModel: model);
+
+  ///
+  void setSelectedTemple({required TempleInfoModel temple}) => state = state.copyWith(selectedTemple: temple);
 }

@@ -2,6 +2,7 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../../models/geoloc_model.dart';
+import '../../models/temple_latlng_model.dart';
 
 part 'app_params_response_state.freezed.dart';
 
@@ -17,5 +18,6 @@ class AppParamsResponseState with _$AppParamsResponseState {
     LatLng? currentCenter,
     @Default(false) bool isTempleCircleShow,
     GeolocModel? polylineGeolocModel,
+    TempleInfoModel? selectedTemple,
   }) = _AppParamsResponseState;
 }
