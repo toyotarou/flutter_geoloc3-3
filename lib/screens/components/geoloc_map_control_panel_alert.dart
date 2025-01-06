@@ -330,7 +330,7 @@ class _GeolocMapControlPanelAlertState extends ConsumerState<GeolocMapControlPan
                                 itemScrollController: itemScrollController,
                               ),
                               paddingTop: context.screenSize.height * 0.1,
-                              paddingBottom: context.screenSize.height * 0.25,
+                              paddingBottom: context.screenSize.height * 0.3,
                               paddingLeft: context.screenSize.width * 0.5,
                               clearBarrierColor: true,
                             );
