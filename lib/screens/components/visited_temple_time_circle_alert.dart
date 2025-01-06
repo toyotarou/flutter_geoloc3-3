@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../controllers/app_params/app_params_notifier.dart';
 import '../../extensions/extensions.dart';
 import '../../models/geoloc_model.dart';
 import '../../models/temple_latlng_model.dart';
@@ -39,8 +40,6 @@ class _VisitedTempleTimeCircleAlertState
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Text(widget.temple.temple),
-              Divider(color: Colors.white.withOpacity(0.5), thickness: 5),
               Expanded(child: displayTempleNearVisitedTime()),
             ],
           ),
@@ -73,22 +72,70 @@ class _VisitedTempleTimeCircleAlertState
 
       if (dist != null) {
         if (dist <= 100) {
-          list.add(Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 3),
-            child: Row(
-              children: <Widget>[
-                CircleAvatar(
-                  radius: 10,
-                  // ignore: use_if_null_to_convert_nulls_to_bools
-                  backgroundColor: (widget.displayTempMap == true)
-                      ? Colors.orangeAccent.withOpacity(0.5)
-                      : Colors.green[900]?.withOpacity(0.5),
-                ),
-                const SizedBox(width: 10),
-                Text(element.time),
-              ],
+          list.add(
+            OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                padding: EdgeInsets.zero,
+                // ignore: use_if_null_to_convert_nulls_to_bools
+                backgroundColor: (widget.displayTempMap == true)
+                    ? Colors.orangeAccent.withOpacity(0.2)
+                    : Colors.green[900]?.withOpacity(0.2),
+              ),
+              onPressed: () {
+                // ref.read(appParamProvider.notifier).setIsMarkerShow(flag: true);
+                //
+                // ref.read(appParamProvider.notifier).setSelectedTimeGeoloc(
+                //       geoloc: GeolocModel(
+                //         id: id,
+                //         year: year,
+                //         month: month,
+                //         day: day,
+                //         time: time,
+                //         latitude: latitude,
+                //         longitude: longitude,
+                //       ),
+                //     );
+                //
+                //
+                //
+
+
+
+
+
+
+                //
+                // widget.mapController.move(
+                //   LatLng(
+                //     widget.geolocStateList[index].latitude
+                //         .toDouble(),
+                //     widget.geolocStateList[index].longitude
+                //         .toDouble(),
+                //   ),
+                //   appParamState.currentZoom,
+                // );
+                //
+                // ref
+                //     .read(appParamProvider.notifier)
+                //     .setPolylineGeolocModel(
+                //     model: widget.geolocStateList[index]);
+                //
+                // itemScrollController.jumpTo(index: index);
+                //
+                //
+                //
+              },
+              child: Column(
+                children: <Widget>[
+                  Text(
+                    element.time,
+                    style: const TextStyle(fontSize: 8, color: Colors.white),
+                  ),
+                  Container(width: context.screenSize.width),
+                ],
+              ),
             ),
-          ));
+          );
         }
       }
     }
