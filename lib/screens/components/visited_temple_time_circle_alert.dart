@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../controllers/app_params/app_params_notifier.dart';
 import '../../extensions/extensions.dart';
 import '../../models/geoloc_model.dart';
 import '../../models/temple_latlng_model.dart';
@@ -9,22 +8,17 @@ import '../../utilities/utilities.dart';
 
 class VisitedTempleTimeCircleAlert extends ConsumerStatefulWidget {
   const VisitedTempleTimeCircleAlert(
-      {super.key,
-      required this.temple,
-      required this.geolocStateList,
-      this.displayTempMap});
+      {super.key, required this.temple, required this.geolocStateList, this.displayTempMap});
 
   final TempleInfoModel temple;
   final List<GeolocModel> geolocStateList;
   final bool? displayTempMap;
 
   @override
-  ConsumerState<VisitedTempleTimeCircleAlert> createState() =>
-      _VisitedTempleTimeCircleAlertState();
+  ConsumerState<VisitedTempleTimeCircleAlert> createState() => _VisitedTempleTimeCircleAlertState();
 }
 
-class _VisitedTempleTimeCircleAlertState
-    extends ConsumerState<VisitedTempleTimeCircleAlert> {
+class _VisitedTempleTimeCircleAlertState extends ConsumerState<VisitedTempleTimeCircleAlert> {
   Utility utility = Utility();
 
   ///
@@ -98,11 +92,6 @@ class _VisitedTempleTimeCircleAlertState
                 //
                 //
                 //
-
-
-
-
-
 
                 //
                 // widget.mapController.move(

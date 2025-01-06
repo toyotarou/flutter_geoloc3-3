@@ -22,8 +22,10 @@ class GeolocMapAlert extends ConsumerStatefulWidget {
       this.displayTempMap,
       required this.displayMonthMap,
       required this.walkRecord,
-      this.templeInfoList});
+      this.templeInfoList,
+      required this.date});
 
+  final DateTime date;
   final List<GeolocModel> geolocStateList;
   final bool? displayTempMap;
   final bool displayMonthMap;
@@ -107,15 +109,12 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
     makeMarker();
 
     if (!getBoundsZoomValue) {
-      WidgetsBinding.instance
-          .addPostFrameCallback((_) async => setDefaultBoundsMap());
+      WidgetsBinding.instance.addPostFrameCallback((_) async => setDefaultBoundsMap());
     }
 
     final AppParamsResponseState appParamState = ref.watch(appParamProvider);
 
-    polylineGeolocList = (!appParamState.isMarkerShow)
-        ? widget.geolocStateList
-        : <GeolocModel>[];
+    polylineGeolocList = (!appParamState.isMarkerShow) ? widget.geolocStateList : <GeolocModel>[];
 
     if (appParamState.polylineGeolocModel != null) {
       makePolylineGeolocList(geoloc: appParamState.polylineGeolocModel!);
@@ -128,15 +127,12 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
           FlutterMap(
             mapController: mapController,
             options: MapOptions(
-              initialCenter: LatLng(
-                  widget.geolocStateList[0].latitude.toDouble(),
-                  widget.geolocStateList[0].longitude.toDouble()),
+              initialCenter:
+                  LatLng(widget.geolocStateList[0].latitude.toDouble(), widget.geolocStateList[0].longitude.toDouble()),
               initialZoom: currentZoomEightTeen,
               onPositionChanged: (MapCamera position, bool isMoving) {
                 if (isMoving) {
-                  ref
-                      .read(appParamProvider.notifier)
-                      .setCurrentZoom(zoom: position.zoom);
+                  ref.read(appParamProvider.notifier).setCurrentZoom(zoom: position.zoom);
                 }
               },
             ),
@@ -147,9 +143,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                 userAgentPackageName: 'com.example.app',
               ),
 
-              if (appParamState.isMarkerShow) ...<Widget>[
-                MarkerLayer(markers: markerList)
-              ],
+              if (appParamState.isMarkerShow) ...<Widget>[MarkerLayer(markers: markerList)],
 
               // ignore: always_specify_types
               PolylineLayer(
@@ -157,8 +151,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                   // ignore: always_specify_types
                   Polyline(
                     points: polylineGeolocList
-                        .map((GeolocModel e) => LatLng(
-                            e.latitude.toDouble(), e.longitude.toDouble()))
+                        .map((GeolocModel e) => LatLng(e.latitude.toDouble(), e.longitude.toDouble()))
                         .toList(),
                     color: Colors.redAccent,
                     strokeWidth: 5,
@@ -166,15 +159,13 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                 ],
               ),
 
-              if (appParamState.isTempleCircleShow &&
-                  appParamState.currentCenter != null)
+              if (appParamState.isTempleCircleShow && appParamState.currentCenter != null)
                 // ignore: always_specify_types
                 PolygonLayer(
                   polygons: <Polygon<Object>>[
                     // ignore: always_specify_types
                     Polygon(
-                      points: calculateCirclePoints(
-                          appParamState.currentCenter!, circleRadiusMeters),
+                      points: calculateCirclePoints(appParamState.currentCenter!, circleRadiusMeters),
                       color: Colors.redAccent.withOpacity(0.1),
                       borderStrokeWidth: 2.0,
                       borderColor: Colors.redAccent.withOpacity(0.5),
@@ -201,17 +192,22 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                       Container(
                         width: 100,
                         alignment: Alignment.topLeft,
-                        child: (appParamState.selectedTimeGeoloc != null)
-                            ? Row(
-                                children: <Widget>[
+                        child: Row(
+                          children: <Widget>[
+                            Column(
+                              children: <Widget>[
+                                Text(widget.date.yyyymmdd),
+                                if (appParamState.selectedTimeGeoloc != null) ...<Widget>[
                                   Text(
                                     appParamState.selectedTimeGeoloc!.time,
                                     style: const TextStyle(fontSize: 20),
                                   ),
-                                  const SizedBox(width: 20),
                                 ],
-                              )
-                            : null,
+                              ],
+                            ),
+                            const SizedBox(width: 20),
+                          ],
+                        ),
                       ),
                       Expanded(
                         child: Row(
@@ -221,16 +217,13 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                                 children: <Widget>[
                                   Row(
                                     children: <Widget>[
-                                      const SizedBox(
-                                          width: 70, child: Text('size: ')),
+                                      const SizedBox(width: 70, child: Text('size: ')),
                                       Expanded(
                                         child: Container(
                                           alignment: Alignment.topRight,
                                           child: Text(
-                                            appParamState.currentZoom
-                                                .toStringAsFixed(2),
-                                            style:
-                                                const TextStyle(fontSize: 20),
+                                            appParamState.currentZoom.toStringAsFixed(2),
+                                            style: const TextStyle(fontSize: 20),
                                           ),
                                         ),
                                       ),
@@ -238,15 +231,13 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                                   ),
                                   Row(
                                     children: <Widget>[
-                                      const SizedBox(
-                                          width: 70, child: Text('padding: ')),
+                                      const SizedBox(width: 70, child: Text('padding: ')),
                                       Expanded(
                                         child: Container(
                                           alignment: Alignment.topRight,
                                           child: Text(
                                             '${appParamState.currentPaddingIndex * 10} px',
-                                            style:
-                                                const TextStyle(fontSize: 20),
+                                            style: const TextStyle(fontSize: 20),
                                           ),
                                         ),
                                       ),
@@ -258,8 +249,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                             const SizedBox(width: 20),
                             Container(
                               decoration: BoxDecoration(
-                                  color: Colors.black.withOpacity(0.3),
-                                  borderRadius: BorderRadius.circular(10)),
+                                  color: Colors.black.withOpacity(0.3), borderRadius: BorderRadius.circular(10)),
                               child: IconButton(
                                 onPressed: () {
                                   GeolocDialog(
@@ -268,8 +258,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                                       geolocStateList: widget.geolocStateList,
                                       templeInfoList: widget.templeInfoList,
                                       mapController: mapController,
-                                      currentZoomEightTeen:
-                                          currentZoomEightTeen,
+                                      currentZoomEightTeen: currentZoomEightTeen,
                                       selectedHourMap: selectedHourMap,
                                       minMaxLatLngMap: <String, double>{
                                         'minLat': minLat,
@@ -279,8 +268,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                                       },
                                       displayTempMap: widget.displayTempMap,
                                     ),
-                                    paddingTop:
-                                        context.screenSize.height * 0.65,
+                                    paddingTop: context.screenSize.height * 0.65,
                                     clearBarrierColor: true,
                                   );
                                 },
@@ -335,14 +323,12 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
   ///
   void setDefaultBoundsMap() {
     if (widget.geolocStateList.length > 1) {
-      final int currentPaddingIndex = ref.watch(appParamProvider
-          .select((AppParamsResponseState value) => value.currentPaddingIndex));
+      final int currentPaddingIndex =
+          ref.watch(appParamProvider.select((AppParamsResponseState value) => value.currentPaddingIndex));
 
-      final LatLngBounds bounds = LatLngBounds.fromPoints(
-          <LatLng>[LatLng(minLat, maxLng), LatLng(maxLat, minLng)]);
+      final LatLngBounds bounds = LatLngBounds.fromPoints(<LatLng>[LatLng(minLat, maxLng), LatLng(maxLat, minLng)]);
 
-      final CameraFit cameraFit = CameraFit.bounds(
-          bounds: bounds, padding: EdgeInsets.all(currentPaddingIndex * 10));
+      final CameraFit cameraFit = CameraFit.bounds(bounds: bounds, padding: EdgeInsets.all(currentPaddingIndex * 10));
 
       mapController.fitCamera(cameraFit);
 
@@ -363,14 +349,13 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
   void makeMarker() {
     markerList = <Marker>[];
 
-    final GeolocModel? selectedTimeGeoloc = ref.watch(appParamProvider
-        .select((AppParamsResponseState value) => value.selectedTimeGeoloc));
+    final GeolocModel? selectedTimeGeoloc =
+        ref.watch(appParamProvider.select((AppParamsResponseState value) => value.selectedTimeGeoloc));
 
     for (final GeolocModel element in widget.geolocStateList) {
       markerList.add(
         Marker(
-          point:
-              LatLng(element.latitude.toDouble(), element.longitude.toDouble()),
+          point: LatLng(element.latitude.toDouble(), element.longitude.toDouble()),
           width: 40,
           height: 40,
           // ignore: use_if_null_to_convert_nulls_to_bools
@@ -378,17 +363,14 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
               ? const Icon(Icons.ac_unit, size: 20, color: Colors.redAccent)
               : CircleAvatar(
                   // ignore: use_if_null_to_convert_nulls_to_bools
-                  backgroundColor: (selectedTimeGeoloc != null &&
-                          selectedTimeGeoloc.time == element.time)
+                  backgroundColor: (selectedTimeGeoloc != null && selectedTimeGeoloc.time == element.time)
                       ? Colors.redAccent.withOpacity(0.5)
 
                       // ignore: use_if_null_to_convert_nulls_to_bools
                       : (widget.displayTempMap == true)
                           ? Colors.orangeAccent.withOpacity(0.5)
                           : Colors.green[900]?.withOpacity(0.5),
-                  child: Text(element.time,
-                      style:
-                          const TextStyle(color: Colors.white, fontSize: 10)),
+                  child: Text(element.time, style: const TextStyle(color: Colors.white, fontSize: 10)),
                 ),
         ),
       );
@@ -412,12 +394,9 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
     for (int i = 0; i <= points; i++) {
       final double angle = 2 * pi * i / points;
 
-      final double latOffset =
-          asin(sin(lat) * cos(d) + cos(lat) * sin(d) * cos(angle));
+      final double latOffset = asin(sin(lat) * cos(d) + cos(lat) * sin(d) * cos(angle));
 
-      final double lngOffset = lng +
-          atan2(sin(angle) * sin(d) * cos(lat),
-              cos(d) - sin(lat) * sin(latOffset));
+      final double lngOffset = lng + atan2(sin(angle) * sin(d) * cos(lat), cos(d) - sin(lat) * sin(latOffset));
 
       circlePoints.add(LatLng(latOffset * 180.0 / pi, lngOffset * 180.0 / pi));
     }
@@ -428,8 +407,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
   void makePolylineGeolocList({required GeolocModel geoloc}) {
     polylineGeolocList = <GeolocModel>[];
 
-    final int pos = widget.geolocStateList
-        .indexWhere((GeolocModel element) => element.time == geoloc.time);
+    final int pos = widget.geolocStateList.indexWhere((GeolocModel element) => element.time == geoloc.time);
 
     if (pos > 0) {
       polylineGeolocList.add(widget.geolocStateList[pos - 1]);
