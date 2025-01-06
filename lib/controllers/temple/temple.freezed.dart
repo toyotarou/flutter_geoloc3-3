@@ -20,6 +20,8 @@ mixin _$TempleControllerState {
       throw _privateConstructorUsedError;
   Map<String, List<TempleInfoModel>> get templeInfoMap =>
       throw _privateConstructorUsedError;
+  Map<String, List<String>> get templeVisitedDateMap =>
+      throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $TempleControllerStateCopyWith<TempleControllerState> get copyWith =>
@@ -34,7 +36,8 @@ abstract class $TempleControllerStateCopyWith<$Res> {
   @useResult
   $Res call(
       {List<TempleInfoModel> templeInfoList,
-      Map<String, List<TempleInfoModel>> templeInfoMap});
+      Map<String, List<TempleInfoModel>> templeInfoMap,
+      Map<String, List<String>> templeVisitedDateMap});
 }
 
 /// @nodoc
@@ -53,6 +56,7 @@ class _$TempleControllerStateCopyWithImpl<$Res,
   $Res call({
     Object? templeInfoList = null,
     Object? templeInfoMap = null,
+    Object? templeVisitedDateMap = null,
   }) {
     return _then(_value.copyWith(
       templeInfoList: null == templeInfoList
@@ -63,6 +67,10 @@ class _$TempleControllerStateCopyWithImpl<$Res,
           ? _value.templeInfoMap
           : templeInfoMap // ignore: cast_nullable_to_non_nullable
               as Map<String, List<TempleInfoModel>>,
+      templeVisitedDateMap: null == templeVisitedDateMap
+          ? _value.templeVisitedDateMap
+          : templeVisitedDateMap // ignore: cast_nullable_to_non_nullable
+              as Map<String, List<String>>,
     ) as $Val);
   }
 }
@@ -78,7 +86,8 @@ abstract class _$$TempleControllerStateImplCopyWith<$Res>
   @useResult
   $Res call(
       {List<TempleInfoModel> templeInfoList,
-      Map<String, List<TempleInfoModel>> templeInfoMap});
+      Map<String, List<TempleInfoModel>> templeInfoMap,
+      Map<String, List<String>> templeVisitedDateMap});
 }
 
 /// @nodoc
@@ -95,6 +104,7 @@ class __$$TempleControllerStateImplCopyWithImpl<$Res>
   $Res call({
     Object? templeInfoList = null,
     Object? templeInfoMap = null,
+    Object? templeVisitedDateMap = null,
   }) {
     return _then(_$TempleControllerStateImpl(
       templeInfoList: null == templeInfoList
@@ -105,6 +115,10 @@ class __$$TempleControllerStateImplCopyWithImpl<$Res>
           ? _value._templeInfoMap
           : templeInfoMap // ignore: cast_nullable_to_non_nullable
               as Map<String, List<TempleInfoModel>>,
+      templeVisitedDateMap: null == templeVisitedDateMap
+          ? _value._templeVisitedDateMap
+          : templeVisitedDateMap // ignore: cast_nullable_to_non_nullable
+              as Map<String, List<String>>,
     ));
   }
 }
@@ -115,9 +129,12 @@ class _$TempleControllerStateImpl implements _TempleControllerState {
   const _$TempleControllerStateImpl(
       {final List<TempleInfoModel> templeInfoList = const <TempleInfoModel>[],
       final Map<String, List<TempleInfoModel>> templeInfoMap =
-          const <String, List<TempleInfoModel>>{}})
+          const <String, List<TempleInfoModel>>{},
+      final Map<String, List<String>> templeVisitedDateMap =
+          const <String, List<String>>{}})
       : _templeInfoList = templeInfoList,
-        _templeInfoMap = templeInfoMap;
+        _templeInfoMap = templeInfoMap,
+        _templeVisitedDateMap = templeVisitedDateMap;
 
   final List<TempleInfoModel> _templeInfoList;
   @override
@@ -137,9 +154,19 @@ class _$TempleControllerStateImpl implements _TempleControllerState {
     return EqualUnmodifiableMapView(_templeInfoMap);
   }
 
+  final Map<String, List<String>> _templeVisitedDateMap;
+  @override
+  @JsonKey()
+  Map<String, List<String>> get templeVisitedDateMap {
+    if (_templeVisitedDateMap is EqualUnmodifiableMapView)
+      return _templeVisitedDateMap;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_templeVisitedDateMap);
+  }
+
   @override
   String toString() {
-    return 'TempleControllerState(templeInfoList: $templeInfoList, templeInfoMap: $templeInfoMap)';
+    return 'TempleControllerState(templeInfoList: $templeInfoList, templeInfoMap: $templeInfoMap, templeVisitedDateMap: $templeVisitedDateMap)';
   }
 
   @override
@@ -150,14 +177,17 @@ class _$TempleControllerStateImpl implements _TempleControllerState {
             const DeepCollectionEquality()
                 .equals(other._templeInfoList, _templeInfoList) &&
             const DeepCollectionEquality()
-                .equals(other._templeInfoMap, _templeInfoMap));
+                .equals(other._templeInfoMap, _templeInfoMap) &&
+            const DeepCollectionEquality()
+                .equals(other._templeVisitedDateMap, _templeVisitedDateMap));
   }
 
   @override
   int get hashCode => Object.hash(
       runtimeType,
       const DeepCollectionEquality().hash(_templeInfoList),
-      const DeepCollectionEquality().hash(_templeInfoMap));
+      const DeepCollectionEquality().hash(_templeInfoMap),
+      const DeepCollectionEquality().hash(_templeVisitedDateMap));
 
   @JsonKey(ignore: true)
   @override
@@ -170,13 +200,16 @@ class _$TempleControllerStateImpl implements _TempleControllerState {
 abstract class _TempleControllerState implements TempleControllerState {
   const factory _TempleControllerState(
           {final List<TempleInfoModel> templeInfoList,
-          final Map<String, List<TempleInfoModel>> templeInfoMap}) =
+          final Map<String, List<TempleInfoModel>> templeInfoMap,
+          final Map<String, List<String>> templeVisitedDateMap}) =
       _$TempleControllerStateImpl;
 
   @override
   List<TempleInfoModel> get templeInfoList;
   @override
   Map<String, List<TempleInfoModel>> get templeInfoMap;
+  @override
+  Map<String, List<String>> get templeVisitedDateMap;
   @override
   @JsonKey(ignore: true)
   _$$TempleControllerStateImplCopyWith<_$TempleControllerStateImpl>
