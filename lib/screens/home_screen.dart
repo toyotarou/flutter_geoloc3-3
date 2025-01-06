@@ -333,6 +333,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                     await BackgroundTask.instance.start(isEnabledEvenIfKilled: isEnabledEvenIfKilled);
                     setState(() => bgText = 'start');
                   }
+
+                  if (mounted) {
+                    Navigator.pop(context);
+                  }
                 },
                 child: Row(
                   children: <Widget>[

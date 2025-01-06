@@ -94,17 +94,26 @@ class _GeolocMapControlPanelAlertState extends ConsumerState<GeolocMapControlPan
                         ),
                         const SizedBox(width: 20),
                         GestureDetector(
-                          onTap: () => setDefaultBoundsMap(),
+                          onTap: () {
+                            ref.read(appParamProvider.notifier).setSelectedTimeGeoloc();
+
+                            setDefaultBoundsMap();
+                          },
                           child: const Icon(Icons.center_focus_strong),
                         ),
                       ],
                     ),
                     Row(
                       children: <Widget>[
-                        GestureDetector(
-                          onTap: () {
-                            ///
-
+                        OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            // ignore: use_if_null_to_convert_nulls_to_bools
+                            backgroundColor: (widget.displayTempMap == true)
+                                ? Colors.orangeAccent.withOpacity(0.2)
+                                : Colors.green[900]?.withOpacity(0.2),
+                          ),
+                          onPressed: () {
                             if (widget.geolocStateList.length == 1 || appParamState.selectedTimeGeoloc != null) {
                               ref.read(appParamProvider.notifier).setCurrentZoom(zoom: appParamState.currentZoom + 1);
 
@@ -127,16 +136,25 @@ class _GeolocMapControlPanelAlertState extends ConsumerState<GeolocMapControlPan
 
                               setDefaultBoundsMap();
                             }
-
-                            ///
                           },
-                          child: const Icon(Icons.add),
+                          child: Column(
+                            children: <Widget>[
+                              Text(
+                                (appParamState.selectedTimeGeoloc == null) ? '広域' : '狭域',
+                                style: const TextStyle(color: Colors.white, fontSize: 10),
+                              ),
+                            ],
+                          ),
                         ),
-                        const SizedBox(width: 20),
-                        GestureDetector(
-                          onTap: () {
-                            ///
-
+                        OutlinedButton(
+                          style: OutlinedButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            // ignore: use_if_null_to_convert_nulls_to_bools
+                            backgroundColor: (widget.displayTempMap == true)
+                                ? Colors.orangeAccent.withOpacity(0.2)
+                                : Colors.green[900]?.withOpacity(0.2),
+                          ),
+                          onPressed: () {
                             if (widget.geolocStateList.length == 1 || appParamState.selectedTimeGeoloc != null) {
                               ref.read(appParamProvider.notifier).setCurrentZoom(zoom: appParamState.currentZoom - 1);
 
@@ -163,10 +181,15 @@ class _GeolocMapControlPanelAlertState extends ConsumerState<GeolocMapControlPan
 
                               setDefaultBoundsMap();
                             }
-
-                            ///
                           },
-                          child: const Icon(Icons.remove),
+                          child: Column(
+                            children: <Widget>[
+                              Text(
+                                (appParamState.selectedTimeGeoloc == null) ? '狭域' : '広域',
+                                style: const TextStyle(color: Colors.white, fontSize: 10),
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
