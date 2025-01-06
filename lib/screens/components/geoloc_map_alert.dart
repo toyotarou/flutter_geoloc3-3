@@ -72,12 +72,10 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
       setState(() => isLoading = true);
 
       // ignore: always_specify_types
-      Future.delayed(const Duration(seconds: 5), () {
+      Future.delayed(const Duration(seconds: 2), () {
         setDefaultBoundsMap();
 
         setState(() {
-          showFirstMap = false;
-
           isLoading = false;
         });
       });
@@ -98,8 +96,6 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
   // }
 
   bool getBoundsZoomValue = false;
-
-  bool showFirstMap = true;
 
   ///
   @override
@@ -297,26 +293,12 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                     ],
                   ),
                 ),
-                if (showFirstMap) ...<Widget>[
-                  const SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[
-                      Container(),
-                      IconButton(
-                        onPressed: () {
-                          setState(() => showFirstMap = false);
-
-                          setDefaultBoundsMap();
-                        },
-                        icon: const Icon(Icons.map, color: Colors.black),
-                      ),
-                    ],
-                  ),
-                ],
               ],
             ),
           ),
+          if (isLoading) ...<Widget>[
+            const Center(child: CircularProgressIndicator()),
+          ],
         ],
       ),
     );
