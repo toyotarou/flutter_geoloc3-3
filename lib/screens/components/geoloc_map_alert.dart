@@ -246,7 +246,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                                 ],
                               ),
                             ),
-                            if (widget.displayMonthMap == false) ...[
+                            if (!widget.displayMonthMap) ...<Widget>[
                               const SizedBox(width: 20),
                               Container(
                                 decoration: BoxDecoration(

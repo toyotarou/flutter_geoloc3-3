@@ -29,95 +29,108 @@ class PickupGeolocDisplayAlert extends ConsumerStatefulWidget {
 class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAlert> {
   Utility utility = Utility();
 
+  bool isLoading = false;
+
   ///
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: SafeArea(
-          child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: <Widget>[
-            Container(width: context.screenSize.width),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
+      body: Stack(
+        children: <Widget>[
+          SafeArea(
+              child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
               children: <Widget>[
-                Text(widget.date.yyyymmdd),
+                Container(width: context.screenSize.width),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    if (widget.pickupGeolocList.length > 1) ...<Widget>[
-                      GestureDetector(
-                        onTap: () {
-                          ref.read(appParamProvider.notifier).setIsMarkerShow(flag: true);
+                    Text(widget.date.yyyymmdd),
+                    Row(
+                      children: <Widget>[
+                        if (widget.pickupGeolocList.length > 1) ...<Widget>[
+                          GestureDetector(
+                            onTap: () {
+                              ref.read(appParamProvider.notifier).setIsMarkerShow(flag: true);
 
-                          ref.read(appParamProvider.notifier).setSelectedTimeGeoloc();
+                              ref.read(appParamProvider.notifier).setSelectedTimeGeoloc();
 
-//                          ref.read(appParamProvider.notifier).setSelectedHour(hour: '');
+                              //                          ref.read(appParamProvider.notifier).setSelectedHour(hour: '');
 
-                          final List<GeolocModel> list = <GeolocModel>[];
-                          for (final Geoloc element in widget.pickupGeolocList) {
-                            list.add(
-                              GeolocModel(
-                                id: 0,
-                                year: element.date.split('-')[0],
-                                month: element.date.split('-')[1],
-                                day: element.date.split('-')[2],
-                                time: element.time,
-                                latitude: element.latitude,
-                                longitude: element.longitude,
-                              ),
-                            );
-                          }
+                              final List<GeolocModel> list = <GeolocModel>[];
+                              for (final Geoloc element in widget.pickupGeolocList) {
+                                list.add(
+                                  GeolocModel(
+                                    id: 0,
+                                    year: element.date.split('-')[0],
+                                    month: element.date.split('-')[1],
+                                    day: element.date.split('-')[2],
+                                    time: element.time,
+                                    latitude: element.latitude,
+                                    longitude: element.longitude,
+                                  ),
+                                );
+                              }
 
-                          GeolocDialog(
-                            context: context,
-                            widget: GeolocMapAlert(
-                              date: widget.date,
-                              geolocStateList: list,
-                              displayTempMap: true,
-                              displayMonthMap: false,
-                              walkRecord: widget.walkRecord,
-                              templeInfoList: widget.templeInfoMap,
+                              GeolocDialog(
+                                context: context,
+                                widget: GeolocMapAlert(
+                                  date: widget.date,
+                                  geolocStateList: list,
+                                  displayTempMap: true,
+                                  displayMonthMap: false,
+                                  walkRecord: widget.walkRecord,
+                                  templeInfoList: widget.templeInfoMap,
+                                ),
+                              );
+                            },
+                            child: const Column(
+                              children: <Widget>[
+                                Text('isar'),
+                                Icon(Icons.map, color: Colors.orangeAccent),
+                                Text('map')
+                              ],
                             ),
-                          );
-                        },
-                        child: const Column(
-                          children: <Widget>[Text('isar'), Icon(Icons.map, color: Colors.orangeAccent), Text('map')],
-                        ),
-                      ),
-                      const SizedBox(width: 30),
-                    ],
-                    GestureDetector(
-                      onTap: () => _showDeleteDialog(),
-                      child: const Column(
-                        children: <Widget>[
-                          Text('delete'),
-                          Icon(Icons.delete, color: Colors.greenAccent),
-                          Text('mysql'),
+                          ),
+                          const SizedBox(width: 30),
                         ],
-                      ),
-                    ),
-                    const SizedBox(width: 30),
-                    GestureDetector(
-                      onTap: () => inputPickupGeoloc(),
-                      child: const Column(children: <Widget>[Text('input'), Icon(Icons.input), Text('mysql')]),
+                        GestureDetector(
+                          onTap: () => _showDeleteDialog(),
+                          child: const Column(
+                            children: <Widget>[
+                              Text('delete'),
+                              Icon(Icons.delete, color: Colors.greenAccent),
+                              Text('mysql'),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 30),
+                        GestureDetector(
+                          onTap: () => inputPickupGeoloc(),
+                          child: const Column(children: <Widget>[Text('input'), Icon(Icons.input), Text('mysql')]),
+                        ),
+                      ],
                     ),
                   ],
                 ),
+                Divider(color: Colors.white.withOpacity(0.5), thickness: 5),
+                Expanded(child: displayPickupGeolocList()),
+                Divider(color: Colors.white.withOpacity(0.5), thickness: 5),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[Container(), Text(widget.pickupGeolocList.length.toString())],
+                ),
               ],
             ),
-            Divider(color: Colors.white.withOpacity(0.5), thickness: 5),
-            Expanded(child: displayPickupGeolocList()),
-            Divider(color: Colors.white.withOpacity(0.5), thickness: 5),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[Container(), Text(widget.pickupGeolocList.length.toString())],
-            ),
+          )),
+          if (isLoading) ...<Widget>[
+            const Center(child: CircularProgressIndicator()),
           ],
-        ),
-      )),
+        ],
+      ),
     );
   }
 
@@ -220,6 +233,8 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
 
   ///
   Future<void> inputPickupGeoloc() async {
+    setState(() => isLoading = true);
+
     widget.pickupGeolocList
       ..sort((Geoloc a, Geoloc b) => a.time.compareTo(b.time))
       ..forEach((Geoloc element) async {
@@ -236,14 +251,22 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
       });
 
     if (mounted) {
-      Navigator.pop(context);
-      Navigator.pop(context);
+      ////////
 
-      Navigator.pushReplacement(
-        context,
-        // ignore: inference_failure_on_instance_creation, always_specify_types
-        MaterialPageRoute(builder: (BuildContext context) => HomeScreen(baseYm: widget.date.yyyymm)),
-      );
+      // ignore: always_specify_types
+      Future.delayed(const Duration(seconds: 2), () {
+        // ignore: use_build_context_synchronously
+        Navigator.pop(context);
+        // ignore: use_build_context_synchronously
+        Navigator.pop(context);
+
+        Navigator.pushReplacement(
+          // ignore: use_build_context_synchronously
+          context,
+          // ignore: inference_failure_on_instance_creation, always_specify_types
+          MaterialPageRoute(builder: (BuildContext context) => HomeScreen(baseYm: widget.date.yyyymm)),
+        );
+      });
     }
   }
 }
