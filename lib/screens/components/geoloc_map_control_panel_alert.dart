@@ -43,6 +43,8 @@ class _GeolocMapControlPanelAlertState extends ConsumerState<GeolocMapControlPan
   final ItemScrollController itemScrollController = ItemScrollController();
   final ItemPositionsListener itemPositionsListener = ItemPositionsListener.create();
 
+  RangeValues _currentRange = const RangeValues(9, 18);
+
   ///
   @override
   void initState() {
@@ -287,6 +289,55 @@ class _GeolocMapControlPanelAlertState extends ConsumerState<GeolocMapControlPan
 
                 /////
 
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: SliderTheme(
+                        data: SliderThemeData(
+                          // ignore: use_if_null_to_convert_nulls_to_bools
+                          thumbColor: (widget.displayTempMap == true)
+                              ? Colors.orangeAccent.withOpacity(0.2)
+                              : Colors.green[900]?.withOpacity(0.2),
+                          // ignore: use_if_null_to_convert_nulls_to_bools
+                          activeTrackColor: (widget.displayTempMap == true)
+                              ? Colors.orangeAccent.withOpacity(0.2)
+                              : Colors.green[900]?.withOpacity(0.2),
+                          inactiveTrackColor: Colors.white,
+                        ),
+                        child: RangeSlider(
+                          values: _currentRange,
+                          max: 23,
+                          divisions: 23,
+                          labels:
+                              RangeLabels(_currentRange.start.round().toString(), _currentRange.end.round().toString()),
+                          onChanged: (RangeValues newRange) => setState(() => _currentRange = newRange),
+                        ),
+                      ),
+                    ),
+                    OutlinedButton(
+                      style: OutlinedButton.styleFrom(
+                        padding: EdgeInsets.zero,
+                        // ignore: use_if_null_to_convert_nulls_to_bools
+                        backgroundColor: (widget.displayTempMap == true)
+                            ? Colors.orangeAccent.withOpacity(0.2)
+                            : Colors.green[900]?.withOpacity(0.2),
+                      ),
+                      onPressed: () {
+                        print(_currentRange.start.round());
+
+                        print(_currentRange.end.round());
+                      },
+                      child: const Column(
+                        children: <Widget>[
+                          Text('set', style: TextStyle(color: Colors.white)),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+
+                /////
+
                 if (widget.templeInfoList != null) ...<Widget>[
                   SingleChildScrollView(
                     controller: scrollController,
@@ -330,7 +381,7 @@ class _GeolocMapControlPanelAlertState extends ConsumerState<GeolocMapControlPan
                                 itemScrollController: itemScrollController,
                               ),
                               paddingTop: context.screenSize.height * 0.1,
-                              paddingBottom: context.screenSize.height * 0.3,
+                              paddingBottom: context.screenSize.height * 0.35,
                               paddingLeft: context.screenSize.width * 0.5,
                               clearBarrierColor: true,
                             );

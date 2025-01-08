@@ -269,7 +269,9 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                                       },
                                       displayTempMap: widget.displayTempMap,
                                     ),
-                                    paddingTop: context.screenSize.height * 0.6,
+                                    paddingTop: (widget.templeInfoList != null)
+                                        ? context.screenSize.height * 0.55
+                                        : context.screenSize.height * 0.6,
                                     clearBarrierColor: true,
                                   );
                                 },
