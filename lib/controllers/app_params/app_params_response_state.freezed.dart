@@ -26,6 +26,8 @@ mixin _$AppParamsResponseState {
   bool get isTempleCircleShow => throw _privateConstructorUsedError;
   GeolocModel? get polylineGeolocModel => throw _privateConstructorUsedError;
   TempleInfoModel? get selectedTemple => throw _privateConstructorUsedError;
+  int get timeGeolocDisplayStart => throw _privateConstructorUsedError;
+  int get timeGeolocDisplayEnd => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $AppParamsResponseStateCopyWith<AppParamsResponseState> get copyWith =>
@@ -48,7 +50,9 @@ abstract class $AppParamsResponseStateCopyWith<$Res> {
       LatLng? currentCenter,
       bool isTempleCircleShow,
       GeolocModel? polylineGeolocModel,
-      TempleInfoModel? selectedTemple});
+      TempleInfoModel? selectedTemple,
+      int timeGeolocDisplayStart,
+      int timeGeolocDisplayEnd});
 }
 
 /// @nodoc
@@ -75,6 +79,8 @@ class _$AppParamsResponseStateCopyWithImpl<$Res,
     Object? isTempleCircleShow = null,
     Object? polylineGeolocModel = freezed,
     Object? selectedTemple = freezed,
+    Object? timeGeolocDisplayStart = null,
+    Object? timeGeolocDisplayEnd = null,
   }) {
     return _then(_value.copyWith(
       calendarSelectedDate: freezed == calendarSelectedDate
@@ -117,6 +123,14 @@ class _$AppParamsResponseStateCopyWithImpl<$Res,
           ? _value.selectedTemple
           : selectedTemple // ignore: cast_nullable_to_non_nullable
               as TempleInfoModel?,
+      timeGeolocDisplayStart: null == timeGeolocDisplayStart
+          ? _value.timeGeolocDisplayStart
+          : timeGeolocDisplayStart // ignore: cast_nullable_to_non_nullable
+              as int,
+      timeGeolocDisplayEnd: null == timeGeolocDisplayEnd
+          ? _value.timeGeolocDisplayEnd
+          : timeGeolocDisplayEnd // ignore: cast_nullable_to_non_nullable
+              as int,
     ) as $Val);
   }
 }
@@ -140,7 +154,9 @@ abstract class _$$AppParamsResponseStateImplCopyWith<$Res>
       LatLng? currentCenter,
       bool isTempleCircleShow,
       GeolocModel? polylineGeolocModel,
-      TempleInfoModel? selectedTemple});
+      TempleInfoModel? selectedTemple,
+      int timeGeolocDisplayStart,
+      int timeGeolocDisplayEnd});
 }
 
 /// @nodoc
@@ -166,6 +182,8 @@ class __$$AppParamsResponseStateImplCopyWithImpl<$Res>
     Object? isTempleCircleShow = null,
     Object? polylineGeolocModel = freezed,
     Object? selectedTemple = freezed,
+    Object? timeGeolocDisplayStart = null,
+    Object? timeGeolocDisplayEnd = null,
   }) {
     return _then(_$AppParamsResponseStateImpl(
       calendarSelectedDate: freezed == calendarSelectedDate
@@ -208,6 +226,14 @@ class __$$AppParamsResponseStateImplCopyWithImpl<$Res>
           ? _value.selectedTemple
           : selectedTemple // ignore: cast_nullable_to_non_nullable
               as TempleInfoModel?,
+      timeGeolocDisplayStart: null == timeGeolocDisplayStart
+          ? _value.timeGeolocDisplayStart
+          : timeGeolocDisplayStart // ignore: cast_nullable_to_non_nullable
+              as int,
+      timeGeolocDisplayEnd: null == timeGeolocDisplayEnd
+          ? _value.timeGeolocDisplayEnd
+          : timeGeolocDisplayEnd // ignore: cast_nullable_to_non_nullable
+              as int,
     ));
   }
 }
@@ -225,7 +251,9 @@ class _$AppParamsResponseStateImpl implements _AppParamsResponseState {
       this.currentCenter,
       this.isTempleCircleShow = false,
       this.polylineGeolocModel,
-      this.selectedTemple});
+      this.selectedTemple,
+      this.timeGeolocDisplayStart = -1,
+      this.timeGeolocDisplayEnd = -1});
 
   @override
   final DateTime? calendarSelectedDate;
@@ -252,10 +280,16 @@ class _$AppParamsResponseStateImpl implements _AppParamsResponseState {
   final GeolocModel? polylineGeolocModel;
   @override
   final TempleInfoModel? selectedTemple;
+  @override
+  @JsonKey()
+  final int timeGeolocDisplayStart;
+  @override
+  @JsonKey()
+  final int timeGeolocDisplayEnd;
 
   @override
   String toString() {
-    return 'AppParamsResponseState(calendarSelectedDate: $calendarSelectedDate, selectedTimeGeoloc: $selectedTimeGeoloc, isMarkerShow: $isMarkerShow, selectedHour: $selectedHour, currentZoom: $currentZoom, currentPaddingIndex: $currentPaddingIndex, currentCenter: $currentCenter, isTempleCircleShow: $isTempleCircleShow, polylineGeolocModel: $polylineGeolocModel, selectedTemple: $selectedTemple)';
+    return 'AppParamsResponseState(calendarSelectedDate: $calendarSelectedDate, selectedTimeGeoloc: $selectedTimeGeoloc, isMarkerShow: $isMarkerShow, selectedHour: $selectedHour, currentZoom: $currentZoom, currentPaddingIndex: $currentPaddingIndex, currentCenter: $currentCenter, isTempleCircleShow: $isTempleCircleShow, polylineGeolocModel: $polylineGeolocModel, selectedTemple: $selectedTemple, timeGeolocDisplayStart: $timeGeolocDisplayStart, timeGeolocDisplayEnd: $timeGeolocDisplayEnd)';
   }
 
   @override
@@ -282,7 +316,11 @@ class _$AppParamsResponseStateImpl implements _AppParamsResponseState {
             (identical(other.polylineGeolocModel, polylineGeolocModel) ||
                 other.polylineGeolocModel == polylineGeolocModel) &&
             (identical(other.selectedTemple, selectedTemple) ||
-                other.selectedTemple == selectedTemple));
+                other.selectedTemple == selectedTemple) &&
+            (identical(other.timeGeolocDisplayStart, timeGeolocDisplayStart) ||
+                other.timeGeolocDisplayStart == timeGeolocDisplayStart) &&
+            (identical(other.timeGeolocDisplayEnd, timeGeolocDisplayEnd) ||
+                other.timeGeolocDisplayEnd == timeGeolocDisplayEnd));
   }
 
   @override
@@ -297,7 +335,9 @@ class _$AppParamsResponseStateImpl implements _AppParamsResponseState {
       currentCenter,
       isTempleCircleShow,
       polylineGeolocModel,
-      selectedTemple);
+      selectedTemple,
+      timeGeolocDisplayStart,
+      timeGeolocDisplayEnd);
 
   @JsonKey(ignore: true)
   @override
@@ -318,7 +358,9 @@ abstract class _AppParamsResponseState implements AppParamsResponseState {
       final LatLng? currentCenter,
       final bool isTempleCircleShow,
       final GeolocModel? polylineGeolocModel,
-      final TempleInfoModel? selectedTemple}) = _$AppParamsResponseStateImpl;
+      final TempleInfoModel? selectedTemple,
+      final int timeGeolocDisplayStart,
+      final int timeGeolocDisplayEnd}) = _$AppParamsResponseStateImpl;
 
   @override
   DateTime? get calendarSelectedDate;
@@ -340,6 +382,10 @@ abstract class _AppParamsResponseState implements AppParamsResponseState {
   GeolocModel? get polylineGeolocModel;
   @override
   TempleInfoModel? get selectedTemple;
+  @override
+  int get timeGeolocDisplayStart;
+  @override
+  int get timeGeolocDisplayEnd;
   @override
   @JsonKey(ignore: true)
   _$$AppParamsResponseStateImplCopyWith<_$AppParamsResponseStateImpl>

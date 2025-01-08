@@ -43,7 +43,7 @@ class _GeolocMapControlPanelAlertState extends ConsumerState<GeolocMapControlPan
   final ItemScrollController itemScrollController = ItemScrollController();
   final ItemPositionsListener itemPositionsListener = ItemPositionsListener.create();
 
-  RangeValues _currentRange = const RangeValues(9, 18);
+  RangeValues currentRange = const RangeValues(0, 23);
 
   ///
   @override
@@ -209,6 +209,13 @@ class _GeolocMapControlPanelAlertState extends ConsumerState<GeolocMapControlPan
                   scrollDirection: Axis.horizontal,
                   child: Row(
                     children: timeList.map((String e) {
+                      if (appParamState.timeGeolocDisplayStart != -1 && appParamState.timeGeolocDisplayEnd != -1) {
+                        final int num = e.toInt();
+                        if (num < appParamState.timeGeolocDisplayStart || num > appParamState.timeGeolocDisplayEnd) {
+                          return Container();
+                        }
+                      }
+
                       return Padding(
                         padding: const EdgeInsets.only(right: 10),
                         child: GestureDetector(
@@ -243,6 +250,13 @@ class _GeolocMapControlPanelAlertState extends ConsumerState<GeolocMapControlPan
                     itemScrollController: itemScrollController,
                     itemPositionsListener: itemPositionsListener,
                     itemBuilder: (BuildContext context, int index) {
+                      if (appParamState.timeGeolocDisplayStart != -1 && appParamState.timeGeolocDisplayEnd != -1) {
+                        final int num = widget.geolocStateList[index].time.split(':')[0].toInt();
+                        if (num < appParamState.timeGeolocDisplayStart || num > appParamState.timeGeolocDisplayEnd) {
+                          return Container();
+                        }
+                      }
+
                       return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 5),
                         child: GestureDetector(
@@ -305,12 +319,12 @@ class _GeolocMapControlPanelAlertState extends ConsumerState<GeolocMapControlPan
                           inactiveTrackColor: Colors.white,
                         ),
                         child: RangeSlider(
-                          values: _currentRange,
+                          values: currentRange,
                           max: 23,
                           divisions: 23,
                           labels:
-                              RangeLabels(_currentRange.start.round().toString(), _currentRange.end.round().toString()),
-                          onChanged: (RangeValues newRange) => setState(() => _currentRange = newRange),
+                              RangeLabels(currentRange.start.round().toString(), currentRange.end.round().toString()),
+                          onChanged: (RangeValues newRange) => setState(() => currentRange = newRange),
                         ),
                       ),
                     ),
@@ -322,11 +336,10 @@ class _GeolocMapControlPanelAlertState extends ConsumerState<GeolocMapControlPan
                             ? Colors.orangeAccent.withOpacity(0.2)
                             : Colors.green[900]?.withOpacity(0.2),
                       ),
-                      onPressed: () {
-                        print(_currentRange.start.round());
-
-                        print(_currentRange.end.round());
-                      },
+                      onPressed: () => ref.read(appParamProvider.notifier).setTimeGeolocDisplay(
+                            start: currentRange.start.round(),
+                            end: currentRange.end.round(),
+                          ),
                       child: const Column(
                         children: <Widget>[
                           Text('set', style: TextStyle(color: Colors.white)),

@@ -19,5 +19,7 @@ class AppParamsResponseState with _$AppParamsResponseState {
     @Default(false) bool isTempleCircleShow,
     GeolocModel? polylineGeolocModel,
     TempleInfoModel? selectedTemple,
+    @Default(-1) int timeGeolocDisplayStart,
+    @Default(-1) int timeGeolocDisplayEnd,
   }) = _AppParamsResponseState;
 }

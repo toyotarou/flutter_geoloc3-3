@@ -252,6 +252,8 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                                   color: Colors.black.withOpacity(0.3), borderRadius: BorderRadius.circular(10)),
                               child: IconButton(
                                 onPressed: () {
+                                  ref.read(appParamProvider.notifier).setTimeGeolocDisplay(start: -1, end: 23);
+
                                   GeolocDialog(
                                     context: context,
                                     widget: GeolocMapControlPanelAlert(

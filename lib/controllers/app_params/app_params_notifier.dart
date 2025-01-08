@@ -42,4 +42,8 @@ class AppParamNotifier extends StateNotifier<AppParamsResponseState> {
 
   ///
   void setSelectedTemple({required TempleInfoModel temple}) => state = state.copyWith(selectedTemple: temple);
+
+  ///
+  void setTimeGeolocDisplay({required int start, required int end}) =>
+      state = state.copyWith(timeGeolocDisplayStart: start, timeGeolocDisplayEnd: end);
 }
