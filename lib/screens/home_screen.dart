@@ -244,45 +244,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             child: ElevatedButton(
                 style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
                 onPressed: () {
-                  final List<GeolocModel> list = <GeolocModel>[];
-
-                  int i = 0;
-                  String keepLat = '';
-                  String keepLng = '';
-                  ref.watch(geolocControllerProvider.select((GeolocControllerState value) => value.geolocList)).toList()
-                    ..sort((GeolocModel a, GeolocModel b) => a.latitude.compareTo(b.latitude))
-                    ..sort((GeolocModel a, GeolocModel b) => a.longitude.compareTo(b.longitude))
-                    ..forEach((GeolocModel element) {
-                      String distance = '';
-
-                      if (i == 0) {
-                        list.add(element);
-                      } else {
-                        final String di = utility.calcDistance(
-                          originLat: keepLat.toDouble(),
-                          originLng: keepLng.toDouble(),
-                          destLat: element.latitude.toDouble(),
-                          destLng: element.longitude.toDouble(),
-                        );
-
-                        final double dis = di.toDouble() * 1000;
-
-                        final List<String> exDis = dis.toString().split('.');
-
-                        distance = exDis[0];
-
-                        final int? dist = int.tryParse(distance);
-
-                        if (dist != null && dist > 1000) {
-                          list.add(element);
-                        }
-                      }
-
-                      keepLat = element.latitude;
-                      keepLng = element.longitude;
-                      i++;
-                    });
-
                   ref.read(appParamProvider.notifier).setIsMarkerShow(flag: true);
 
                   ref.read(appParamProvider.notifier).setSelectedTimeGeoloc();
@@ -292,8 +253,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                   GeolocDialog(
                     context: context,
                     widget: GeolocMapAlert(
-                      date: DateTime.parse('${widget.baseYm}-01 00:00:00'),
-                      geolocStateList: list,
+                      date: (widget.baseYm == null) ? DateTime.now() : DateTime.parse('${widget.baseYm}-01 00:00:00'),
+                      geolocStateList:
+                          ref.watch(geolocControllerProvider.select((GeolocControllerState value) => value.geolocList)),
                       displayMonthMap: true,
                       walkRecord: WalkRecordModel(
                         id: 0,

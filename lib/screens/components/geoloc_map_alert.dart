@@ -246,40 +246,42 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                                 ],
                               ),
                             ),
-                            const SizedBox(width: 20),
-                            Container(
-                              decoration: BoxDecoration(
-                                  color: Colors.black.withOpacity(0.3), borderRadius: BorderRadius.circular(10)),
-                              child: IconButton(
-                                onPressed: () {
-                                  ref.read(appParamProvider.notifier).setTimeGeolocDisplay(start: -1, end: 23);
+                            if (widget.displayMonthMap == false) ...[
+                              const SizedBox(width: 20),
+                              Container(
+                                decoration: BoxDecoration(
+                                    color: Colors.black.withOpacity(0.3), borderRadius: BorderRadius.circular(10)),
+                                child: IconButton(
+                                  onPressed: () {
+                                    ref.read(appParamProvider.notifier).setTimeGeolocDisplay(start: -1, end: 23);
 
-                                  GeolocDialog(
-                                    context: context,
-                                    widget: GeolocMapControlPanelAlert(
-                                      date: widget.date,
-                                      geolocStateList: widget.geolocStateList,
-                                      templeInfoList: widget.templeInfoList,
-                                      mapController: mapController,
-                                      currentZoomEightTeen: currentZoomEightTeen,
-                                      selectedHourMap: selectedHourMap,
-                                      minMaxLatLngMap: <String, double>{
-                                        'minLat': minLat,
-                                        'maxLng': maxLng,
-                                        'maxLat': maxLat,
-                                        'minLng': minLng,
-                                      },
-                                      displayTempMap: widget.displayTempMap,
-                                    ),
-                                    paddingTop: (widget.templeInfoList != null)
-                                        ? context.screenSize.height * 0.55
-                                        : context.screenSize.height * 0.6,
-                                    clearBarrierColor: true,
-                                  );
-                                },
-                                icon: const Icon(Icons.info),
+                                    GeolocDialog(
+                                      context: context,
+                                      widget: GeolocMapControlPanelAlert(
+                                        date: widget.date,
+                                        geolocStateList: widget.geolocStateList,
+                                        templeInfoList: widget.templeInfoList,
+                                        mapController: mapController,
+                                        currentZoomEightTeen: currentZoomEightTeen,
+                                        selectedHourMap: selectedHourMap,
+                                        minMaxLatLngMap: <String, double>{
+                                          'minLat': minLat,
+                                          'maxLng': maxLng,
+                                          'maxLat': maxLat,
+                                          'minLng': minLng,
+                                        },
+                                        displayTempMap: widget.displayTempMap,
+                                      ),
+                                      paddingTop: (widget.templeInfoList != null)
+                                          ? context.screenSize.height * 0.55
+                                          : context.screenSize.height * 0.6,
+                                      clearBarrierColor: true,
+                                    );
+                                  },
+                                  icon: const Icon(Icons.info),
+                                ),
                               ),
-                            ),
+                            ],
                           ],
                         ),
                       ),
