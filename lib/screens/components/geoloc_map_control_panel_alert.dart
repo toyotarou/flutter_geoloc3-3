@@ -9,7 +9,9 @@ import '../../controllers/app_params/app_params_response_state.dart';
 import '../../extensions/extensions.dart';
 import '../../models/geoloc_model.dart';
 import '../../models/temple_latlng_model.dart';
+import '../../utilities/utilities.dart';
 import '../parts/geoloc_dialog.dart';
+import '../parts/geoloc_overlay.dart';
 import 'visited_temple_time_circle_alert.dart';
 
 class GeolocMapControlPanelAlert extends ConsumerStatefulWidget {
@@ -44,6 +46,10 @@ class _GeolocMapControlPanelAlertState extends ConsumerState<GeolocMapControlPan
   final ItemPositionsListener itemPositionsListener = ItemPositionsListener.create();
 
   RangeValues currentRange = const RangeValues(0, 23);
+
+  final List<OverlayEntry> _bigEntries = [];
+
+  Utility utility = Utility();
 
   ///
   @override
@@ -383,20 +389,15 @@ class _GeolocMapControlPanelAlertState extends ConsumerState<GeolocMapControlPan
                             widget.mapController
                                 .move(LatLng(element.latitude.toDouble(), element.longitude.toDouble()), 17);
 
-                            GeolocDialog(
+                            addBigOverlay(
                               context: context,
-                              widget: VisitedTempleTimeCircleAlert(
-                                date: widget.date,
-                                temple: element,
-                                geolocStateList: widget.geolocStateList,
-                                displayTempMap: widget.displayTempMap,
-                                mapController: widget.mapController,
-                                itemScrollController: itemScrollController,
-                              ),
-                              paddingTop: context.screenSize.height * 0.1,
-                              paddingBottom: context.screenSize.height * 0.35,
-                              paddingLeft: context.screenSize.width * 0.5,
-                              clearBarrierColor: true,
+                              bigEntries: _bigEntries,
+                              setStateCallback: setState,
+                              width: context.screenSize.width * 0.3,
+                              height: 390,
+                              color: Colors.blueGrey.withOpacity(0.3),
+                              initialPosition: Offset(context.screenSize.width * 0.7, 160),
+                              widget: displayTempleGeolocTimeCircleAvatarList(temple: element),
                             );
                           },
                           child: Container(
@@ -449,5 +450,87 @@ class _GeolocMapControlPanelAlertState extends ConsumerState<GeolocMapControlPan
 
       ref.read(appParamProvider.notifier).setCurrentZoom(zoom: newZoom);
     }
+  }
+
+  ///
+  Widget displayTempleGeolocTimeCircleAvatarList({required TempleInfoModel temple}) {
+    final List<Widget> list = <Widget>[];
+
+    String distance = '';
+
+    final AppParamsResponseState appParamState = ref.watch(appParamProvider);
+
+    for (final GeolocModel element in widget.geolocStateList) {
+      final String di = utility.calcDistance(
+        originLat: temple.latitude.toDouble(),
+        originLng: temple.longitude.toDouble(),
+        destLat: element.latitude.toDouble(),
+        destLng: element.longitude.toDouble(),
+      );
+
+      final double dis = di.toDouble() * 1000;
+
+      final List<String> exDis = dis.toString().split('.');
+
+      distance = exDis[0];
+
+      final int? dist = int.tryParse(distance);
+
+      if (dist != null) {
+        if (dist <= 100) {
+          list.add(
+            OutlinedButton(
+              style: OutlinedButton.styleFrom(
+                padding: EdgeInsets.zero,
+                // ignore: use_if_null_to_convert_nulls_to_bools
+                backgroundColor:
+                    (appParamState.selectedTimeGeoloc != null && appParamState.selectedTimeGeoloc!.time == element.time)
+                        ? Colors.redAccent.withOpacity(0.5)
+                        // ignore: use_if_null_to_convert_nulls_to_bools
+                        : (widget.displayTempMap == true)
+                            ? Colors.orangeAccent.withOpacity(0.2)
+                            : Colors.green[900]?.withOpacity(0.2),
+              ),
+              onPressed: () {
+                ref.read(appParamProvider.notifier).setIsMarkerShow(flag: true);
+
+                ref.read(appParamProvider.notifier).setSelectedTimeGeoloc(
+                      geoloc: GeolocModel(
+                        id: 0,
+                        year: widget.date.yyyymmdd.split('-')[0],
+                        month: widget.date.yyyymmdd.split('-')[1],
+                        day: widget.date.yyyymmdd.split('-')[2],
+                        time: element.time,
+                        latitude: element.latitude,
+                        longitude: element.longitude,
+                      ),
+                    );
+
+                widget.mapController.move(
+                  LatLng(element.latitude.toDouble(), element.longitude.toDouble()),
+                  appParamState.currentZoom,
+                );
+
+                final int pos =
+                    widget.geolocStateList.indexWhere((GeolocModel element2) => element2.time == element.time);
+
+                itemScrollController.jumpTo(index: pos);
+              },
+              child: Column(
+                children: <Widget>[
+                  Text(element.time, style: const TextStyle(color: Colors.white, fontSize: 10)),
+                  Container(width: context.screenSize.width),
+                ],
+              ),
+            ),
+          );
+        }
+      }
+    }
+
+    return Container(
+      height: 330,
+      child: SingleChildScrollView(child: Column(children: list)),
+    );
   }
 }
