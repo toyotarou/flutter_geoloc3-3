@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:latlong2/latlong.dart';
 
@@ -21,5 +22,7 @@ class AppParamsResponseState with _$AppParamsResponseState {
     TempleInfoModel? selectedTemple,
     @Default(-1) int timeGeolocDisplayStart,
     @Default(-1) int timeGeolocDisplayEnd,
+    List<OverlayEntry>? bigEntries,
+    void Function(VoidCallback fn)? setStateCallback,
   }) = _AppParamsResponseState;
 }

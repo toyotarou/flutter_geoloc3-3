@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../../controllers/app_params/app_params_notifier.dart';
+import '../../controllers/app_params/app_params_response_state.dart';
 
 //=======================================================//
 
@@ -144,4 +148,20 @@ void addBigOverlay({
   setStateCallback(() => bigEntries.add(entry));
 
   Overlay.of(context).insert(entry);
+}
+
+///
+void closeAllOverlays({required WidgetRef ref}) {
+  final List<OverlayEntry>? bigEntries =
+      ref.watch(appParamProvider.select((AppParamsResponseState value) => value.bigEntries));
+  final void Function(void Function() p1)? setStateCallback =
+      ref.watch(appParamProvider.select((AppParamsResponseState value) => value.setStateCallback));
+
+  if (bigEntries != null && setStateCallback != null) {
+    for (final OverlayEntry e in bigEntries) {
+      e.remove();
+    }
+
+//    setStateCallback(() => bigEntries.clear());
+  }
 }

@@ -28,6 +28,9 @@ mixin _$AppParamsResponseState {
   TempleInfoModel? get selectedTemple => throw _privateConstructorUsedError;
   int get timeGeolocDisplayStart => throw _privateConstructorUsedError;
   int get timeGeolocDisplayEnd => throw _privateConstructorUsedError;
+  List<OverlayEntry>? get bigEntries => throw _privateConstructorUsedError;
+  void Function(void Function())? get setStateCallback =>
+      throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $AppParamsResponseStateCopyWith<AppParamsResponseState> get copyWith =>
@@ -52,7 +55,9 @@ abstract class $AppParamsResponseStateCopyWith<$Res> {
       GeolocModel? polylineGeolocModel,
       TempleInfoModel? selectedTemple,
       int timeGeolocDisplayStart,
-      int timeGeolocDisplayEnd});
+      int timeGeolocDisplayEnd,
+      List<OverlayEntry>? bigEntries,
+      void Function(void Function())? setStateCallback});
 }
 
 /// @nodoc
@@ -81,6 +86,8 @@ class _$AppParamsResponseStateCopyWithImpl<$Res,
     Object? selectedTemple = freezed,
     Object? timeGeolocDisplayStart = null,
     Object? timeGeolocDisplayEnd = null,
+    Object? bigEntries = freezed,
+    Object? setStateCallback = freezed,
   }) {
     return _then(_value.copyWith(
       calendarSelectedDate: freezed == calendarSelectedDate
@@ -131,6 +138,14 @@ class _$AppParamsResponseStateCopyWithImpl<$Res,
           ? _value.timeGeolocDisplayEnd
           : timeGeolocDisplayEnd // ignore: cast_nullable_to_non_nullable
               as int,
+      bigEntries: freezed == bigEntries
+          ? _value.bigEntries
+          : bigEntries // ignore: cast_nullable_to_non_nullable
+              as List<OverlayEntry>?,
+      setStateCallback: freezed == setStateCallback
+          ? _value.setStateCallback
+          : setStateCallback // ignore: cast_nullable_to_non_nullable
+              as void Function(void Function())?,
     ) as $Val);
   }
 }
@@ -156,7 +171,9 @@ abstract class _$$AppParamsResponseStateImplCopyWith<$Res>
       GeolocModel? polylineGeolocModel,
       TempleInfoModel? selectedTemple,
       int timeGeolocDisplayStart,
-      int timeGeolocDisplayEnd});
+      int timeGeolocDisplayEnd,
+      List<OverlayEntry>? bigEntries,
+      void Function(void Function())? setStateCallback});
 }
 
 /// @nodoc
@@ -184,6 +201,8 @@ class __$$AppParamsResponseStateImplCopyWithImpl<$Res>
     Object? selectedTemple = freezed,
     Object? timeGeolocDisplayStart = null,
     Object? timeGeolocDisplayEnd = null,
+    Object? bigEntries = freezed,
+    Object? setStateCallback = freezed,
   }) {
     return _then(_$AppParamsResponseStateImpl(
       calendarSelectedDate: freezed == calendarSelectedDate
@@ -234,6 +253,14 @@ class __$$AppParamsResponseStateImplCopyWithImpl<$Res>
           ? _value.timeGeolocDisplayEnd
           : timeGeolocDisplayEnd // ignore: cast_nullable_to_non_nullable
               as int,
+      bigEntries: freezed == bigEntries
+          ? _value._bigEntries
+          : bigEntries // ignore: cast_nullable_to_non_nullable
+              as List<OverlayEntry>?,
+      setStateCallback: freezed == setStateCallback
+          ? _value.setStateCallback
+          : setStateCallback // ignore: cast_nullable_to_non_nullable
+              as void Function(void Function())?,
     ));
   }
 }
@@ -253,7 +280,10 @@ class _$AppParamsResponseStateImpl implements _AppParamsResponseState {
       this.polylineGeolocModel,
       this.selectedTemple,
       this.timeGeolocDisplayStart = -1,
-      this.timeGeolocDisplayEnd = -1});
+      this.timeGeolocDisplayEnd = -1,
+      final List<OverlayEntry>? bigEntries,
+      this.setStateCallback})
+      : _bigEntries = bigEntries;
 
   @override
   final DateTime? calendarSelectedDate;
@@ -286,10 +316,22 @@ class _$AppParamsResponseStateImpl implements _AppParamsResponseState {
   @override
   @JsonKey()
   final int timeGeolocDisplayEnd;
+  final List<OverlayEntry>? _bigEntries;
+  @override
+  List<OverlayEntry>? get bigEntries {
+    final value = _bigEntries;
+    if (value == null) return null;
+    if (_bigEntries is EqualUnmodifiableListView) return _bigEntries;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
+
+  @override
+  final void Function(void Function())? setStateCallback;
 
   @override
   String toString() {
-    return 'AppParamsResponseState(calendarSelectedDate: $calendarSelectedDate, selectedTimeGeoloc: $selectedTimeGeoloc, isMarkerShow: $isMarkerShow, selectedHour: $selectedHour, currentZoom: $currentZoom, currentPaddingIndex: $currentPaddingIndex, currentCenter: $currentCenter, isTempleCircleShow: $isTempleCircleShow, polylineGeolocModel: $polylineGeolocModel, selectedTemple: $selectedTemple, timeGeolocDisplayStart: $timeGeolocDisplayStart, timeGeolocDisplayEnd: $timeGeolocDisplayEnd)';
+    return 'AppParamsResponseState(calendarSelectedDate: $calendarSelectedDate, selectedTimeGeoloc: $selectedTimeGeoloc, isMarkerShow: $isMarkerShow, selectedHour: $selectedHour, currentZoom: $currentZoom, currentPaddingIndex: $currentPaddingIndex, currentCenter: $currentCenter, isTempleCircleShow: $isTempleCircleShow, polylineGeolocModel: $polylineGeolocModel, selectedTemple: $selectedTemple, timeGeolocDisplayStart: $timeGeolocDisplayStart, timeGeolocDisplayEnd: $timeGeolocDisplayEnd, bigEntries: $bigEntries, setStateCallback: $setStateCallback)';
   }
 
   @override
@@ -320,7 +362,11 @@ class _$AppParamsResponseStateImpl implements _AppParamsResponseState {
             (identical(other.timeGeolocDisplayStart, timeGeolocDisplayStart) ||
                 other.timeGeolocDisplayStart == timeGeolocDisplayStart) &&
             (identical(other.timeGeolocDisplayEnd, timeGeolocDisplayEnd) ||
-                other.timeGeolocDisplayEnd == timeGeolocDisplayEnd));
+                other.timeGeolocDisplayEnd == timeGeolocDisplayEnd) &&
+            const DeepCollectionEquality()
+                .equals(other._bigEntries, _bigEntries) &&
+            (identical(other.setStateCallback, setStateCallback) ||
+                other.setStateCallback == setStateCallback));
   }
 
   @override
@@ -337,7 +383,9 @@ class _$AppParamsResponseStateImpl implements _AppParamsResponseState {
       polylineGeolocModel,
       selectedTemple,
       timeGeolocDisplayStart,
-      timeGeolocDisplayEnd);
+      timeGeolocDisplayEnd,
+      const DeepCollectionEquality().hash(_bigEntries),
+      setStateCallback);
 
   @JsonKey(ignore: true)
   @override
@@ -349,18 +397,21 @@ class _$AppParamsResponseStateImpl implements _AppParamsResponseState {
 
 abstract class _AppParamsResponseState implements AppParamsResponseState {
   const factory _AppParamsResponseState(
-      {final DateTime? calendarSelectedDate,
-      final GeolocModel? selectedTimeGeoloc,
-      final bool isMarkerShow,
-      final String selectedHour,
-      final double currentZoom,
-      final int currentPaddingIndex,
-      final LatLng? currentCenter,
-      final bool isTempleCircleShow,
-      final GeolocModel? polylineGeolocModel,
-      final TempleInfoModel? selectedTemple,
-      final int timeGeolocDisplayStart,
-      final int timeGeolocDisplayEnd}) = _$AppParamsResponseStateImpl;
+          {final DateTime? calendarSelectedDate,
+          final GeolocModel? selectedTimeGeoloc,
+          final bool isMarkerShow,
+          final String selectedHour,
+          final double currentZoom,
+          final int currentPaddingIndex,
+          final LatLng? currentCenter,
+          final bool isTempleCircleShow,
+          final GeolocModel? polylineGeolocModel,
+          final TempleInfoModel? selectedTemple,
+          final int timeGeolocDisplayStart,
+          final int timeGeolocDisplayEnd,
+          final List<OverlayEntry>? bigEntries,
+          final void Function(void Function())? setStateCallback}) =
+      _$AppParamsResponseStateImpl;
 
   @override
   DateTime? get calendarSelectedDate;
@@ -386,6 +437,10 @@ abstract class _AppParamsResponseState implements AppParamsResponseState {
   int get timeGeolocDisplayStart;
   @override
   int get timeGeolocDisplayEnd;
+  @override
+  List<OverlayEntry>? get bigEntries;
+  @override
+  void Function(void Function())? get setStateCallback;
   @override
   @JsonKey(ignore: true)
   _$$AppParamsResponseStateImplCopyWith<_$AppParamsResponseStateImpl>

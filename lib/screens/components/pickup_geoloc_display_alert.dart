@@ -85,6 +85,8 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
                                   walkRecord: widget.walkRecord,
                                   templeInfoList: widget.templeInfoMap,
                                 ),
+                                executeFunctionWhenDialogClose: true,
+                                ref: ref,
                               );
                             },
                             child: const Column(

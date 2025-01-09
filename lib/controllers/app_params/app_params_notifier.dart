@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 import '../../models/geoloc_model.dart';
@@ -46,4 +47,12 @@ class AppParamNotifier extends StateNotifier<AppParamsResponseState> {
   ///
   void setTimeGeolocDisplay({required int start, required int end}) =>
       state = state.copyWith(timeGeolocDisplayStart: start, timeGeolocDisplayEnd: end);
+
+  ///
+  void setTempleGeolocTimeCircleAvatarParams({
+    required List<OverlayEntry>? bigEntries,
+    required void Function(VoidCallback fn)? setStateCallback,
+  }) {
+    state = state.copyWith(bigEntries: bigEntries, setStateCallback: setStateCallback);
+  }
 }

@@ -384,6 +384,9 @@ class _GeolocMapControlPanelAlertState extends ConsumerState<GeolocMapControlPan
 
                             ref.read(appParamProvider.notifier).setSelectedTemple(temple: element);
 
+                            ref.read(appParamProvider.notifier).setTempleGeolocTimeCircleAvatarParams(
+                                bigEntries: _bigEntries, setStateCallback: setState);
+
                             widget.mapController
                                 .move(LatLng(element.latitude.toDouble(), element.longitude.toDouble()), 17);
 

@@ -266,6 +266,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                         distance: 0,
                       ),
                     ),
+                    executeFunctionWhenDialogClose: true,
+                    ref: ref,
                   );
                 },
                 child: const Text('month')),
@@ -613,6 +615,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                                         ),
                                                     templeInfoList: templeInfoMap[generateYmd],
                                                   ),
+                                                  executeFunctionWhenDialogClose: true,
+                                                  ref: ref,
                                                 );
                                               },
                                         child: Text(

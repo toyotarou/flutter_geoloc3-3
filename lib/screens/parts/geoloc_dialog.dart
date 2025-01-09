@@ -1,6 +1,9 @@
 // ignore_for_file: non_constant_identifier_names
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import 'geoloc_overlay.dart';
 
 Future<void> GeolocDialog({
   required BuildContext context,
@@ -10,7 +13,10 @@ Future<void> GeolocDialog({
   double paddingBottom = 0,
   double paddingLeft = 0,
   bool clearBarrierColor = false,
+  bool? executeFunctionWhenDialogClose,
+  WidgetRef? ref,
 }) {
+  // ignore: inference_failure_on_function_invocation
   return showDialog(
     context: context,
     barrierColor: clearBarrierColor ? Colors.transparent : Colors.blueGrey.withOpacity(0.3),
@@ -25,5 +31,16 @@ Future<void> GeolocDialog({
         ),
       );
     },
-  );
+    // ignore: always_specify_types
+  ).then((value) {
+    // ignore: use_if_null_to_convert_nulls_to_bools
+    if (executeFunctionWhenDialogClose == true) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        final ModalRoute<Object?>? route = ModalRoute.of(context);
+        if (route != null && route.isCurrent) {
+          closeAllOverlays(ref: ref!);
+        }
+      });
+    }
+  });
 }
