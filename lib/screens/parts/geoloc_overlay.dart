@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 //=======================================================//
 
 class DraggableOverlayItem {
+  DraggableOverlayItem({required this.position, required this.width, required this.height, required this.color});
+
   late OverlayEntry entry;
 
   Offset position;
@@ -11,8 +13,6 @@ class DraggableOverlayItem {
   final double height;
 
   final Color color;
-
-  DraggableOverlayItem({required this.position, required this.width, required this.height, required this.color});
 }
 
 //=======================================================//
@@ -27,12 +27,13 @@ OverlayEntry createDraggableOverlayEntry({
   required VoidCallback onRemove,
   required Widget widget,
 }) {
-  final screenSize = MediaQuery.of(context).size;
+  final Size screenSize = MediaQuery.of(context).size;
 
-  final item = DraggableOverlayItem(position: initialOffset, width: width, height: height, color: color);
+  final DraggableOverlayItem item =
+      DraggableOverlayItem(position: initialOffset, width: width, height: height, color: color);
 
-  final entry = OverlayEntry(
-    builder: (context) {
+  final OverlayEntry entry = OverlayEntry(
+    builder: (BuildContext context) {
       return Positioned(
         left: item.position.dx,
         top: item.position.dy,
@@ -44,7 +45,7 @@ OverlayEntry createDraggableOverlayEntry({
             width: item.width,
             height: item.height,
             child: Column(
-              children: [
+              children: <Widget>[
                 Container(
                   color: Colors.transparent,
                   height: 40,
@@ -54,10 +55,10 @@ OverlayEntry createDraggableOverlayEntry({
                       if (event.buttons == 1) {
                         item.position += event.delta;
 
-                        final maxX = screenSize.width - item.width;
-                        final maxY = screenSize.height - item.height;
-                        final clampedX = item.position.dx.clamp(0, maxX);
-                        final clampedY = item.position.dy.clamp(0, maxY);
+                        final double maxX = screenSize.width - item.width;
+                        final double maxY = screenSize.height - item.height;
+                        final num clampedX = item.position.dx.clamp(0, maxX);
+                        final num clampedY = item.position.dy.clamp(0, maxY);
 
                         item.position = Offset(double.parse(clampedX.toString()), double.parse(clampedY.toString()));
 
@@ -66,7 +67,7 @@ OverlayEntry createDraggableOverlayEntry({
                     },
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
+                      children: <Widget>[
                         const Icon(Icons.drag_indicator),
                         const Expanded(child: Text('')),
                         IconButton(onPressed: onRemove, icon: const Icon(Icons.close)),
@@ -79,7 +80,7 @@ OverlayEntry createDraggableOverlayEntry({
                     padding: const EdgeInsets.symmetric(horizontal: 10),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
+                      children: <Widget>[
                         Container(width: double.infinity),
                         // Text('Width: ${item.width}'),
                         // Text('Height: ${item.height}'),
@@ -118,7 +119,7 @@ void addBigOverlay({
   required Widget widget,
 }) {
   if (bigEntries.isNotEmpty) {
-    for (final e in bigEntries) {
+    for (final OverlayEntry e in bigEntries) {
       e.remove();
     }
 

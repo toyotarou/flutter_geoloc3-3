@@ -10,9 +10,7 @@ import '../../extensions/extensions.dart';
 import '../../models/geoloc_model.dart';
 import '../../models/temple_latlng_model.dart';
 import '../../utilities/utilities.dart';
-import '../parts/geoloc_dialog.dart';
 import '../parts/geoloc_overlay.dart';
-import 'visited_temple_time_circle_alert.dart';
 
 class GeolocMapControlPanelAlert extends ConsumerStatefulWidget {
   const GeolocMapControlPanelAlert({
@@ -47,7 +45,7 @@ class _GeolocMapControlPanelAlertState extends ConsumerState<GeolocMapControlPan
 
   RangeValues currentRange = const RangeValues(0, 23);
 
-  final List<OverlayEntry> _bigEntries = [];
+  final List<OverlayEntry> _bigEntries = <OverlayEntry>[];
 
   Utility utility = Utility();
 
@@ -528,9 +526,6 @@ class _GeolocMapControlPanelAlertState extends ConsumerState<GeolocMapControlPan
       }
     }
 
-    return Container(
-      height: 330,
-      child: SingleChildScrollView(child: Column(children: list)),
-    );
+    return SizedBox(height: 330, child: SingleChildScrollView(child: Column(children: list)));
   }
 }
