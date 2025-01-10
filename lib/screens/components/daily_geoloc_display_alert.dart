@@ -36,6 +36,8 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
 
   Map<String, List<Geoloc>> geolocMap = <String, List<Geoloc>>{};
 
+  bool isLoading = false;
+
   ///
   void _init() {
     _makeGeolocList();
@@ -53,89 +55,96 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
 
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: SafeArea(
-          child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          children: <Widget>[
-            Container(width: context.screenSize.width),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
+      body: Stack(
+        children: <Widget>[
+          SafeArea(
+              child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Column(
               children: <Widget>[
-                Text(widget.date.yyyymmdd),
+                Container(width: context.screenSize.width),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    GestureDetector(
-                      onTap: () async {
-                        bool errFlg = false;
-                        String contentStr = '';
+                    Text(widget.date.yyyymmdd),
+                    Row(
+                      children: <Widget>[
+                        GestureDetector(
+                          onTap: () async {
+                            bool errFlg = false;
+                            String contentStr = '';
 
-                        if (widget.geolocStateList.isEmpty) {
-                          errFlg = true;
-                          contentStr = 'mysqlデータがありません。';
-                        }
+                            if (widget.geolocStateList.isEmpty) {
+                              errFlg = true;
+                              contentStr = 'mysqlデータがありません。';
+                            }
 
-                        if (geolocMap.isEmpty) {
-                          errFlg = true;
-                          contentStr = 'geolocMapが作成されていません。';
-                        }
+                            if (geolocMap.isEmpty) {
+                              errFlg = true;
+                              contentStr = 'geolocMapが作成されていません。';
+                            }
 
-                        if (errFlg) {
-                          // ignore: always_specify_types
-                          Future.delayed(
-                            Duration.zero,
-                            () => error_dialog(
-                                // ignore: use_build_context_synchronously
-                                context: context,
-                                title: 'isarデータを削除できません。',
-                                content: contentStr),
-                          );
+                            if (errFlg) {
+                              // ignore: always_specify_types
+                              Future.delayed(
+                                Duration.zero,
+                                () => error_dialog(
+                                    // ignore: use_build_context_synchronously
+                                    context: context,
+                                    title: 'isarデータを削除できません。',
+                                    content: contentStr),
+                              );
 
-                          return;
-                        }
+                              return;
+                            }
 
-                        _showDeleteDialog(geolocList: geolocMap[widget.date.yyyymmdd]);
-                      },
-                      child: Column(
-                        children: <Widget>[
-                          const Text('delete'),
-                          Icon(Icons.delete,
-                              color: (widget.geolocStateList.isEmpty) ? Colors.grey : Colors.lightBlueAccent),
-                          const Text('isar'),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(width: 30),
-                    GestureDetector(
-                      onTap: () {
-                        GeolocDialog(
-                          // ignore: use_build_context_synchronously
-                          context: context,
-                          widget: PickupGeolocDisplayAlert(
-                            date: widget.date,
-                            pickupGeolocList: pickupGeolocList,
-                            walkRecord: widget.walkRecord,
-                            templeInfoMap: widget.templeInfoMap,
+                            _showDeleteDialog(geolocList: geolocMap[widget.date.yyyymmdd]);
+                          },
+                          child: Column(
+                            children: <Widget>[
+                              const Text('delete'),
+                              Icon(Icons.delete,
+                                  color: (widget.geolocStateList.isEmpty) ? Colors.grey : Colors.lightBlueAccent),
+                              const Text('isar'),
+                            ],
                           ),
-                        );
-                      },
-                      child: const Column(children: <Widget>[Text('select'), Icon(Icons.list), Text('list')]),
+                        ),
+                        const SizedBox(width: 30),
+                        GestureDetector(
+                          onTap: () {
+                            GeolocDialog(
+                              // ignore: use_build_context_synchronously
+                              context: context,
+                              widget: PickupGeolocDisplayAlert(
+                                date: widget.date,
+                                pickupGeolocList: pickupGeolocList,
+                                walkRecord: widget.walkRecord,
+                                templeInfoMap: widget.templeInfoMap,
+                              ),
+                            );
+                          },
+                          child: const Column(children: <Widget>[Text('select'), Icon(Icons.list), Text('list')]),
+                        ),
+                      ],
                     ),
                   ],
                 ),
+                Divider(color: Colors.white.withOpacity(0.5), thickness: 5),
+                Expanded(child: displayGeolocList()),
+                Divider(color: Colors.white.withOpacity(0.5), thickness: 5),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[Container(), Text(diffSeconds)],
+                ),
               ],
             ),
-            Divider(color: Colors.white.withOpacity(0.5), thickness: 5),
-            Expanded(child: displayGeolocList()),
-            Divider(color: Colors.white.withOpacity(0.5), thickness: 5),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[Container(), Text(diffSeconds)],
-            ),
+          )),
+          if (isLoading) ...<Widget>[
+            const Center(child: CircularProgressIndicator()),
           ],
-        ),
-      )),
+        ],
+      ),
     );
   }
 
@@ -260,6 +269,8 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
 
   ///
   Future<void> _deleteGeolocList({List<Geoloc>? geolocList}) async {
+    setState(() => isLoading = true);
+
     // ignore: always_specify_types
     await GeolocRepository()
         .deleteGeolocList(geolocList: geolocList)
