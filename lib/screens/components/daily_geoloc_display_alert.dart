@@ -7,6 +7,7 @@ import '../../models/temple_latlng_model.dart';
 import '../../models/walk_record_model.dart';
 import '../../ripository/geolocs_repository.dart';
 import '../../utilities/utilities.dart';
+import '../home_screen.dart';
 import '../parts/error_dialog.dart';
 import '../parts/geoloc_dialog.dart';
 import 'pickup_geoloc_display_alert.dart';
@@ -265,8 +266,18 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
         // ignore: always_specify_types
         .then((value) {
       if (mounted) {
-        // ignore: use_build_context_synchronously
-        Navigator.pop(context);
+        // ignore: always_specify_types
+        Future.delayed(const Duration(seconds: 2), () {
+          // ignore: use_build_context_synchronously
+          Navigator.pop(context);
+
+          Navigator.pushReplacement(
+            // ignore: use_build_context_synchronously
+            context,
+            // ignore: inference_failure_on_instance_creation, always_specify_types
+            MaterialPageRoute(builder: (BuildContext context) => HomeScreen(baseYm: widget.date.yyyymm)),
+          );
+        });
       }
     });
   }
