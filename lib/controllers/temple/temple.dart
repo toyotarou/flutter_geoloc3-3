@@ -17,6 +17,7 @@ class TempleControllerState with _$TempleControllerState {
     @Default(<TempleInfoModel>[]) List<TempleInfoModel> templeInfoList,
     @Default(<String, List<TempleInfoModel>>{}) Map<String, List<TempleInfoModel>> templeInfoMap,
     @Default(<String, List<String>>{}) Map<String, List<String>> templeVisitedDateMap,
+    @Default(<String, List<String>>{}) Map<String, List<String>> yearVisitedDateMap,
   }) = _TempleControllerState;
 }
 
@@ -38,6 +39,8 @@ class TempleController extends _$TempleController {
       final Map<String, List<TempleInfoModel>> map = <String, List<TempleInfoModel>>{};
 
       final Map<String, List<String>> map2 = <String, List<String>>{};
+
+      Map<String, List<String>> map3 = {};
 
       //===============================================================================//
 
@@ -71,6 +74,8 @@ class TempleController extends _$TempleController {
 
         map['${templeModelValueData.year}-${templeModelValueData.month}-${templeModelValueData.day}'] =
             <TempleInfoModel>[];
+
+        map3[templeModelValueData.year] = <String>[];
 
         ////////////////////////////////////////////
         map2[templeModelValueData.temple] = <String>[];
@@ -117,9 +122,13 @@ class TempleController extends _$TempleController {
               ?.add('${templeModelValueData2.year}-${templeModelValueData2.month}-${templeModelValueData2.day}');
         }
         //___________________________________________________________
+
+        map3[templeModelValueData2.year]
+            ?.add('${templeModelValueData2.year}-${templeModelValueData2.month}-${templeModelValueData2.day}');
       }
 
-      state = state.copyWith(templeInfoList: list, templeInfoMap: map, templeVisitedDateMap: map2);
+      state = state.copyWith(
+          templeInfoList: list, templeInfoMap: map, templeVisitedDateMap: map2, yearVisitedDateMap: map3);
       // ignore: always_specify_types
     }).catchError((error, _) {
       utility.showError('予期せぬエラーが発生しました');

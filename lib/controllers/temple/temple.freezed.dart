@@ -22,6 +22,8 @@ mixin _$TempleControllerState {
       throw _privateConstructorUsedError;
   Map<String, List<String>> get templeVisitedDateMap =>
       throw _privateConstructorUsedError;
+  Map<String, List<String>> get yearVisitedDateMap =>
+      throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $TempleControllerStateCopyWith<TempleControllerState> get copyWith =>
@@ -37,7 +39,8 @@ abstract class $TempleControllerStateCopyWith<$Res> {
   $Res call(
       {List<TempleInfoModel> templeInfoList,
       Map<String, List<TempleInfoModel>> templeInfoMap,
-      Map<String, List<String>> templeVisitedDateMap});
+      Map<String, List<String>> templeVisitedDateMap,
+      Map<String, List<String>> yearVisitedDateMap});
 }
 
 /// @nodoc
@@ -57,6 +60,7 @@ class _$TempleControllerStateCopyWithImpl<$Res,
     Object? templeInfoList = null,
     Object? templeInfoMap = null,
     Object? templeVisitedDateMap = null,
+    Object? yearVisitedDateMap = null,
   }) {
     return _then(_value.copyWith(
       templeInfoList: null == templeInfoList
@@ -70,6 +74,10 @@ class _$TempleControllerStateCopyWithImpl<$Res,
       templeVisitedDateMap: null == templeVisitedDateMap
           ? _value.templeVisitedDateMap
           : templeVisitedDateMap // ignore: cast_nullable_to_non_nullable
+              as Map<String, List<String>>,
+      yearVisitedDateMap: null == yearVisitedDateMap
+          ? _value.yearVisitedDateMap
+          : yearVisitedDateMap // ignore: cast_nullable_to_non_nullable
               as Map<String, List<String>>,
     ) as $Val);
   }
@@ -87,7 +95,8 @@ abstract class _$$TempleControllerStateImplCopyWith<$Res>
   $Res call(
       {List<TempleInfoModel> templeInfoList,
       Map<String, List<TempleInfoModel>> templeInfoMap,
-      Map<String, List<String>> templeVisitedDateMap});
+      Map<String, List<String>> templeVisitedDateMap,
+      Map<String, List<String>> yearVisitedDateMap});
 }
 
 /// @nodoc
@@ -105,6 +114,7 @@ class __$$TempleControllerStateImplCopyWithImpl<$Res>
     Object? templeInfoList = null,
     Object? templeInfoMap = null,
     Object? templeVisitedDateMap = null,
+    Object? yearVisitedDateMap = null,
   }) {
     return _then(_$TempleControllerStateImpl(
       templeInfoList: null == templeInfoList
@@ -119,6 +129,10 @@ class __$$TempleControllerStateImplCopyWithImpl<$Res>
           ? _value._templeVisitedDateMap
           : templeVisitedDateMap // ignore: cast_nullable_to_non_nullable
               as Map<String, List<String>>,
+      yearVisitedDateMap: null == yearVisitedDateMap
+          ? _value._yearVisitedDateMap
+          : yearVisitedDateMap // ignore: cast_nullable_to_non_nullable
+              as Map<String, List<String>>,
     ));
   }
 }
@@ -131,10 +145,13 @@ class _$TempleControllerStateImpl implements _TempleControllerState {
       final Map<String, List<TempleInfoModel>> templeInfoMap =
           const <String, List<TempleInfoModel>>{},
       final Map<String, List<String>> templeVisitedDateMap =
+          const <String, List<String>>{},
+      final Map<String, List<String>> yearVisitedDateMap =
           const <String, List<String>>{}})
       : _templeInfoList = templeInfoList,
         _templeInfoMap = templeInfoMap,
-        _templeVisitedDateMap = templeVisitedDateMap;
+        _templeVisitedDateMap = templeVisitedDateMap,
+        _yearVisitedDateMap = yearVisitedDateMap;
 
   final List<TempleInfoModel> _templeInfoList;
   @override
@@ -164,9 +181,19 @@ class _$TempleControllerStateImpl implements _TempleControllerState {
     return EqualUnmodifiableMapView(_templeVisitedDateMap);
   }
 
+  final Map<String, List<String>> _yearVisitedDateMap;
+  @override
+  @JsonKey()
+  Map<String, List<String>> get yearVisitedDateMap {
+    if (_yearVisitedDateMap is EqualUnmodifiableMapView)
+      return _yearVisitedDateMap;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableMapView(_yearVisitedDateMap);
+  }
+
   @override
   String toString() {
-    return 'TempleControllerState(templeInfoList: $templeInfoList, templeInfoMap: $templeInfoMap, templeVisitedDateMap: $templeVisitedDateMap)';
+    return 'TempleControllerState(templeInfoList: $templeInfoList, templeInfoMap: $templeInfoMap, templeVisitedDateMap: $templeVisitedDateMap, yearVisitedDateMap: $yearVisitedDateMap)';
   }
 
   @override
@@ -179,7 +206,9 @@ class _$TempleControllerStateImpl implements _TempleControllerState {
             const DeepCollectionEquality()
                 .equals(other._templeInfoMap, _templeInfoMap) &&
             const DeepCollectionEquality()
-                .equals(other._templeVisitedDateMap, _templeVisitedDateMap));
+                .equals(other._templeVisitedDateMap, _templeVisitedDateMap) &&
+            const DeepCollectionEquality()
+                .equals(other._yearVisitedDateMap, _yearVisitedDateMap));
   }
 
   @override
@@ -187,7 +216,8 @@ class _$TempleControllerStateImpl implements _TempleControllerState {
       runtimeType,
       const DeepCollectionEquality().hash(_templeInfoList),
       const DeepCollectionEquality().hash(_templeInfoMap),
-      const DeepCollectionEquality().hash(_templeVisitedDateMap));
+      const DeepCollectionEquality().hash(_templeVisitedDateMap),
+      const DeepCollectionEquality().hash(_yearVisitedDateMap));
 
   @JsonKey(ignore: true)
   @override
@@ -201,7 +231,8 @@ abstract class _TempleControllerState implements TempleControllerState {
   const factory _TempleControllerState(
           {final List<TempleInfoModel> templeInfoList,
           final Map<String, List<TempleInfoModel>> templeInfoMap,
-          final Map<String, List<String>> templeVisitedDateMap}) =
+          final Map<String, List<String>> templeVisitedDateMap,
+          final Map<String, List<String>> yearVisitedDateMap}) =
       _$TempleControllerStateImpl;
 
   @override
@@ -210,6 +241,8 @@ abstract class _TempleControllerState implements TempleControllerState {
   Map<String, List<TempleInfoModel>> get templeInfoMap;
   @override
   Map<String, List<String>> get templeVisitedDateMap;
+  @override
+  Map<String, List<String>> get yearVisitedDateMap;
   @override
   @JsonKey(ignore: true)
   _$$TempleControllerStateImplCopyWith<_$TempleControllerStateImpl>
