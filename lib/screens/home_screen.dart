@@ -27,6 +27,7 @@ import '../utilities/utilities.dart';
 import 'components/daily_geoloc_display_alert.dart';
 import 'components/geoloc_map_alert.dart';
 import 'components/history_geoloc_list_alert.dart';
+import 'components/temple_visited_date_display_alert.dart';
 import 'parts/geoloc_dialog.dart';
 import 'parts/menu_head_icon.dart';
 
@@ -203,31 +204,56 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     final CalendarsResponseState calendarState = ref.watch(calendarProvider);
 
+    ref.watch(geolocControllerProvider.select((GeolocControllerState value) => value.geolocMap));
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
         title: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            Text(calendarState.baseYearMonth),
-            const SizedBox(width: 10),
-            SizedBox(
-              width: 100,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  IconButton(
-                      onPressed: () => _goPrevMonth(),
-                      icon: Icon(Icons.arrow_back_ios, color: Colors.white.withOpacity(0.8), size: 14)),
-                  IconButton(
-                    onPressed: () => (DateTime.now().yyyymm == calendarState.baseYearMonth) ? null : _goNextMonth(),
-                    icon: Icon(Icons.arrow_forward_ios,
-                        size: 14,
-                        color: (DateTime.now().yyyymm == calendarState.baseYearMonth)
-                            ? Colors.grey.withOpacity(0.6)
-                            : Colors.white.withOpacity(0.8)),
+            Row(
+              children: <Widget>[
+                Text(calendarState.baseYearMonth),
+                const SizedBox(width: 10),
+                SizedBox(
+                  width: 100,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      IconButton(
+                          onPressed: () => _goPrevMonth(),
+                          icon: Icon(Icons.arrow_back_ios, color: Colors.white.withOpacity(0.8), size: 14)),
+                      IconButton(
+                        onPressed: () => (DateTime.now().yyyymm == calendarState.baseYearMonth) ? null : _goNextMonth(),
+                        icon: Icon(Icons.arrow_forward_ios,
+                            size: 14,
+                            color: (DateTime.now().yyyymm == calendarState.baseYearMonth)
+                                ? Colors.grey.withOpacity(0.6)
+                                : Colors.white.withOpacity(0.8)),
+                      ),
+                    ],
                   ),
-                ],
-              ),
+                ),
+              ],
+            ),
+            const SizedBox(width: 20),
+            Row(
+              children: <Widget>[
+                IconButton(
+                  onPressed: () {
+                    GeolocDialog(
+                      context: context,
+                      widget: const TempleVisitedDateDisplayAlert(),
+                    );
+                  },
+                  icon: Icon(
+                    FontAwesomeIcons.toriiGate,
+                    size: 20,
+                    color: Colors.white.withOpacity(0.6),
+                  ),
+                ),
+              ],
             ),
           ],
         ),
