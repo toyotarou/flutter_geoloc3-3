@@ -2,10 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../controllers/app_params/app_params_notifier.dart';
+import '../../controllers/geoloc/geoloc.dart';
 import '../../controllers/temple/temple.dart';
 import '../../controllers/walk_record/walk_record.dart';
 import '../../extensions/extensions.dart';
+import '../../models/geoloc_model.dart';
 import '../../models/temple_latlng_model.dart';
+import '../../models/walk_record_model.dart';
+import '../parts/geoloc_dialog.dart';
+import 'geoloc_map_alert.dart';
 
 class TempleVisitedDateDisplayAlert extends ConsumerStatefulWidget {
   const TempleVisitedDateDisplayAlert({super.key});
@@ -15,6 +20,15 @@ class TempleVisitedDateDisplayAlert extends ConsumerStatefulWidget {
 }
 
 class _TempleVisitedDateDisplayAlertState extends ConsumerState<TempleVisitedDateDisplayAlert> {
+  ///
+  @override
+  void initState() {
+    super.initState();
+
+    ref.read(geolocControllerProvider.notifier).getAllGeoloc();
+  }
+
+  ///
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,7 +56,11 @@ class _TempleVisitedDateDisplayAlertState extends ConsumerState<TempleVisitedDat
     final Map<String, List<TempleInfoModel>> templeInfoMap =
         ref.watch(templeControllerProvider.select((TempleControllerState value) => value.templeInfoMap));
 
-    ref.watch(walkRecordControllerProvider.select((WalkRecordControllerState value) => value.walkRecordMap));
+    final Map<String, WalkRecordModel> walkRecordMap =
+        ref.watch(walkRecordControllerProvider.select((WalkRecordControllerState value) => value.walkRecordMap));
+
+    final Map<String, List<GeolocModel>> allGeolocMap =
+        ref.watch(geolocControllerProvider.select((GeolocControllerState value) => value.allGeolocMap));
 
     yearVisitedDateMap.forEach(
       (String year, List<String> value) {
@@ -60,34 +78,19 @@ class _TempleVisitedDateDisplayAlertState extends ConsumerState<TempleVisitedDat
                         onTap: () {
                           ref.read(appParamProvider.notifier).setIsMarkerShow(flag: false);
 
-                          /*
-
-
                           GeolocDialog(
                             context: context,
                             widget: GeolocMapAlert(
                               date: DateTime.parse('$date 00:00:00'),
-                              geolocStateList: widget.geolocStateMap[date] ?? <GeolocModel>[],
+                              geolocStateList: allGeolocMap[date] ?? <GeolocModel>[],
                               displayMonthMap: false,
                               walkRecord: walkRecordMap[date] ??
-                                  WalkRecordModel(
-                                    id: 0,
-                                    year: '',
-                                    month: '',
-                                    day: '',
-                                    step: 0,
-                                    distance: 0,
-                                  ),
+                                  WalkRecordModel(id: 0, year: '', month: '', day: '', step: 0, distance: 0),
                               templeInfoList: templeInfoMap[date],
                             ),
                             executeFunctionWhenDialogClose: true,
                             ref: ref,
                           );
-
-
-
-
-                          */
                         },
                         child: CircleAvatar(radius: 12, backgroundColor: Colors.white.withOpacity(0.2)),
                       ),

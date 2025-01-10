@@ -632,13 +632,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                                     displayMonthMap: false,
                                                     walkRecord: walkRecordMap[generateYmd] ??
                                                         WalkRecordModel(
-                                                          id: 0,
-                                                          year: '',
-                                                          month: '',
-                                                          day: '',
-                                                          step: 0,
-                                                          distance: 0,
-                                                        ),
+                                                            id: 0, year: '', month: '', day: '', step: 0, distance: 0),
                                                     templeInfoList: templeInfoMap[generateYmd],
                                                   ),
                                                   executeFunctionWhenDialogClose: true,

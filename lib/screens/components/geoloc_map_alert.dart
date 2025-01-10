@@ -288,6 +288,24 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                     ],
                   ),
                 ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    if (widget.walkRecord.step != 0 && widget.walkRecord.distance != 0) ...<Widget>[
+                      Text(
+                        'step: ${widget.walkRecord.step} / distance: ${widget.walkRecord.distance}',
+                        style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                    if (widget.walkRecord.step == 0 || widget.walkRecord.distance == 0) ...<Widget>[
+                      Container(),
+                    ],
+                    Text(
+                      widget.geolocStateList.length.toString(),
+                      style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
