@@ -18,6 +18,7 @@ class TempleControllerState with _$TempleControllerState {
     @Default(<String, List<TempleInfoModel>>{}) Map<String, List<TempleInfoModel>> templeInfoMap,
     @Default(<String, List<String>>{}) Map<String, List<String>> templeVisitedDateMap,
     @Default(<String, List<String>>{}) Map<String, List<String>> yearVisitedDateMap,
+    @Default(<List<String>>[]) List<List<String>> templeSearchValueList,
   }) = _TempleControllerState;
 }
 
@@ -40,7 +41,9 @@ class TempleController extends _$TempleController {
 
       final Map<String, List<String>> map2 = <String, List<String>>{};
 
-      Map<String, List<String>> map3 = {};
+      final Map<String, List<String>> map3 = <String, List<String>>{};
+
+      final List<List<String>> list2 = <List<String>>[];
 
       //===============================================================================//
 
@@ -94,6 +97,8 @@ class TempleController extends _$TempleController {
         final List<String> templeName = <String>[templeModelValueData2.temple];
         templeModelValueData2.memo?.split('、').forEach((String element) => templeName.add(element));
 
+        list2.add(templeName);
+
         ///
 
         map2[templeModelValueData2.temple]
@@ -128,7 +133,12 @@ class TempleController extends _$TempleController {
       }
 
       state = state.copyWith(
-          templeInfoList: list, templeInfoMap: map, templeVisitedDateMap: map2, yearVisitedDateMap: map3);
+        templeInfoList: list,
+        templeInfoMap: map,
+        templeVisitedDateMap: map2,
+        yearVisitedDateMap: map3,
+        templeSearchValueList: list2,
+      );
       // ignore: always_specify_types
     }).catchError((error, _) {
       utility.showError('予期せぬエラーが発生しました');
