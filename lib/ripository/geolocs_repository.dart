@@ -5,7 +5,7 @@ import 'isar_repository.dart';
 
 class GeolocRepository {
   ///
-  Future<List<Geoloc>?> getAllGeoloc() async {
+  Future<List<Geoloc>?> getAllIsarGeoloc() async {
     await IsarRepository.configure();
     return IsarRepository.isar.geolocs.where().sortByDateDesc().thenByTimeDesc().findAll();
   }

@@ -145,19 +145,20 @@ class GeolocController extends _$GeolocController {
   }
 
   ///
-  Future<void> getAllGeoloc() async {
+  Future<GeolocControllerState> _fetchAllGeolocData() async {
     final HttpClient client = ref.read(httpClientProvider);
 
-    // ignore: always_specify_types
-    await client.get(path: 'geoloc').then((value) {
-      final List<GeolocModel> list = <GeolocModel>[];
-      final Map<String, List<GeolocModel>> map = <String, List<GeolocModel>>{};
+    try {
+      // ignore: always_specify_types
+      final dynamic value = await client.get(path: 'geoloc');
+
+      final list = <GeolocModel>[];
+      final map = <String, List<GeolocModel>>{};
 
       // ignore: avoid_dynamic_calls
       for (int i = 0; i < value.length.toString().toInt(); i++) {
         // ignore: avoid_dynamic_calls
         final GeolocModel val = GeolocModel.fromJson(value[i] as Map<String, dynamic>);
-
         list.add(val);
 
         map['${val.year}-${val.month}-${val.day}'] = <GeolocModel>[];
@@ -167,14 +168,22 @@ class GeolocController extends _$GeolocController {
       for (int i = 0; i < value.length.toString().toInt(); i++) {
         // ignore: avoid_dynamic_calls
         final GeolocModel val = GeolocModel.fromJson(value[i] as Map<String, dynamic>);
-
         map['${val.year}-${val.month}-${val.day}']?.add(val);
       }
 
-      state = state.copyWith(allGeolocList: list, allGeolocMap: map);
-      // ignore: always_specify_types
-    }).catchError((error, _) {
+      return state.copyWith(allGeolocList: list, allGeolocMap: map);
+    } catch (e) {
       utility.showError('予期せぬエラーが発生しました');
-    });
+      rethrow; // これにより呼び出し元でキャッチできる
+    }
+  }
+
+  ///
+  Future<void> getAllGeoloc() async {
+    try {
+      final newState = await _fetchAllGeolocData();
+
+      state = newState;
+    } catch (_) {}
   }
 }

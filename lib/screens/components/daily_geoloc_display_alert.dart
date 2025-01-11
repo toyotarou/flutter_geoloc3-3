@@ -152,7 +152,7 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
   Future<void> _makeGeolocList() async {
     geolocMap = <String, List<Geoloc>>{};
 
-    GeolocRepository().getAllGeoloc().then((List<Geoloc>? value) {
+    GeolocRepository().getAllIsarGeoloc().then((List<Geoloc>? value) {
       if (mounted) {
         setState(() {
           geolocList = value;

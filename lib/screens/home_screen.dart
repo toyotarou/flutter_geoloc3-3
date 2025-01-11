@@ -687,7 +687,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
   ///
   Future<void> _makeGeolocList() async {
-    GeolocRepository().getAllGeoloc().then((List<Geoloc>? value) {
+    GeolocRepository().getAllIsarGeoloc().then((List<Geoloc>? value) {
       if (mounted) {
         setState(() {
           geolocList = value;

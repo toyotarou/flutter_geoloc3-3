@@ -73,29 +73,42 @@ class _TempleVisitedDateDisplayAlertState extends ConsumerState<TempleVisitedDat
                 Container(
                   padding: const EdgeInsets.symmetric(vertical: 3),
                   child: Row(
-                    children: <Widget>[
-                      GestureDetector(
-                        onTap: () {
-                          ref.read(appParamProvider.notifier).setIsMarkerShow(flag: false);
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Row(
+                        children: <Widget>[
+                          GestureDetector(
+                            onTap: () {
+                              ref.read(appParamProvider.notifier).setIsMarkerShow(flag: false);
 
-                          GeolocDialog(
-                            context: context,
-                            widget: GeolocMapAlert(
-                              date: DateTime.parse('$date 00:00:00'),
-                              geolocStateList: allGeolocMap[date] ?? <GeolocModel>[],
-                              displayMonthMap: false,
-                              walkRecord: walkRecordMap[date] ??
-                                  WalkRecordModel(id: 0, year: '', month: '', day: '', step: 0, distance: 0),
-                              templeInfoList: templeInfoMap[date],
-                            ),
-                            executeFunctionWhenDialogClose: true,
-                            ref: ref,
-                          );
-                        },
-                        child: CircleAvatar(radius: 12, backgroundColor: Colors.white.withOpacity(0.2)),
+                              GeolocDialog(
+                                context: context,
+                                widget: GeolocMapAlert(
+                                  date: DateTime.parse('$date 00:00:00'),
+                                  geolocStateList: allGeolocMap[date] ?? <GeolocModel>[],
+                                  displayMonthMap: false,
+                                  walkRecord: walkRecordMap[date] ??
+                                      WalkRecordModel(id: 0, year: '', month: '', day: '', step: 0, distance: 0),
+                                  templeInfoList: templeInfoMap[date],
+                                ),
+                                executeFunctionWhenDialogClose: true,
+                                ref: ref,
+                              );
+                            },
+                            child: CircleAvatar(radius: 12, backgroundColor: Colors.white.withOpacity(0.2)),
+                          ),
+                          const SizedBox(width: 10),
+                          Text(date),
+                        ],
                       ),
-                      const SizedBox(width: 10),
-                      Text(date),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          if (allGeolocMap[date] != null) ...[
+                            Text(allGeolocMap[date]!.length.toString()),
+                          ],
+                        ],
+                      ),
                     ],
                   ),
                 ),
