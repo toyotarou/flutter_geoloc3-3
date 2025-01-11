@@ -26,6 +26,8 @@ class _TempleVisitedDateDisplayAlertState extends ConsumerState<TempleVisitedDat
     super.initState();
 
     ref.read(geolocControllerProvider.notifier).getAllGeoloc();
+
+    ref.read(walkRecordControllerProvider.notifier).getAllWalkRecord();
   }
 
   ///
@@ -74,7 +76,7 @@ class _TempleVisitedDateDisplayAlertState extends ConsumerState<TempleVisitedDat
                   padding: const EdgeInsets.symmetric(vertical: 3),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
+                    children: <Widget>[
                       Row(
                         children: <Widget>[
                           GestureDetector(
@@ -101,12 +103,28 @@ class _TempleVisitedDateDisplayAlertState extends ConsumerState<TempleVisitedDat
                           Text(date),
                         ],
                       ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          if (allGeolocMap[date] != null) ...[
-                            Text(allGeolocMap[date]!.length.toString()),
-                          ],
+                      Stack(
+                        children: <Widget>[
+                          Positioned(
+                            right: 100,
+                            child: Text(
+                              (walkRecordMap[date] == null)
+                                  ? '-'
+                                  : '${(walkRecordMap[date]!.distance / 1000).toString().split('.')[0]} Km',
+                              style: TextStyle(fontSize: 20, color: Colors.yellowAccent.withOpacity(0.5)),
+                            ),
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: <Widget>[
+                              Text(
+                                (walkRecordMap[date] == null)
+                                    ? '-'
+                                    : 'step: ${walkRecordMap[date]!.step} / distance: ${walkRecordMap[date]!.distance}',
+                              ),
+                              Text((allGeolocMap[date] == null) ? '-' : allGeolocMap[date]!.length.toString()),
+                            ],
+                          ),
                         ],
                       ),
                     ],
@@ -136,7 +154,7 @@ class _TempleVisitedDateDisplayAlertState extends ConsumerState<TempleVisitedDat
                 );
               }
 
-              list2.add(const SizedBox(height: 10));
+              list2.add(Divider(color: Colors.white.withOpacity(0.2), thickness: 3));
             }
           }
 

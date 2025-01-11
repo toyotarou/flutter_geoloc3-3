@@ -53,4 +53,45 @@ class WalkRecordController extends _$WalkRecordController {
       utility.showError('予期せぬエラーが発生しました');
     });
   }
+
+  //---------------------------------------------------------------//
+
+  ///
+  Future<WalkRecordControllerState> _fetchAllWalkRecordData() async {
+    final HttpClient client = ref.read(httpClientProvider);
+
+    try {
+      // ignore: always_specify_types
+      final dynamic value = await client.get(path: 'walkRecord');
+
+      final List<WalkRecordModel> list = <WalkRecordModel>[];
+      final Map<String, WalkRecordModel> map = <String, WalkRecordModel>{};
+
+      // ignore: avoid_dynamic_calls
+      for (int i = 0; i < value.length.toString().toInt(); i++) {
+        // ignore: avoid_dynamic_calls
+        final WalkRecordModel val = WalkRecordModel.fromJson(value[i] as Map<String, dynamic>);
+
+        list.add(val);
+
+        map['${val.year}-${val.month.padLeft(2, '0')}-${val.day.padLeft(2, '0')}'] = val;
+      }
+
+      return state.copyWith(walkRecordList: list, walkRecordMap: map);
+    } catch (e) {
+      utility.showError('予期せぬエラーが発生しました');
+      rethrow; // これにより呼び出し元でキャッチできる
+    }
+  }
+
+  ///
+  Future<void> getAllWalkRecord() async {
+    try {
+      final WalkRecordControllerState newState = await _fetchAllWalkRecordData();
+
+      state = newState;
+    } catch (_) {}
+  }
+
+//---------------------------------------------------------------//
 }

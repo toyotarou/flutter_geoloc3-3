@@ -144,6 +144,8 @@ class GeolocController extends _$GeolocController {
     });
   }
 
+  //---------------------------------------------------------------//
+
   ///
   Future<GeolocControllerState> _fetchAllGeolocData() async {
     final HttpClient client = ref.read(httpClientProvider);
@@ -152,8 +154,8 @@ class GeolocController extends _$GeolocController {
       // ignore: always_specify_types
       final dynamic value = await client.get(path: 'geoloc');
 
-      final list = <GeolocModel>[];
-      final map = <String, List<GeolocModel>>{};
+      final List<GeolocModel> list = <GeolocModel>[];
+      final Map<String, List<GeolocModel>> map = <String, List<GeolocModel>>{};
 
       // ignore: avoid_dynamic_calls
       for (int i = 0; i < value.length.toString().toInt(); i++) {
@@ -181,9 +183,11 @@ class GeolocController extends _$GeolocController {
   ///
   Future<void> getAllGeoloc() async {
     try {
-      final newState = await _fetchAllGeolocData();
+      final GeolocControllerState newState = await _fetchAllGeolocData();
 
       state = newState;
     } catch (_) {}
   }
+
+//---------------------------------------------------------------//
 }
