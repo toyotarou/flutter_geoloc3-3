@@ -256,7 +256,7 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
       ////////
 
       // ignore: always_specify_types
-      Future.delayed(const Duration(seconds: 2), () {
+      Future.delayed(const Duration(seconds: 5), () {
         // ignore: use_build_context_synchronously
         Navigator.pop(context);
         // ignore: use_build_context_synchronously
