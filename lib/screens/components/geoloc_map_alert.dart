@@ -74,7 +74,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
       setState(() => isLoading = true);
 
       // ignore: always_specify_types
-      Future.delayed(const Duration(seconds: 5), () {
+      Future.delayed(const Duration(seconds: 2), () {
         setDefaultBoundsMap();
 
         setState(() {

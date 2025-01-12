@@ -278,7 +278,7 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
         .then((value) {
       if (mounted) {
         // ignore: always_specify_types
-        Future.delayed(const Duration(seconds: 5), () {
+        Future.delayed(const Duration(seconds: 2), () {
           // ignore: use_build_context_synchronously
           Navigator.pop(context);
 
