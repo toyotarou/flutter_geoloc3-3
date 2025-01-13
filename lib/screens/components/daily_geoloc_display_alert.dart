@@ -267,29 +267,57 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
     showDialog(context: context, builder: (BuildContext context) => alert);
   }
 
+  // ///
+  // Future<void> _deleteGeolocList({List<Geoloc>? geolocList}) async {
+  //   setState(() => isLoading = true);
+  //
+  //   // ignore: always_specify_types
+  //   await GeolocRepository()
+  //       .deleteGeolocList(geolocList: geolocList)
+  //       // ignore: always_specify_types
+  //       .then((value) {
+  //     if (mounted) {
+  //       // ignore: always_specify_types
+  //       Future.delayed(const Duration(seconds: 2), () {
+  //         // ignore: use_build_context_synchronously
+  //         Navigator.pop(context);
+  //
+  //         Navigator.pushReplacement(
+  //           // ignore: use_build_context_synchronously
+  //           context,
+  //           // ignore: inference_failure_on_instance_creation, always_specify_types
+  //           MaterialPageRoute(builder: (BuildContext context) => HomeScreen(baseYm: widget.date.yyyymm)),
+  //         );
+  //       });
+  //     }
+  //   });
+  // }
+
   ///
   Future<void> _deleteGeolocList({List<Geoloc>? geolocList}) async {
     setState(() => isLoading = true);
 
-    // ignore: always_specify_types
-    await GeolocRepository()
-        .deleteGeolocList(geolocList: geolocList)
-        // ignore: always_specify_types
-        .then((value) {
-      if (mounted) {
-        // ignore: always_specify_types
-        Future.delayed(const Duration(seconds: 2), () {
-          // ignore: use_build_context_synchronously
-          Navigator.pop(context);
+    try {
+      // 削除完了を待つ
+      await GeolocRepository().deleteGeolocList(geolocList: geolocList);
 
-          Navigator.pushReplacement(
-            // ignore: use_build_context_synchronously
-            context,
-            // ignore: inference_failure_on_instance_creation, always_specify_types
-            MaterialPageRoute(builder: (BuildContext context) => HomeScreen(baseYm: widget.date.yyyymm)),
-          );
-        });
+      if (!mounted) {
+        return;
       }
-    });
+
+      // 削除完了後にすぐ画面遷移
+      Navigator.pop(context);
+      Navigator.pushReplacement(
+        context,
+        // ignore: inference_failure_on_instance_creation, always_specify_types
+        MaterialPageRoute(
+          builder: (BuildContext context) => HomeScreen(baseYm: widget.date.yyyymm),
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => isLoading = false);
+      }
+    }
   }
 }

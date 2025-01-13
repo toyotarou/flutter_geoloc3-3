@@ -233,42 +233,83 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
     });
   }
 
+  // ///
+  // Future<void> inputPickupGeoloc() async {
+  //   setState(() => isLoading = true);
+  //
+  //   widget.pickupGeolocList
+  //     ..sort((Geoloc a, Geoloc b) => a.time.compareTo(b.time))
+  //     ..forEach((Geoloc element) async {
+  //       final Map<String, String> map = <String, String>{
+  //         'year': element.date.split('-')[0],
+  //         'month': element.date.split('-')[1],
+  //         'day': element.date.split('-')[2],
+  //         'time': element.time,
+  //         'latitude': element.latitude,
+  //         'longitude': element.longitude,
+  //       };
+  //
+  //       await ref.read(geolocControllerProvider.notifier).inputGeoloc(map: map);
+  //     });
+  //
+  //   if (mounted) {
+  //     ////////
+  //
+  //     // ignore: always_specify_types
+  //     Future.delayed(const Duration(seconds: 2), () {
+  //       // ignore: use_build_context_synchronously
+  //       Navigator.pop(context);
+  //       // ignore: use_build_context_synchronously
+  //       Navigator.pop(context);
+  //
+  //       Navigator.pushReplacement(
+  //         // ignore: use_build_context_synchronously
+  //         context,
+  //         // ignore: inference_failure_on_instance_creation, always_specify_types
+  //         MaterialPageRoute(builder: (BuildContext context) => HomeScreen(baseYm: widget.date.yyyymm)),
+  //       );
+  //     });
+  //   }
+  // }
+
   ///
   Future<void> inputPickupGeoloc() async {
     setState(() => isLoading = true);
 
-    widget.pickupGeolocList
-      ..sort((Geoloc a, Geoloc b) => a.time.compareTo(b.time))
-      ..forEach((Geoloc element) async {
-        final Map<String, String> map = <String, String>{
-          'year': element.date.split('-')[0],
-          'month': element.date.split('-')[1],
-          'day': element.date.split('-')[2],
-          'time': element.time,
-          'latitude': element.latitude,
-          'longitude': element.longitude,
-        };
+    // データをソート
+    widget.pickupGeolocList.sort((Geoloc a, Geoloc b) => a.time.compareTo(b.time));
 
-        await ref.read(geolocControllerProvider.notifier).inputGeoloc(map: map);
-      });
+    // 各 Geoloc ごとに非同期処理を順次実行
+    for (final Geoloc element in widget.pickupGeolocList) {
+      final Map<String, String> map = <String, String>{
+        'year': element.date.split('-')[0],
+        'month': element.date.split('-')[1],
+        'day': element.date.split('-')[2],
+        'time': element.time,
+        'latitude': element.latitude,
+        'longitude': element.longitude,
+      };
 
+      // 非同期処理を待機しながら順次実行
+      await ref.read(geolocControllerProvider.notifier).inputGeoloc(map: map);
+    }
+
+    // 全ての非同期処理が完了した後に画面遷移を行う
     if (mounted) {
-      ////////
+      Navigator.pop(context);
+      Navigator.pop(context);
+      Navigator.pushReplacement(
+        context,
+        // ignore: inference_failure_on_instance_creation, always_specify_types
+        MaterialPageRoute(
+          builder: (BuildContext context) => HomeScreen(baseYm: widget.date.yyyymm),
+        ),
+      );
+    }
 
-      // ignore: always_specify_types
-      Future.delayed(const Duration(seconds: 2), () {
-        // ignore: use_build_context_synchronously
-        Navigator.pop(context);
-        // ignore: use_build_context_synchronously
-        Navigator.pop(context);
-
-        Navigator.pushReplacement(
-          // ignore: use_build_context_synchronously
-          context,
-          // ignore: inference_failure_on_instance_creation, always_specify_types
-          MaterialPageRoute(builder: (BuildContext context) => HomeScreen(baseYm: widget.date.yyyymm)),
-        );
-      });
+    // ローディング状態を解除
+    if (mounted) {
+      setState(() => isLoading = false);
     }
   }
 }
