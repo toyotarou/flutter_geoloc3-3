@@ -398,7 +398,14 @@ class _GeolocMapControlPanelAlertState extends ConsumerState<GeolocMapControlPan
                               height: 390,
                               color: Colors.blueGrey.withOpacity(0.3),
                               initialPosition: Offset(context.screenSize.width * 0.7, 160),
-                              widget: displayTempleGeolocTimeCircleAvatarList(temple: element),
+                              widget: Consumer(builder: (BuildContext context, WidgetRef ref, Widget? child) {
+                                final AppParamsResponseState appParamState = ref.watch(appParamProvider);
+
+                                return displayTempleGeolocTimeCircleAvatarList(
+                                  temple: element,
+                                  appParamState: appParamState,
+                                );
+                              }),
                             );
                           },
                           child: Container(
@@ -454,12 +461,11 @@ class _GeolocMapControlPanelAlertState extends ConsumerState<GeolocMapControlPan
   }
 
   ///
-  Widget displayTempleGeolocTimeCircleAvatarList({required TempleInfoModel temple}) {
+  Widget displayTempleGeolocTimeCircleAvatarList(
+      {required TempleInfoModel temple, required AppParamsResponseState appParamState}) {
     final List<Widget> list = <Widget>[];
 
     String distance = '';
-
-    final AppParamsResponseState appParamState = ref.watch(appParamProvider);
 
     for (final GeolocModel element in widget.geolocStateList) {
       final String di = utility.calcDistance(
