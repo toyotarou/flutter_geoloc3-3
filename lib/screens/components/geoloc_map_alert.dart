@@ -63,6 +63,12 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
 
   bool isLoading = false;
 
+  List<LatLng> latLngList = <LatLng>[];
+
+  final List<LatLng> tappedPoints = <LatLng>[];
+
+  List<LatLng> enclosedMarkers = <LatLng>[];
+
   ///
   @override
   void initState() {
@@ -135,6 +141,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                   ref.read(appParamProvider.notifier).setCurrentZoom(zoom: position.zoom);
                 }
               },
+              onTap: (TapPosition tapPosition, LatLng latlng) => setState(() => tappedPoints.add(latlng)),
             ),
             children: <Widget>[
               TileLayer(
@@ -169,6 +176,34 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                       color: Colors.redAccent.withOpacity(0.1),
                       borderStrokeWidth: 2.0,
                       borderColor: Colors.redAccent.withOpacity(0.5),
+                    ),
+                  ],
+                ),
+
+              if (tappedPoints.isNotEmpty)
+                MarkerLayer(
+                  markers: tappedPoints
+                      .map(
+                        (LatLng point) => Marker(
+                          point: point,
+                          width: 40,
+                          height: 40,
+                          child: const Icon(Icons.circle, size: 20, color: Colors.blue),
+                        ),
+                      )
+                      .toList(),
+                ),
+
+              if (tappedPoints.isNotEmpty)
+                // ignore: always_specify_types
+                PolygonLayer(
+                  polygons: <Polygon<Object>>[
+                    // ignore: always_specify_types
+                    Polygon(
+                      points: tappedPoints,
+                      color: Colors.blue.withOpacity(0.3),
+                      borderColor: Colors.blue,
+                      borderStrokeWidth: 2.0,
                     ),
                   ],
                 ),
@@ -306,9 +341,58 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                     ),
                   ],
                 ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Container(),
+                    Row(
+                      children: <Widget>[
+                        IconButton(
+                            onPressed: () {
+                              _findEnclosedMarkers();
+                            },
+                            icon: const Icon(Icons.list)),
+                        IconButton(
+                            onPressed: () {
+                              _clearPolygon();
+                            },
+                            icon: const Icon(Icons.clear)),
+                      ],
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
+          if (enclosedMarkers.isNotEmpty)
+            Positioned(
+              bottom: 20,
+              left: 20,
+              right: 20,
+              child: Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: <BoxShadow>[BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 10)],
+                ),
+                child: DefaultTextStyle(
+                  style: const TextStyle(color: Colors.black),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      const Text(
+                        'ポリゴン内のマーカー:',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
+                      ...enclosedMarkers.map(
+                        (LatLng marker) => Text('Lat: ${marker.latitude}, Lng: ${marker.longitude}'),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
           if (isLoading) ...<Widget>[
             const Center(child: CircularProgressIndicator()),
           ],
@@ -332,9 +416,13 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
 
   ///
   void makeMinMaxLatLng() {
+    latLngList = <LatLng>[];
+
     for (final GeolocModel element in widget.geolocStateList) {
       latList.add(element.latitude.toDouble());
       lngList.add(element.longitude.toDouble());
+
+      latLngList.add(LatLng(element.latitude.toDouble(), element.longitude.toDouble()));
     }
 
     if (latList.isNotEmpty && lngList.isNotEmpty) {
@@ -438,5 +526,79 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
       polylineGeolocList.add(widget.geolocStateList[pos - 1]);
       polylineGeolocList.add(geoloc);
     }
+  }
+
+  ///
+  void _clearPolygon() {
+    setState(() {
+      tappedPoints.clear();
+      enclosedMarkers.clear();
+    });
+  }
+
+  ///
+  void _findEnclosedMarkers() {
+    if (tappedPoints.isEmpty) {
+      return;
+    }
+
+    setState(() =>
+        enclosedMarkers = latLngList.where((LatLng marker) => _isPointInsidePolygon(marker, tappedPoints)).toList());
+  }
+
+  /// ポイントがポリゴン内にあるかどうか
+  /// 「射影法（Ray-Casting Algorithm）」
+  bool _isPointInsidePolygon(LatLng point, List<LatLng> latLngList) {
+    int intersectCount = 0;
+
+    for (int i = 0; i < latLngList.length; i++) {
+      /// 全体の処理概要
+      /// ポリゴンの各辺を順番にチェックします。
+      //
+      /// ポリゴンは複数の点で構成されており、各点は頂点（vertex1, vertex2）として扱われます。
+      /// 最後の頂点と最初の頂点をつなぐ処理も行うために (i + 1) % polygon.length を使用しています。
+      ///
+      /// 水平方向に射影（Ray）を投げ、交差点を数える:
+      /// 指定した point から水平方向に仮想的な直線を引き、ポリゴンの各辺と交差する回数を数えます。
+      /// 交差点の数が奇数ならば、その点はポリゴンの内部にあると判定します。
+
+      final LatLng vertex1 = latLngList[i];
+      final LatLng vertex2 = latLngList[(i + 1) % latLngList.length];
+
+      /// 意図: point が現在の辺（vertex1 と vertex2 の間）と交差しうるかを判定します。
+      /// 動作:
+      /// vertex1 と vertex2 の緯度（latitude）の間に、point の緯度が含まれている場合に true となります。
+      /// vertex1.latitude > point.latitude と vertex2.latitude > point.latitude が異なる値である場合に交差が発生します。
+
+      final bool flag1 = ((vertex1.latitude > point.latitude) != (vertex2.latitude > point.latitude));
+
+      /// dbl1 (vertex2.longitude - vertex1.longitude):
+      /// 現在の辺の x方向の長さ（経度差） を計算します。
+      ///
+      /// dbl2 (point.latitude - vertex1.latitude):
+      /// 点（point）と辺の始点（vertex1）の y方向の差（緯度差） を計算します。
+      ///
+      /// dbl3 (vertex2.latitude - vertex1.latitude):
+      /// 辺の y方向の長さ（緯度差） を計算します。
+
+      final double dbl1 = vertex2.longitude - vertex1.longitude;
+      final double dbl2 = point.latitude - vertex1.latitude;
+      final double dbl3 = vertex2.latitude - vertex1.latitude;
+
+      /// 現在の辺が、point.latitude と同じ高さ（y座標）で交差する x座標 を計算します。
+      /// この結果が point.longitude より大きい場合、point の右側に交差点があることを示します。
+
+      final bool flag2 = point.longitude < (dbl1 * dbl2 / dbl3) + vertex1.longitude;
+
+      if (flag1 && flag2) {
+        intersectCount++;
+      }
+    }
+
+    /// 意味:
+    /// 交差点の数が奇数の場合、点はポリゴンの内部にあります。
+    /// 偶数の場合、点はポリゴンの外部にあります。
+
+    return intersectCount.isOdd;
   }
 }
