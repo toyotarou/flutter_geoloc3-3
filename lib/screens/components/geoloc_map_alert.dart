@@ -69,6 +69,8 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
 
   List<LatLng> enclosedMarkers = <LatLng>[];
 
+  Map<String, GeolocModel> latLngGeolocModelMap = <String, GeolocModel>{};
+
   ///
   @override
   void initState() {
@@ -97,11 +99,6 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
 
     super.dispose();
   }
-
-  // ///
-  // void _scrollToTop() {
-  //   _scrollController.animateTo(0, duration: const Duration(milliseconds: 500), curve: Curves.easeInOut);
-  // }
 
   bool getBoundsZoomValue = false;
 
@@ -188,7 +185,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                           point: point,
                           width: 40,
                           height: 40,
-                          child: const Icon(Icons.circle, size: 20, color: Colors.blue),
+                          child: const Icon(Icons.circle, size: 20, color: Colors.purple),
                         ),
                       )
                       .toList(),
@@ -201,9 +198,9 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                     // ignore: always_specify_types
                     Polygon(
                       points: tappedPoints,
-                      color: Colors.blue.withOpacity(0.3),
-                      borderColor: Colors.blue,
-                      borderStrokeWidth: 2.0,
+                      color: Colors.purple.withOpacity(0.1),
+                      borderColor: Colors.purple,
+                      borderStrokeWidth: 2,
                     ),
                   ],
                 ),
@@ -348,15 +345,9 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                     Row(
                       children: <Widget>[
                         IconButton(
-                            onPressed: () {
-                              _findEnclosedMarkers();
-                            },
-                            icon: const Icon(Icons.list)),
+                            onPressed: () => _findEnclosedMarkers(), icon: const Icon(Icons.list, color: Colors.black)),
                         IconButton(
-                            onPressed: () {
-                              _clearPolygon();
-                            },
-                            icon: const Icon(Icons.clear)),
+                            onPressed: () => _clearPolygon(), icon: const Icon(Icons.clear, color: Colors.black)),
                       ],
                     ),
                   ],
@@ -376,21 +367,8 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                   borderRadius: BorderRadius.circular(10),
                   boxShadow: <BoxShadow>[BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 10)],
                 ),
-                child: DefaultTextStyle(
-                  style: const TextStyle(color: Colors.black),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      const Text(
-                        'ポリゴン内のマーカー:',
-                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                      ),
-                      ...enclosedMarkers.map(
-                        (LatLng marker) => Text('Lat: ${marker.latitude}, Lng: ${marker.longitude}'),
-                      ),
-                    ],
-                  ),
-                ),
+                height: context.screenSize.height * 0.3,
+                child: displayInnerPolygonTime(),
               ),
             ),
           if (isLoading) ...<Widget>[
@@ -423,6 +401,8 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
       lngList.add(element.longitude.toDouble());
 
       latLngList.add(LatLng(element.latitude.toDouble(), element.longitude.toDouble()));
+
+      latLngGeolocModelMap['${element.latitude}|${element.longitude}'] = element;
     }
 
     if (latList.isNotEmpty && lngList.isNotEmpty) {
@@ -600,5 +580,33 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
     /// 偶数の場合、点はポリゴンの外部にあります。
 
     return intersectCount.isOdd;
+  }
+
+  ///
+  Widget displayInnerPolygonTime() {
+    final List<Widget> list = <Widget>[];
+
+    final List<GeolocModel> list2 = <GeolocModel>[];
+
+    for (final LatLng element in enclosedMarkers) {
+      final GeolocModel? latLngGeolocModel = latLngGeolocModelMap['${element.latitude}|${element.longitude}'];
+
+      if (latLngGeolocModel != null) {
+        list2.add(latLngGeolocModel);
+      }
+    }
+
+    list2
+      ..sort((GeolocModel a, GeolocModel b) => a.time.compareTo(b.time))
+      ..forEach((GeolocModel element) {
+        list.add(Text(element.time));
+      });
+
+    return SingleChildScrollView(
+      child: DefaultTextStyle(
+        style: const TextStyle(color: Colors.black),
+        child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: list),
+      ),
+    );
   }
 }
