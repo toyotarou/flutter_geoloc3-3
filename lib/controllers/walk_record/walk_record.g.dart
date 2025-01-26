@@ -7,7 +7,7 @@ part of 'walk_record.dart';
 // **************************************************************************
 
 String _$walkRecordControllerHash() =>
-    r'2548904086540dd3c8a0d7a3a9048065a2e22efa';
+    r'28413f4e1df32fc57b601cf497f211f0840ce435';
 
 /// See also [WalkRecordController].
 @ProviderFor(WalkRecordController)

@@ -179,7 +179,18 @@ class _TempleVisitedDateDisplayAlertState extends ConsumerState<TempleVisitedDat
     );
 
     return SingleChildScrollView(
-      child: DefaultTextStyle(style: const TextStyle(fontSize: 12), child: Column(children: list)),
+      physics: const BouncingScrollPhysics(),
+      scrollDirection: Axis.horizontal,
+      child: SingleChildScrollView(
+        physics: const BouncingScrollPhysics(),
+        child: DefaultTextStyle(
+          style: const TextStyle(fontSize: 12),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: list,
+          ),
+        ),
+      ),
     );
   }
 }

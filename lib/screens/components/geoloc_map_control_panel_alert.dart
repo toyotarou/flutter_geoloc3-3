@@ -9,8 +9,11 @@ import '../../controllers/app_params/app_params_response_state.dart';
 import '../../extensions/extensions.dart';
 import '../../models/geoloc_model.dart';
 import '../../models/temple_latlng_model.dart';
+import '../../models/temple_photo_model.dart';
 import '../../utilities/utilities.dart';
+import '../parts/geoloc_dialog.dart';
 import '../parts/geoloc_overlay.dart';
+import 'temple_photo_display_alert.dart';
 
 class GeolocMapControlPanelAlert extends ConsumerStatefulWidget {
   const GeolocMapControlPanelAlert({
@@ -23,6 +26,7 @@ class GeolocMapControlPanelAlert extends ConsumerStatefulWidget {
     required this.minMaxLatLngMap,
     this.displayTempMap,
     required this.date,
+    required this.templePhotoDateList,
   });
 
   final DateTime date;
@@ -33,6 +37,7 @@ class GeolocMapControlPanelAlert extends ConsumerStatefulWidget {
   final List<TempleInfoModel>? templeInfoList;
   final Map<String, double> minMaxLatLngMap;
   final bool? displayTempMap;
+  final List<TemplePhotoModel> templePhotoDateList;
 
   @override
   ConsumerState<GeolocMapControlPanelAlert> createState() => _GeolocMapControlPanelAlertState();
@@ -390,6 +395,14 @@ class _GeolocMapControlPanelAlertState extends ConsumerState<GeolocMapControlPan
                             widget.mapController
                                 .move(LatLng(element.latitude.toDouble(), element.longitude.toDouble()), 17);
 
+                            TemplePhotoModel templePhoto =
+                                TemplePhotoModel(date: DateTime.now(), temple: '', templephotos: <String>[]);
+
+                            if (widget.templePhotoDateList.isNotEmpty) {
+                              templePhoto = widget.templePhotoDateList
+                                  .firstWhere((TemplePhotoModel element2) => element2.temple == element.temple);
+                            }
+
                             addBigOverlay(
                               context: context,
                               bigEntries: _bigEntries,
@@ -404,6 +417,7 @@ class _GeolocMapControlPanelAlertState extends ConsumerState<GeolocMapControlPan
                                 return displayTempleGeolocTimeCircleAvatarList(
                                   temple: element,
                                   appParamState: appParamState,
+                                  templephotos: templePhoto.templephotos,
                                 );
                               }),
                             );
@@ -462,7 +476,9 @@ class _GeolocMapControlPanelAlertState extends ConsumerState<GeolocMapControlPan
 
   ///
   Widget displayTempleGeolocTimeCircleAvatarList(
-      {required TempleInfoModel temple, required AppParamsResponseState appParamState}) {
+      {required TempleInfoModel temple,
+      required AppParamsResponseState appParamState,
+      required List<String> templephotos}) {
     final List<Widget> list = <Widget>[];
 
     String distance = '';
@@ -535,6 +551,35 @@ class _GeolocMapControlPanelAlertState extends ConsumerState<GeolocMapControlPan
       }
     }
 
-    return SizedBox(height: 330, child: SingleChildScrollView(child: Column(children: list)));
+    return SizedBox(
+      height: 350,
+      child: Column(
+        children: <Widget>[
+          Expanded(
+            child: SingleChildScrollView(
+              physics: const BouncingScrollPhysics(),
+              child: SingleChildScrollView(physics: const BouncingScrollPhysics(), child: Column(children: list)),
+            ),
+          ),
+          if (templephotos.isNotEmpty) ...<Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                Container(),
+                IconButton(
+                    onPressed: () {
+                      GeolocDialog(
+                        context: context,
+                        widget: TemplePhotoDisplayAlert(templephotos: templephotos),
+                        clearBarrierColor: true,
+                      );
+                    },
+                    icon: const Icon(Icons.photo)),
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
   }
 }

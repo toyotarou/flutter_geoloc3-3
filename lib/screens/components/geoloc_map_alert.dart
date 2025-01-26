@@ -7,9 +7,12 @@ import 'package:latlong2/latlong.dart';
 
 import '../../controllers/app_params/app_params_notifier.dart';
 import '../../controllers/app_params/app_params_response_state.dart';
+import '../../controllers/temple_photo/temple_photo_notifier.dart';
+import '../../controllers/temple_photo/temple_photo_response_state.dart';
 import '../../extensions/extensions.dart';
 import '../../models/geoloc_model.dart';
 import '../../models/temple_latlng_model.dart';
+import '../../models/temple_photo_model.dart';
 import '../../models/walk_record_model.dart';
 import '../../utilities/tile_provider.dart';
 import '../parts/geoloc_dialog.dart';
@@ -71,6 +74,8 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
 
   Map<String, GeolocModel> latLngGeolocModelMap = <String, GeolocModel>{};
 
+  Map<String, List<TemplePhotoModel>> templePhotoDateMap = <String, List<TemplePhotoModel>>{};
+
   ///
   @override
   void initState() {
@@ -121,6 +126,12 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
 
     if (appParamState.polylineGeolocModel != null) {
       makePolylineGeolocList(geoloc: appParamState.polylineGeolocModel!);
+    }
+
+    final TemplePhotoResponseState templePhotoState = ref.watch(templePhotoProvider);
+
+    if (templePhotoState.templePhotoDateMap.value != null) {
+      templePhotoDateMap = templePhotoState.templePhotoDateMap.value!;
     }
 
     return Scaffold(
@@ -303,6 +314,8 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                                           'minLng': minLng,
                                         },
                                         displayTempMap: widget.displayTempMap,
+                                        templePhotoDateList:
+                                            templePhotoDateMap[widget.date.yyyymmdd] ?? <TemplePhotoModel>[],
                                       ),
                                       paddingTop: (widget.templeInfoList != null)
                                           ? context.screenSize.height * 0.55
