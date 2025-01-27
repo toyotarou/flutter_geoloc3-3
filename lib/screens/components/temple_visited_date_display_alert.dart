@@ -4,10 +4,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../controllers/app_params/app_params_notifier.dart';
 import '../../controllers/geoloc/geoloc.dart';
 import '../../controllers/temple/temple.dart';
+import '../../controllers/temple_photo/temple_photo_notifier.dart';
+import '../../controllers/temple_photo/temple_photo_response_state.dart';
 import '../../controllers/walk_record/walk_record.dart';
 import '../../extensions/extensions.dart';
 import '../../models/geoloc_model.dart';
 import '../../models/temple_latlng_model.dart';
+import '../../models/temple_photo_model.dart';
 import '../../models/walk_record_model.dart';
 import '../parts/geoloc_dialog.dart';
 import 'geoloc_map_alert.dart';
@@ -20,6 +23,8 @@ class TempleVisitedDateDisplayAlert extends ConsumerStatefulWidget {
 }
 
 class _TempleVisitedDateDisplayAlertState extends ConsumerState<TempleVisitedDateDisplayAlert> {
+  Map<String, List<TemplePhotoModel>> templePhotoDateMap = <String, List<TemplePhotoModel>>{};
+
   ///
   @override
   void initState() {
@@ -64,6 +69,12 @@ class _TempleVisitedDateDisplayAlertState extends ConsumerState<TempleVisitedDat
     final Map<String, List<GeolocModel>> allGeolocMap =
         ref.watch(geolocControllerProvider.select((GeolocControllerState value) => value.allGeolocMap));
 
+    final TemplePhotoResponseState templePhotoState = ref.watch(templePhotoProvider);
+
+    if (templePhotoState.templePhotoDateMap.value != null) {
+      templePhotoDateMap = templePhotoState.templePhotoDateMap.value!;
+    }
+
     yearVisitedDateMap.forEach(
       (String year, List<String> value) {
         if (year.toInt() >= 2023) {
@@ -71,6 +82,8 @@ class _TempleVisitedDateDisplayAlertState extends ConsumerState<TempleVisitedDat
 
           for (final String date in value) {
             if (DateTime.parse('$date 00:00:00').isAfter(DateTime(2023, 4, 13))) {
+              final List<TemplePhotoModel>? templePhotoDateList = templePhotoDateMap[date];
+
               list2.add(
                 Container(
                   padding: const EdgeInsets.symmetric(vertical: 3),
@@ -139,13 +152,35 @@ class _TempleVisitedDateDisplayAlertState extends ConsumerState<TempleVisitedDat
                     child: Row(
                       children: templeInfoMap[date]!.map(
                         (TempleInfoModel e) {
-                          return Container(
-                            width: 120,
-                            height: 60,
-                            margin: const EdgeInsets.all(3),
-                            padding: const EdgeInsets.all(3),
-                            decoration: BoxDecoration(border: Border.all(color: Colors.white.withOpacity(0.2))),
-                            child: Text(e.temple, maxLines: 3, overflow: TextOverflow.ellipsis),
+                          TemplePhotoModel templePhoto =
+                              TemplePhotoModel(date: DateTime.now(), temple: '', templephotos: <String>[]);
+
+                          if (templePhotoDateList != null) {
+                            for (final TemplePhotoModel element in templePhotoDateList) {
+                              if (element.temple == e.temple) {
+                                templePhoto = element;
+                              }
+                            }
+                          }
+
+                          return Stack(
+                            children: <Widget>[
+                              if (templePhoto.templephotos.isNotEmpty) ...<Widget>[
+                                Positioned(
+                                  bottom: 5,
+                                  right: 5,
+                                  child: Icon(Icons.photo, color: Colors.white.withOpacity(0.2)),
+                                ),
+                              ],
+                              Container(
+                                width: 120,
+                                height: 60,
+                                margin: const EdgeInsets.all(3),
+                                padding: const EdgeInsets.all(3),
+                                decoration: BoxDecoration(border: Border.all(color: Colors.white.withOpacity(0.2))),
+                                child: Text(e.temple, maxLines: 3, overflow: TextOverflow.ellipsis),
+                              ),
+                            ],
                           );
                         },
                       ).toList(),
@@ -178,19 +213,9 @@ class _TempleVisitedDateDisplayAlertState extends ConsumerState<TempleVisitedDat
       },
     );
 
+    /// SingleChildScrollViewにできない
     return SingleChildScrollView(
-      physics: const BouncingScrollPhysics(),
-      scrollDirection: Axis.horizontal,
-      child: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        child: DefaultTextStyle(
-          style: const TextStyle(fontSize: 12),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: list,
-          ),
-        ),
-      ),
+      child: DefaultTextStyle(style: const TextStyle(fontSize: 12), child: Column(children: list)),
     );
   }
 }

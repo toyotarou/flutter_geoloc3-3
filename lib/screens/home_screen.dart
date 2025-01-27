@@ -497,26 +497,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
           week: i, geolocStateMap: geolocStateMap, walkRecordMap: walkRecordMap, templeInfoMap: templeInfoMap));
     }
 
+    /// SingleChildScrollViewにできない
     return SingleChildScrollView(
         child: DefaultTextStyle(style: const TextStyle(fontSize: 10), child: Column(children: list)));
-
-    /*
-
-
-        return SingleChildScrollView(
-      physics: const BouncingScrollPhysics(),
-      scrollDirection: Axis.horizontal,
-      child: SingleChildScrollView(
-        physics: const BouncingScrollPhysics(),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: list,
-        ),
-      ),
-    );
-
-
-    */
   }
 
   ///
