@@ -413,9 +413,11 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
       latList.add(element.latitude.toDouble());
       lngList.add(element.longitude.toDouble());
 
-      latLngList.add(LatLng(element.latitude.toDouble(), element.longitude.toDouble()));
+      final LatLng latlng = LatLng(element.latitude.toDouble(), element.longitude.toDouble());
 
-      latLngGeolocModelMap['${element.latitude}|${element.longitude}'] = element;
+      latLngList.add(latlng);
+
+      latLngGeolocModelMap['${latlng.latitude}|${latlng.longitude}'] = element;
     }
 
     if (latList.isNotEmpty && lngList.isNotEmpty) {
