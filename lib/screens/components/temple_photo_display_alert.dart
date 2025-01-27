@@ -14,11 +14,11 @@ class _TemplePhotoDisplayAlertState extends ConsumerState<TemplePhotoDisplayAler
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-          child: Column(
-              children: widget.templephotos.map((String e) {
-        return Text(e);
-      }).toList())),
+      body: PageView(
+        children: widget.templephotos.map((String url) {
+          return Image.network(url, fit: BoxFit.cover, width: double.infinity, height: double.infinity);
+        }).toList(),
+      ),
     );
   }
 }
