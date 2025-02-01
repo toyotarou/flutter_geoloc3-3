@@ -206,6 +206,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
     ref.watch(geolocControllerProvider.select((GeolocControllerState value) => value.geolocMap));
 
+    final List<GeolocModel> geolocStateList =
+        ref.watch(geolocControllerProvider.select((GeolocControllerState value) => value.geolocList));
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -264,40 +267,41 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         children: <Widget>[
           utility.getBackGround(),
           Column(children: <Widget>[Expanded(child: _getCalendar())]),
-          Positioned(
-            bottom: 10,
-            right: 10,
-            child: ElevatedButton(
-                style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
-                onPressed: () {
-                  ref.read(appParamProvider.notifier).setIsMarkerShow(flag: true);
+          if (geolocStateList.isNotEmpty) ...<Widget>[
+            Positioned(
+              bottom: 10,
+              right: 10,
+              child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
+                  onPressed: () {
+                    ref.read(appParamProvider.notifier).setIsMarkerShow(flag: true);
 
-                  ref.read(appParamProvider.notifier).setSelectedTimeGeoloc();
+                    ref.read(appParamProvider.notifier).setSelectedTimeGeoloc();
 
 //                  ref.read(appParamProvider.notifier).setSelectedHour(hour: '');
 
-                  GeolocDialog(
-                    context: context,
-                    widget: GeolocMapAlert(
-                      date: (widget.baseYm == null) ? DateTime.now() : DateTime.parse('${widget.baseYm}-01 00:00:00'),
-                      geolocStateList:
-                          ref.watch(geolocControllerProvider.select((GeolocControllerState value) => value.geolocList)),
-                      displayMonthMap: true,
-                      walkRecord: WalkRecordModel(
-                        id: 0,
-                        year: '',
-                        month: '',
-                        day: '',
-                        step: 0,
-                        distance: 0,
+                    GeolocDialog(
+                      context: context,
+                      widget: GeolocMapAlert(
+                        date: (widget.baseYm == null) ? DateTime.now() : DateTime.parse('${widget.baseYm}-01 00:00:00'),
+                        geolocStateList: geolocStateList,
+                        displayMonthMap: true,
+                        walkRecord: WalkRecordModel(
+                          id: 0,
+                          year: '',
+                          month: '',
+                          day: '',
+                          step: 0,
+                          distance: 0,
+                        ),
                       ),
-                    ),
-                    executeFunctionWhenDialogClose: true,
-                    ref: ref,
-                  );
-                },
-                child: const Text('month')),
-          ),
+                      executeFunctionWhenDialogClose: true,
+                      ref: ref,
+                    );
+                  },
+                  child: const Text('month')),
+            ),
+          ],
         ],
       ),
     );
