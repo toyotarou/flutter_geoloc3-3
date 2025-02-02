@@ -209,6 +209,27 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
     final List<GeolocModel> geolocStateList =
         ref.watch(geolocControllerProvider.select((GeolocControllerState value) => value.geolocList));
 
+    // ignore: always_specify_types
+    final List<GeolocModel> monthGeolocModelList = List.from(geolocStateList);
+
+    if (geolocMap.isNotEmpty) {
+      geolocMap.forEach((String key, List<Geoloc> value) {
+        for (final Geoloc element in value) {
+          monthGeolocModelList.add(
+            GeolocModel(
+              id: 0,
+              year: element.date.split('-')[0],
+              month: element.date.split('-')[1],
+              day: element.date.split('-')[2],
+              time: element.time,
+              latitude: element.latitude,
+              longitude: element.longitude,
+            ),
+          );
+        }
+      });
+    }
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Colors.transparent,
@@ -267,7 +288,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         children: <Widget>[
           utility.getBackGround(),
           Column(children: <Widget>[Expanded(child: _getCalendar())]),
-          if (geolocStateList.isNotEmpty) ...<Widget>[
+          if (monthGeolocModelList.isNotEmpty) ...<Widget>[
             Positioned(
               bottom: 10,
               right: 10,
@@ -284,7 +305,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       context: context,
                       widget: GeolocMapAlert(
                         date: (widget.baseYm == null) ? DateTime.now() : DateTime.parse('${widget.baseYm}-01 00:00:00'),
-                        geolocStateList: geolocStateList,
+                        geolocStateList: monthGeolocModelList,
                         displayMonthMap: true,
                         walkRecord: WalkRecordModel(
                           id: 0,

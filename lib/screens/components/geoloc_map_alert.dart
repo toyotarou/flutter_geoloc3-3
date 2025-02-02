@@ -614,7 +614,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
     list2
       ..sort((GeolocModel a, GeolocModel b) => a.time.compareTo(b.time))
       ..forEach((GeolocModel element) {
-        list.add(Text(element.time));
+        list.add(Text('${element.year}-${element.month}-${element.day} ${element.time}'));
       });
 
     return SingleChildScrollView(
