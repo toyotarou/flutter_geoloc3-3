@@ -601,20 +601,28 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
   Widget displayInnerPolygonTime() {
     final List<Widget> list = <Widget>[];
 
-    final List<GeolocModel> list2 = <GeolocModel>[];
+    final Map<String, GeolocModel> map = <String, GeolocModel>{};
+    final List<String> list2 = <String>[];
 
     for (final LatLng element in enclosedMarkers) {
       final GeolocModel? latLngGeolocModel = latLngGeolocModelMap['${element.latitude}|${element.longitude}'];
 
       if (latLngGeolocModel != null) {
-        list2.add(latLngGeolocModel);
+        final String key =
+            '${latLngGeolocModel.year}-${latLngGeolocModel.month}-${latLngGeolocModel.day} ${latLngGeolocModel.time}';
+
+        map[key] = latLngGeolocModel;
+
+        list2.add(key);
       }
     }
 
     list2
-      ..sort((GeolocModel a, GeolocModel b) => a.time.compareTo(b.time))
-      ..forEach((GeolocModel element) {
-        list.add(Text('${element.year}-${element.month}-${element.day} ${element.time}'));
+      ..sort((String a, String b) => a.compareTo(b))
+      ..forEach((String element) {
+        if (map[element] != null) {
+          list.add(Text(element));
+        }
       });
 
     return SingleChildScrollView(
