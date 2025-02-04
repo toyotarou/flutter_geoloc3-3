@@ -617,7 +617,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
       }
     }
 
-    list2
+    list2.toSet().toList()
       ..sort((String a, String b) => a.compareTo(b))
       ..forEach((String element) {
         if (map[element] != null) {
