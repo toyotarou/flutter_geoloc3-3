@@ -7,6 +7,7 @@ import 'package:latlong2/latlong.dart';
 
 import '../../controllers/app_params/app_params_notifier.dart';
 import '../../controllers/app_params/app_params_response_state.dart';
+import '../../controllers/geoloc/geoloc.dart';
 import '../../controllers/temple_photo/temple_photo_notifier.dart';
 import '../../controllers/temple_photo/temple_photo_response_state.dart';
 import '../../extensions/extensions.dart';
@@ -76,10 +77,16 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
 
   Map<String, List<TemplePhotoModel>> templePhotoDateMap = <String, List<TemplePhotoModel>>{};
 
+  List<GeolocModel> gStateList = <GeolocModel>[];
+
   ///
   @override
   void initState() {
     super.initState();
+
+    if (widget.displayMonthMap) {
+      ref.read(geolocControllerProvider.notifier).getAllGeoloc();
+    }
 
     scrollController = ScrollController();
 
@@ -105,24 +112,20 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
     super.dispose();
   }
 
-  bool getBoundsZoomValue = false;
-
   ///
   @override
   Widget build(BuildContext context) {
+    gStateList = <GeolocModel>[...widget.geolocStateList];
+
     makeSelectedHourMap();
 
     makeMinMaxLatLng();
 
     makeMarker();
 
-    if (!getBoundsZoomValue) {
-      WidgetsBinding.instance.addPostFrameCallback((_) async => setDefaultBoundsMap());
-    }
-
     final AppParamsResponseState appParamState = ref.watch(appParamProvider);
 
-    polylineGeolocList = (!appParamState.isMarkerShow) ? widget.geolocStateList : <GeolocModel>[];
+    polylineGeolocList = (!appParamState.isMarkerShow) ? gStateList : <GeolocModel>[];
 
     if (appParamState.polylineGeolocModel != null) {
       makePolylineGeolocList(geoloc: appParamState.polylineGeolocModel!);
@@ -141,8 +144,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
           FlutterMap(
             mapController: mapController,
             options: MapOptions(
-              initialCenter:
-                  LatLng(widget.geolocStateList[0].latitude.toDouble(), widget.geolocStateList[0].longitude.toDouble()),
+              initialCenter: LatLng(gStateList[0].latitude.toDouble(), gStateList[0].longitude.toDouble()),
               initialZoom: currentZoomEightTeen,
               onPositionChanged: (MapCamera position, bool isMoving) {
                 if (isMoving) {
@@ -302,7 +304,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                                       context: context,
                                       widget: GeolocMapControlPanelAlert(
                                         date: widget.date,
-                                        geolocStateList: widget.geolocStateList,
+                                        geolocStateList: gStateList,
                                         templeInfoList: widget.templeInfoList,
                                         mapController: mapController,
                                         currentZoomEightTeen: currentZoomEightTeen,
@@ -346,7 +348,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                       Container(),
                     ],
                     Text(
-                      widget.geolocStateList.length.toString(),
+                      gStateList.length.toString(),
                       style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
                     ),
                   ],
@@ -384,6 +386,49 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                 child: displayInnerPolygonTime(),
               ),
             ),
+          if (widget.displayMonthMap) ...<Widget>[
+            Positioned(
+              bottom: 0,
+              child: SizedBox(
+                width: context.screenSize.width,
+                child: Row(
+                  children: <Widget>[
+                    Row(
+                      // ignore: always_specify_types
+                      children: List.generate(2, (int index) => index).map((int e) {
+                        final String blockYm = DateTime(
+                          widget.date.yyyymmdd.split('-')[0].toInt(),
+                          widget.date.yyyymmdd.split('-')[1].toInt() - (e + 1),
+                        ).yyyymm;
+
+                        return GestureDetector(
+                          onTap: () {
+                            print(blockYm);
+                          },
+                          child: Container(
+                            width: 60,
+                            height: 60,
+                            margin: const EdgeInsets.all(5),
+                            decoration: BoxDecoration(
+                                color: Colors.black.withOpacity(0.3), borderRadius: BorderRadius.circular(10)),
+                            child: Column(
+                              children: <Widget>[
+                                const SizedBox(height: 10),
+                                Text('-${e + 1}month', style: const TextStyle(fontSize: 10)),
+                                const SizedBox(height: 5),
+                                Text(blockYm),
+                              ],
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                    Expanded(child: Container()),
+                  ],
+                ),
+              ),
+            ),
+          ],
           if (isLoading) ...<Widget>[
             const Center(child: CircularProgressIndicator()),
           ],
@@ -396,11 +441,11 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
   void makeSelectedHourMap() {
     selectedHourMap = <String, List<String>>{};
 
-    for (final GeolocModel element in widget.geolocStateList) {
+    for (final GeolocModel element in gStateList) {
       selectedHourMap[element.time.split(':')[0]] = <String>[];
     }
 
-    for (final GeolocModel element in widget.geolocStateList) {
+    for (final GeolocModel element in gStateList) {
       selectedHourMap[element.time.split(':')[0]]?.add(element.time);
     }
   }
@@ -409,7 +454,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
   void makeMinMaxLatLng() {
     latLngList = <LatLng>[];
 
-    for (final GeolocModel element in widget.geolocStateList) {
+    for (final GeolocModel element in gStateList) {
       latList.add(element.latitude.toDouble());
       lngList.add(element.longitude.toDouble());
 
@@ -430,7 +475,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
 
   ///
   void setDefaultBoundsMap() {
-    if (widget.geolocStateList.length > 1) {
+    if (gStateList.length > 1) {
       final int currentPaddingIndex =
           ref.watch(appParamProvider.select((AppParamsResponseState value) => value.currentPaddingIndex));
 
@@ -448,8 +493,6 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
       setState(() => currentZoom = newZoom);
 
       ref.read(appParamProvider.notifier).setCurrentZoom(zoom: newZoom);
-
-      getBoundsZoomValue = true;
     }
   }
 
@@ -460,7 +503,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
     final GeolocModel? selectedTimeGeoloc =
         ref.watch(appParamProvider.select((AppParamsResponseState value) => value.selectedTimeGeoloc));
 
-    for (final GeolocModel element in widget.geolocStateList) {
+    for (final GeolocModel element in gStateList) {
       markerList.add(
         Marker(
           point: LatLng(element.latitude.toDouble(), element.longitude.toDouble()),
@@ -515,10 +558,10 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
   void makePolylineGeolocList({required GeolocModel geoloc}) {
     polylineGeolocList = <GeolocModel>[];
 
-    final int pos = widget.geolocStateList.indexWhere((GeolocModel element) => element.time == geoloc.time);
+    final int pos = gStateList.indexWhere((GeolocModel element) => element.time == geoloc.time);
 
     if (pos > 0) {
-      polylineGeolocList.add(widget.geolocStateList[pos - 1]);
+      polylineGeolocList.add(gStateList[pos - 1]);
       polylineGeolocList.add(geoloc);
     }
   }
