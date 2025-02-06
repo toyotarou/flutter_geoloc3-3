@@ -24,5 +24,6 @@ class AppParamsResponseState with _$AppParamsResponseState {
     @Default(-1) int timeGeolocDisplayEnd,
     List<OverlayEntry>? bigEntries,
     void Function(VoidCallback fn)? setStateCallback,
+    @Default(<String>[]) List<String> monthGeolocAddMonthButtonLabelList,
   }) = _AppParamsResponseState;
 }

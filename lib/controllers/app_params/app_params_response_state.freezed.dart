@@ -31,6 +31,8 @@ mixin _$AppParamsResponseState {
   List<OverlayEntry>? get bigEntries => throw _privateConstructorUsedError;
   void Function(void Function())? get setStateCallback =>
       throw _privateConstructorUsedError;
+  List<String> get monthGeolocAddMonthButtonLabelList =>
+      throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $AppParamsResponseStateCopyWith<AppParamsResponseState> get copyWith =>
@@ -57,7 +59,8 @@ abstract class $AppParamsResponseStateCopyWith<$Res> {
       int timeGeolocDisplayStart,
       int timeGeolocDisplayEnd,
       List<OverlayEntry>? bigEntries,
-      void Function(void Function())? setStateCallback});
+      void Function(void Function())? setStateCallback,
+      List<String> monthGeolocAddMonthButtonLabelList});
 }
 
 /// @nodoc
@@ -88,6 +91,7 @@ class _$AppParamsResponseStateCopyWithImpl<$Res,
     Object? timeGeolocDisplayEnd = null,
     Object? bigEntries = freezed,
     Object? setStateCallback = freezed,
+    Object? monthGeolocAddMonthButtonLabelList = null,
   }) {
     return _then(_value.copyWith(
       calendarSelectedDate: freezed == calendarSelectedDate
@@ -146,6 +150,11 @@ class _$AppParamsResponseStateCopyWithImpl<$Res,
           ? _value.setStateCallback
           : setStateCallback // ignore: cast_nullable_to_non_nullable
               as void Function(void Function())?,
+      monthGeolocAddMonthButtonLabelList: null ==
+              monthGeolocAddMonthButtonLabelList
+          ? _value.monthGeolocAddMonthButtonLabelList
+          : monthGeolocAddMonthButtonLabelList // ignore: cast_nullable_to_non_nullable
+              as List<String>,
     ) as $Val);
   }
 }
@@ -173,7 +182,8 @@ abstract class _$$AppParamsResponseStateImplCopyWith<$Res>
       int timeGeolocDisplayStart,
       int timeGeolocDisplayEnd,
       List<OverlayEntry>? bigEntries,
-      void Function(void Function())? setStateCallback});
+      void Function(void Function())? setStateCallback,
+      List<String> monthGeolocAddMonthButtonLabelList});
 }
 
 /// @nodoc
@@ -203,6 +213,7 @@ class __$$AppParamsResponseStateImplCopyWithImpl<$Res>
     Object? timeGeolocDisplayEnd = null,
     Object? bigEntries = freezed,
     Object? setStateCallback = freezed,
+    Object? monthGeolocAddMonthButtonLabelList = null,
   }) {
     return _then(_$AppParamsResponseStateImpl(
       calendarSelectedDate: freezed == calendarSelectedDate
@@ -261,6 +272,11 @@ class __$$AppParamsResponseStateImplCopyWithImpl<$Res>
           ? _value.setStateCallback
           : setStateCallback // ignore: cast_nullable_to_non_nullable
               as void Function(void Function())?,
+      monthGeolocAddMonthButtonLabelList: null ==
+              monthGeolocAddMonthButtonLabelList
+          ? _value._monthGeolocAddMonthButtonLabelList
+          : monthGeolocAddMonthButtonLabelList // ignore: cast_nullable_to_non_nullable
+              as List<String>,
     ));
   }
 }
@@ -282,8 +298,11 @@ class _$AppParamsResponseStateImpl implements _AppParamsResponseState {
       this.timeGeolocDisplayStart = -1,
       this.timeGeolocDisplayEnd = -1,
       final List<OverlayEntry>? bigEntries,
-      this.setStateCallback})
-      : _bigEntries = bigEntries;
+      this.setStateCallback,
+      final List<String> monthGeolocAddMonthButtonLabelList = const []})
+      : _bigEntries = bigEntries,
+        _monthGeolocAddMonthButtonLabelList =
+            monthGeolocAddMonthButtonLabelList;
 
   @override
   final DateTime? calendarSelectedDate;
@@ -328,10 +347,19 @@ class _$AppParamsResponseStateImpl implements _AppParamsResponseState {
 
   @override
   final void Function(void Function())? setStateCallback;
+  final List<String> _monthGeolocAddMonthButtonLabelList;
+  @override
+  @JsonKey()
+  List<String> get monthGeolocAddMonthButtonLabelList {
+    if (_monthGeolocAddMonthButtonLabelList is EqualUnmodifiableListView)
+      return _monthGeolocAddMonthButtonLabelList;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_monthGeolocAddMonthButtonLabelList);
+  }
 
   @override
   String toString() {
-    return 'AppParamsResponseState(calendarSelectedDate: $calendarSelectedDate, selectedTimeGeoloc: $selectedTimeGeoloc, isMarkerShow: $isMarkerShow, selectedHour: $selectedHour, currentZoom: $currentZoom, currentPaddingIndex: $currentPaddingIndex, currentCenter: $currentCenter, isTempleCircleShow: $isTempleCircleShow, polylineGeolocModel: $polylineGeolocModel, selectedTemple: $selectedTemple, timeGeolocDisplayStart: $timeGeolocDisplayStart, timeGeolocDisplayEnd: $timeGeolocDisplayEnd, bigEntries: $bigEntries, setStateCallback: $setStateCallback)';
+    return 'AppParamsResponseState(calendarSelectedDate: $calendarSelectedDate, selectedTimeGeoloc: $selectedTimeGeoloc, isMarkerShow: $isMarkerShow, selectedHour: $selectedHour, currentZoom: $currentZoom, currentPaddingIndex: $currentPaddingIndex, currentCenter: $currentCenter, isTempleCircleShow: $isTempleCircleShow, polylineGeolocModel: $polylineGeolocModel, selectedTemple: $selectedTemple, timeGeolocDisplayStart: $timeGeolocDisplayStart, timeGeolocDisplayEnd: $timeGeolocDisplayEnd, bigEntries: $bigEntries, setStateCallback: $setStateCallback, monthGeolocAddMonthButtonLabelList: $monthGeolocAddMonthButtonLabelList)';
   }
 
   @override
@@ -366,7 +394,10 @@ class _$AppParamsResponseStateImpl implements _AppParamsResponseState {
             const DeepCollectionEquality()
                 .equals(other._bigEntries, _bigEntries) &&
             (identical(other.setStateCallback, setStateCallback) ||
-                other.setStateCallback == setStateCallback));
+                other.setStateCallback == setStateCallback) &&
+            const DeepCollectionEquality().equals(
+                other._monthGeolocAddMonthButtonLabelList,
+                _monthGeolocAddMonthButtonLabelList));
   }
 
   @override
@@ -385,7 +416,8 @@ class _$AppParamsResponseStateImpl implements _AppParamsResponseState {
       timeGeolocDisplayStart,
       timeGeolocDisplayEnd,
       const DeepCollectionEquality().hash(_bigEntries),
-      setStateCallback);
+      setStateCallback,
+      const DeepCollectionEquality().hash(_monthGeolocAddMonthButtonLabelList));
 
   @JsonKey(ignore: true)
   @override
@@ -410,7 +442,8 @@ abstract class _AppParamsResponseState implements AppParamsResponseState {
           final int timeGeolocDisplayStart,
           final int timeGeolocDisplayEnd,
           final List<OverlayEntry>? bigEntries,
-          final void Function(void Function())? setStateCallback}) =
+          final void Function(void Function())? setStateCallback,
+          final List<String> monthGeolocAddMonthButtonLabelList}) =
       _$AppParamsResponseStateImpl;
 
   @override
@@ -441,6 +474,8 @@ abstract class _AppParamsResponseState implements AppParamsResponseState {
   List<OverlayEntry>? get bigEntries;
   @override
   void Function(void Function())? get setStateCallback;
+  @override
+  List<String> get monthGeolocAddMonthButtonLabelList;
   @override
   @JsonKey(ignore: true)
   _$$AppParamsResponseStateImplCopyWith<_$AppParamsResponseStateImpl>

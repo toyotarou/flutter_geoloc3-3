@@ -55,4 +55,17 @@ class AppParamNotifier extends StateNotifier<AppParamsResponseState> {
   }) {
     state = state.copyWith(bigEntries: bigEntries, setStateCallback: setStateCallback);
   }
+
+  ///
+  void setMonthGeolocAddMonthButtonLabelList({required String str}) {
+    final List<String> list = <String>[...state.monthGeolocAddMonthButtonLabelList];
+
+    if (!list.contains(str)) {
+      list.add(str);
+    } else {
+      list.remove(str);
+    }
+
+    state = state.copyWith(monthGeolocAddMonthButtonLabelList: list);
+  }
 }
