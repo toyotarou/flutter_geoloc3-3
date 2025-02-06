@@ -16,6 +16,7 @@ import '../../models/temple_latlng_model.dart';
 import '../../models/temple_photo_model.dart';
 import '../../models/walk_record_model.dart';
 import '../../utilities/tile_provider.dart';
+import '../../utilities/utilities.dart';
 import '../parts/geoloc_dialog.dart';
 import 'geoloc_map_control_panel_alert.dart';
 
@@ -79,6 +80,10 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
 
   List<GeolocModel> gStateList = <GeolocModel>[];
 
+  List<String> mgmblList = <String>[];
+
+  Utility utility = Utility();
+
   ///
   @override
   void initState() {
@@ -141,13 +146,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
       templePhotoDateMap = templePhotoState.templePhotoDateMap.value!;
     }
 
-    final List<String> mgmblList = <String>[
-      DateTime(widget.date.yyyymmdd.split('-')[0].toInt(), widget.date.yyyymmdd.split('-')[1].toInt() - 1).yyyymm
-    ];
-
-    if (appParamState.monthGeolocAddMonthButtonLabelList.isNotEmpty) {
-      mgmblList.addAll(appParamState.monthGeolocAddMonthButtonLabelList);
-    }
+    makeMgmblList();
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -156,7 +155,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
           FlutterMap(
             mapController: mapController,
             options: MapOptions(
-              initialCenter: LatLng(gStateList[0].latitude.toDouble(), gStateList[0].longitude.toDouble()),
+              initialCenter: const LatLng(35.718532, 139.586639),
               initialZoom: currentZoomEightTeen,
               onPositionChanged: (MapCamera position, bool isMoving) {
                 if (isMoving) {
@@ -405,10 +404,14 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                 width: context.screenSize.width,
                 child: Row(
                   children: mgmblList.map((String e) {
+                    final String addYm = DateTime(e.split('-')[0].toInt(), e.split('-')[1].toInt() - 1).yyyymm;
+
+                    if (!mgmblList.contains(addYm) && mgmblList.length >= 3) {
+                      return Container();
+                    }
+
                     return GestureDetector(
                       onTap: () {
-                        final String addYm = DateTime(e.split('-')[0].toInt(), e.split('-')[1].toInt() - 1).yyyymm;
-
                         if (!mgmblList.contains(addYm) && mgmblList.length >= 3) {
                           return;
                         }
@@ -456,6 +459,21 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
         ],
       ),
     );
+  }
+
+  ///
+  void makeMgmblList() {
+    mgmblList = <String>[];
+
+    mgmblList.add(
+      DateTime(widget.date.yyyymmdd.split('-')[0].toInt(), widget.date.yyyymmdd.split('-')[1].toInt() - 1).yyyymm,
+    );
+
+    final AppParamsResponseState appParamState = ref.watch(appParamProvider);
+
+    if (appParamState.monthGeolocAddMonthButtonLabelList.isNotEmpty) {
+      mgmblList.addAll(appParamState.monthGeolocAddMonthButtonLabelList);
+    }
   }
 
   ///
@@ -549,9 +567,14 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
               point: LatLng(element.latitude.toDouble(), element.longitude.toDouble()),
               width: 40,
               height: 40,
+
               // ignore: use_if_null_to_convert_nulls_to_bools
               child: (widget.displayMonthMap)
-                  ? const Icon(Icons.ac_unit, size: 20, color: Colors.redAccent)
+                  ? Icon(
+                      Icons.ac_unit,
+                      size: 20,
+                      color: getMonthGeolocIconColor(geolocModel: element),
+                    )
                   : CircleAvatar(
                       // ignore: use_if_null_to_convert_nulls_to_bools
                       backgroundColor: (selectedTimeGeoloc != null && selectedTimeGeoloc.time == element.time)
@@ -570,6 +593,17 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
         keepLat = element.latitude;
         keepLng = element.longitude;
       });
+  }
+
+  ///
+  Color getMonthGeolocIconColor({required GeolocModel geolocModel}) {
+    // var twelveColor = utility.getTwelveColor();
+    //
+    // final int pos = mgmblList.indexWhere((element) => element == '${geolocModel.year}-${geolocModel.month}');
+    //
+    //
+
+    return Colors.redAccent;
   }
 
   ///
