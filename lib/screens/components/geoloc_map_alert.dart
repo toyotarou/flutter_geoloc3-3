@@ -117,6 +117,10 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
   Widget build(BuildContext context) {
     gStateList = <GeolocModel>[...widget.geolocStateList];
 
+    if (widget.displayMonthMap) {
+      addBeforeMonthGeolocToGStateList();
+    }
+
     makeSelectedHourMap();
 
     makeMinMaxLatLng();
@@ -410,6 +414,15 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                         }
 
                         ref.read(appParamProvider.notifier).setMonthGeolocAddMonthButtonLabelList(str: addYm);
+
+                        setState(() => isLoading = true);
+
+                        // ignore: always_specify_types
+                        Future.delayed(const Duration(seconds: 2), () {
+                          setDefaultBoundsMap();
+
+                          setState(() => isLoading = false);
+                        });
                       },
                       child: Container(
                         width: 60,
@@ -523,29 +536,40 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
     final GeolocModel? selectedTimeGeoloc =
         ref.watch(appParamProvider.select((AppParamsResponseState value) => value.selectedTimeGeoloc));
 
-    for (final GeolocModel element in gStateList) {
-      markerList.add(
-        Marker(
-          point: LatLng(element.latitude.toDouble(), element.longitude.toDouble()),
-          width: 40,
-          height: 40,
-          // ignore: use_if_null_to_convert_nulls_to_bools
-          child: (widget.displayMonthMap)
-              ? const Icon(Icons.ac_unit, size: 20, color: Colors.redAccent)
-              : CircleAvatar(
-                  // ignore: use_if_null_to_convert_nulls_to_bools
-                  backgroundColor: (selectedTimeGeoloc != null && selectedTimeGeoloc.time == element.time)
-                      ? Colors.redAccent.withOpacity(0.5)
+    String keepLat = '';
+    String keepLng = '';
 
+    gStateList
+      ..sort((GeolocModel a, GeolocModel b) => a.latitude.compareTo(b.latitude))
+      ..sort((GeolocModel a, GeolocModel b) => a.longitude.compareTo(b.longitude))
+      ..forEach((GeolocModel element) {
+        if (<String>{keepLat, keepLng, element.latitude, element.longitude}.toList().length >= 3) {
+          markerList.add(
+            Marker(
+              point: LatLng(element.latitude.toDouble(), element.longitude.toDouble()),
+              width: 40,
+              height: 40,
+              // ignore: use_if_null_to_convert_nulls_to_bools
+              child: (widget.displayMonthMap)
+                  ? const Icon(Icons.ac_unit, size: 20, color: Colors.redAccent)
+                  : CircleAvatar(
                       // ignore: use_if_null_to_convert_nulls_to_bools
-                      : (widget.displayTempMap == true)
-                          ? Colors.orangeAccent.withOpacity(0.5)
-                          : Colors.green[900]?.withOpacity(0.5),
-                  child: Text(element.time, style: const TextStyle(color: Colors.white, fontSize: 10)),
-                ),
-        ),
-      );
-    }
+                      backgroundColor: (selectedTimeGeoloc != null && selectedTimeGeoloc.time == element.time)
+                          ? Colors.redAccent.withOpacity(0.5)
+
+                          // ignore: use_if_null_to_convert_nulls_to_bools
+                          : (widget.displayTempMap == true)
+                              ? Colors.orangeAccent.withOpacity(0.5)
+                              : Colors.green[900]?.withOpacity(0.5),
+                      child: Text(element.time, style: const TextStyle(color: Colors.white, fontSize: 10)),
+                    ),
+            ),
+          );
+        }
+
+        keepLat = element.latitude;
+        keepLng = element.longitude;
+      });
   }
 
   ///
@@ -694,5 +718,25 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: list),
       ),
     );
+  }
+
+  ///
+  void addBeforeMonthGeolocToGStateList() {
+    final Map<String, List<GeolocModel>> allGeolocMap =
+        ref.watch(geolocControllerProvider.select((GeolocControllerState value) => value.allGeolocMap));
+
+    final List<String> monthGeolocAddMonthButtonLabelList =
+        ref.watch(appParamProvider.select((AppParamsResponseState value) => value.monthGeolocAddMonthButtonLabelList));
+
+    allGeolocMap.forEach((String key, List<GeolocModel> value) {
+      for (final String element in monthGeolocAddMonthButtonLabelList) {
+        if ('${key.split('-')[0]}-${key.split('-')[1]}' == element) {
+          for (int i = 0; i < value.length; i++) {
+            final GeolocModel element2 = value[i];
+            gStateList.add(element2);
+          }
+        }
+      }
+    });
   }
 }
