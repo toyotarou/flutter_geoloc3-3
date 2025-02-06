@@ -16,7 +16,6 @@ import '../../models/temple_latlng_model.dart';
 import '../../models/temple_photo_model.dart';
 import '../../models/walk_record_model.dart';
 import '../../utilities/tile_provider.dart';
-import '../parts/error_dialog.dart';
 import '../parts/geoloc_dialog.dart';
 import 'geoloc_map_control_panel_alert.dart';
 
@@ -138,7 +137,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
       templePhotoDateMap = templePhotoState.templePhotoDateMap.value!;
     }
 
-    List<String> mgmblList = <String>[
+    final List<String> mgmblList = <String>[
       DateTime(widget.date.yyyymmdd.split('-')[0].toInt(), widget.date.yyyymmdd.split('-')[1].toInt() - 1).yyyymm
     ];
 
@@ -395,7 +394,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                 child: displayInnerPolygonTime(),
               ),
             ),
-          if (widget.displayMonthMap && isLoading == false) ...<Widget>[
+          if (widget.displayMonthMap && !isLoading) ...<Widget>[
             Positioned(
               bottom: 0,
               child: SizedBox(
@@ -404,19 +403,9 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                   children: mgmblList.map((String e) {
                     return GestureDetector(
                       onTap: () {
-                        var addYm = DateTime(e.split('-')[0].toInt(), e.split('-')[1].toInt() - 1).yyyymm;
+                        final String addYm = DateTime(e.split('-')[0].toInt(), e.split('-')[1].toInt() - 1).yyyymm;
 
-                        if (!mgmblList.contains(addYm) && mgmblList.length >= 2) {
-                          // ignore: always_specify_types
-                          Future.delayed(
-                            Duration.zero,
-                            () => error_dialog(
-                                // ignore: use_build_context_synchronously
-                                context: context,
-                                title: '年月遡りエラー',
-                                content: 'これ以上の追加はできません。'),
-                          );
-
+                        if (!mgmblList.contains(addYm) && mgmblList.length >= 3) {
                           return;
                         }
 
