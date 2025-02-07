@@ -401,56 +401,78 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
             Positioned(
               bottom: 0,
               child: SizedBox(
-                width: context.screenSize.width,
+                width: context.screenSize.width - 60,
                 child: Row(
-                  children: mgmblList.map((String e) {
-                    final String addYm = DateTime(e.split('-')[0].toInt(), e.split('-')[1].toInt() - 1).yyyymm;
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Row(
+                      children: mgmblList.map((String e) {
+                        final String addYm = DateTime(e.split('-')[0].toInt(), e.split('-')[1].toInt() - 1).yyyymm;
 
-                    if (!mgmblList.contains(addYm) && mgmblList.length >= 3) {
-                      return Container();
-                    }
-
-                    return GestureDetector(
-                      onTap: () {
                         if (!mgmblList.contains(addYm) && mgmblList.length >= 3) {
-                          return;
+                          return Container();
                         }
 
-                        ref.read(appParamProvider.notifier).setMonthGeolocAddMonthButtonLabelList(str: addYm);
+                        return GestureDetector(
+                          onTap: () {
+                            if (!mgmblList.contains(addYm) && mgmblList.length >= 3) {
+                              return;
+                            }
 
-                        setState(() => isLoading = true);
+                            ref.read(appParamProvider.notifier).setMonthGeolocAddMonthButtonLabelList(str: addYm);
 
-                        // ignore: always_specify_types
-                        Future.delayed(const Duration(seconds: 2), () {
-                          setDefaultBoundsMap();
-
-                          setState(() => isLoading = false);
-                        });
-                      },
-                      child: Container(
-                        width: 60,
-                        height: 60,
-                        margin: const EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                          color: (appParamState.monthGeolocAddMonthButtonLabelList.contains(addYm))
-                              ? Colors.redAccent.withOpacity(0.5)
-                              : Colors.black.withOpacity(0.3),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Column(
-                          children: <Widget>[
-                            const SizedBox(height: 10),
-                            Text(
-                              '-${monthDiff(DateTime.parse('$e-01 00:00:00'), widget.date)}month',
-                              style: const TextStyle(fontSize: 10),
+                            // setState(() => isLoading = true);
+                            //
+                            // // ignore: always_specify_types
+                            // Future.delayed(const Duration(seconds: 2), () {
+                            //   setDefaultBoundsMap();
+                            //
+                            //   setState(() => isLoading = false);
+                            // });
+                          },
+                          child: Container(
+                            width: 60,
+                            height: 60,
+                            margin: const EdgeInsets.all(5),
+                            decoration: BoxDecoration(
+                              color: (appParamState.monthGeolocAddMonthButtonLabelList.contains(addYm))
+                                  ? Colors.redAccent.withOpacity(0.5)
+                                  : Colors.black.withOpacity(0.3),
+                              borderRadius: BorderRadius.circular(10),
                             ),
-                            const SizedBox(height: 5),
-                            Text(e),
-                          ],
-                        ),
+                            child: Column(
+                              children: <Widget>[
+                                const SizedBox(height: 10),
+                                Text(
+                                  '-${monthDiff(DateTime.parse('$e-01 00:00:00'), widget.date)}month',
+                                  style: const TextStyle(fontSize: 10),
+                                ),
+                                const SizedBox(height: 5),
+                                Text(e),
+                              ],
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                    Container(
+                      width: 60,
+                      height: 60,
+                      margin: const EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.withOpacity(0.3),
+                        borderRadius: BorderRadius.circular(10),
                       ),
-                    );
-                  }).toList(),
+                      child: IconButton(
+                        onPressed: () {
+                          makeMinMaxLatLng();
+
+                          setDefaultBoundsMap();
+                        },
+                        icon: const Icon(Icons.pages_outlined),
+                      ),
+                    )
+                  ],
                 ),
               ),
             ),
@@ -506,6 +528,9 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
   ///
   void makeMinMaxLatLng() {
     latLngList = <LatLng>[];
+
+    latList = <double>[];
+    lngList = <double>[];
 
     for (final GeolocModel element in gStateList) {
       latList.add(element.latitude.toDouble());
