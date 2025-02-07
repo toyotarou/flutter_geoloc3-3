@@ -16,8 +16,6 @@ import '../../models/temple_latlng_model.dart';
 import '../../models/temple_photo_model.dart';
 import '../../models/walk_record_model.dart';
 import '../../utilities/tile_provider.dart';
-import '../../utilities/utilities.dart';
-import '../parts/button_error_overlay.dart';
 import '../parts/geoloc_dialog.dart';
 import 'geoloc_map_control_panel_alert.dart';
 
@@ -81,12 +79,6 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
 
   List<GeolocModel> gStateList = <GeolocModel>[];
 
-  List<String> mgmblList = <String>[];
-
-  Utility utility = Utility();
-
-  List<GlobalKey> globalKeyList = <GlobalKey<State<StatefulWidget>>>[];
-
   ///
   @override
   void initState() {
@@ -98,9 +90,6 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
 
     scrollController = ScrollController();
 
-    // ignore: always_specify_types
-    globalKeyList = List.generate(100, (int index) => GlobalKey());
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() => isLoading = true);
 
@@ -108,7 +97,9 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
       Future.delayed(const Duration(seconds: 2), () {
         setDefaultBoundsMap();
 
-        setState(() => isLoading = false);
+        setState(() {
+          isLoading = false;
+        });
       });
     });
   }
@@ -125,10 +116,6 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
   @override
   Widget build(BuildContext context) {
     gStateList = <GeolocModel>[...widget.geolocStateList];
-
-    if (widget.displayMonthMap) {
-      addBeforeMonthGeolocToGStateList();
-    }
 
     makeSelectedHourMap();
 
@@ -150,8 +137,6 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
       templePhotoDateMap = templePhotoState.templePhotoDateMap.value!;
     }
 
-    makeMgmblList();
-
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Stack(
@@ -159,7 +144,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
           FlutterMap(
             mapController: mapController,
             options: MapOptions(
-              initialCenter: const LatLng(35.718532, 139.586639),
+              initialCenter: LatLng(gStateList[0].latitude.toDouble(), gStateList[0].longitude.toDouble()),
               initialZoom: currentZoomEightTeen,
               onPositionChanged: (MapCamera position, bool isMoving) {
                 if (isMoving) {
@@ -243,8 +228,10 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                 Container(
                   width: context.screenSize.width,
                   padding: const EdgeInsets.all(10),
-                  decoration:
-                      BoxDecoration(color: Colors.black.withOpacity(0.3), borderRadius: BorderRadius.circular(10)),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                   child: Row(
                     children: <Widget>[
                       Container(
@@ -351,12 +338,14 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    if (widget.walkRecord.step == 0 || widget.walkRecord.distance == 0) ...<Widget>[Container()],
                     if (widget.walkRecord.step != 0 && widget.walkRecord.distance != 0) ...<Widget>[
                       Text(
                         'step: ${widget.walkRecord.step} / distance: ${widget.walkRecord.distance}',
                         style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
                       ),
+                    ],
+                    if (widget.walkRecord.step == 0 || widget.walkRecord.distance == 0) ...<Widget>[
+                      Container(),
                     ],
                     Text(
                       gStateList.length.toString(),
@@ -397,106 +386,55 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                 child: displayInnerPolygonTime(),
               ),
             ),
-          if (widget.displayMonthMap && !isLoading) ...<Widget>[
+          if (widget.displayMonthMap) ...<Widget>[
             Positioned(
               bottom: 0,
               child: SizedBox(
                 width: context.screenSize.width,
                 child: Row(
-                  children: mgmblList.map((String e) {
-                    final String addYm = DateTime(e.split('-')[0].toInt(), e.split('-')[1].toInt() - 1).yyyymm;
+                  children: <Widget>[
+                    Row(
+                      // ignore: always_specify_types
+                      children: List.generate(2, (int index) => index).map((int e) {
+                        final String blockYm = DateTime(
+                          widget.date.yyyymmdd.split('-')[0].toInt(),
+                          widget.date.yyyymmdd.split('-')[1].toInt() - (e + 1),
+                        ).yyyymm;
 
-                    final int monthdiff = monthDiff(DateTime.parse('$e-01 00:00:00'), widget.date);
-
-                    if (!mgmblList.contains(addYm) && mgmblList.length >= 3) {
-                      return Container();
-                    }
-
-                    return GestureDetector(
-                      onTap: () {
-                        setState(() => isLoading = true);
-
-                        if (!mgmblList.contains(addYm) && mgmblList.length >= 3) {
-                          return;
-                        }
-
-                        if (appParamState.monthGeolocAddMonthButtonLabelList.length > 1 && monthdiff == 1) {
-                          showButtonErrorOverlay(
-                            context: context,
-                            buttonKey: globalKeyList[monthdiff],
-                            message: '途中月のgeolocは削除不可',
-                            displayDuration: const Duration(seconds: 2),
-                          );
-
-                          return;
-                        }
-
-                        ref.read(appParamProvider.notifier).setMonthGeolocAddMonthButtonLabelList(str: addYm);
-
-                        // ignore: always_specify_types
-                        Future.delayed(const Duration(seconds: 2), () {
-                          setDefaultBoundsMap();
-
-                          setState(() => isLoading = false);
-                        });
-                      },
-                      child: Container(
-                        key: globalKeyList[monthdiff],
-                        width: 60,
-                        height: 60,
-                        margin: const EdgeInsets.all(5),
-                        decoration: BoxDecoration(
-                          color: (appParamState.monthGeolocAddMonthButtonLabelList.contains(addYm))
-                              ? Colors.redAccent.withOpacity(0.5)
-                              : Colors.black.withOpacity(0.3),
-                          borderRadius: BorderRadius.circular(10),
-                        ),
-                        child: Column(
-                          children: <Widget>[
-                            const SizedBox(height: 10),
-                            Text('-${monthdiff}month', style: const TextStyle(fontSize: 10)),
-                            const SizedBox(height: 5),
-                            Text(e),
-                          ],
-                        ),
-                      ),
-                    );
-                  }).toList(),
+                        return GestureDetector(
+                          onTap: () {
+                            print(blockYm);
+                          },
+                          child: Container(
+                            width: 60,
+                            height: 60,
+                            margin: const EdgeInsets.all(5),
+                            decoration: BoxDecoration(
+                                color: Colors.black.withOpacity(0.3), borderRadius: BorderRadius.circular(10)),
+                            child: Column(
+                              children: <Widget>[
+                                const SizedBox(height: 10),
+                                Text('-${e + 1}month', style: const TextStyle(fontSize: 10)),
+                                const SizedBox(height: 5),
+                                Text(blockYm),
+                              ],
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                    Expanded(child: Container()),
+                  ],
                 ),
               ),
             ),
           ],
-          if (isLoading) ...<Widget>[const Center(child: CircularProgressIndicator())],
+          if (isLoading) ...<Widget>[
+            const Center(child: CircularProgressIndicator()),
+          ],
         ],
       ),
     );
-  }
-
-  ///
-  void makeMgmblList() {
-    mgmblList = <String>[];
-
-    mgmblList.add(
-      DateTime(widget.date.yyyymmdd.split('-')[0].toInt(), widget.date.yyyymmdd.split('-')[1].toInt() - 1).yyyymm,
-    );
-
-    final AppParamsResponseState appParamState = ref.watch(appParamProvider);
-
-    if (appParamState.monthGeolocAddMonthButtonLabelList.isNotEmpty) {
-      mgmblList.addAll(appParamState.monthGeolocAddMonthButtonLabelList);
-    }
-  }
-
-  ///
-  int monthDiff(DateTime start, DateTime end) {
-    // 年差をベースに月差へ変換
-    final int yearDiff = end.year - start.year;
-    final int monthDiff = end.month - start.month;
-
-    // 「年の差×12 + 月の差」で差分の月数を計算
-    final int diff = yearDiff * 12 + monthDiff;
-
-    return diff;
   }
 
   ///
@@ -515,9 +453,6 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
   ///
   void makeMinMaxLatLng() {
     latLngList = <LatLng>[];
-
-    latList = <double>[];
-    lngList = <double>[];
 
     for (final GeolocModel element in gStateList) {
       latList.add(element.latitude.toDouble());
@@ -568,45 +503,28 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
     final GeolocModel? selectedTimeGeoloc =
         ref.watch(appParamProvider.select((AppParamsResponseState value) => value.selectedTimeGeoloc));
 
-    String keepLat = '';
-    String keepLng = '';
-
-    if (widget.displayMonthMap) {
-      gStateList
-        ..sort((GeolocModel a, GeolocModel b) => a.latitude.compareTo(b.latitude))
-        ..sort((GeolocModel a, GeolocModel b) => a.longitude.compareTo(b.longitude));
-    }
-
-    mgmblList.sort((String a, String b) => a.compareTo(b) * -1);
-
     for (final GeolocModel element in gStateList) {
-      if (<String>{keepLat, keepLng, element.latitude, element.longitude}.toList().length >= 3) {
-        markerList.add(
-          Marker(
-            point: LatLng(element.latitude.toDouble(), element.longitude.toDouble()),
-            width: 40,
-            height: 40,
+      markerList.add(
+        Marker(
+          point: LatLng(element.latitude.toDouble(), element.longitude.toDouble()),
+          width: 40,
+          height: 40,
+          // ignore: use_if_null_to_convert_nulls_to_bools
+          child: (widget.displayMonthMap)
+              ? const Icon(Icons.ac_unit, size: 20, color: Colors.redAccent)
+              : CircleAvatar(
+                  // ignore: use_if_null_to_convert_nulls_to_bools
+                  backgroundColor: (selectedTimeGeoloc != null && selectedTimeGeoloc.time == element.time)
+                      ? Colors.redAccent.withOpacity(0.5)
 
-            // ignore: use_if_null_to_convert_nulls_to_bools
-            child: (widget.displayMonthMap)
-                ? const Icon(Icons.ac_unit, size: 20, color: Colors.redAccent)
-                : CircleAvatar(
-                    // ignore: use_if_null_to_convert_nulls_to_bools
-                    backgroundColor: (selectedTimeGeoloc != null && selectedTimeGeoloc.time == element.time)
-                        ? Colors.redAccent.withOpacity(0.5)
-
-                        // ignore: use_if_null_to_convert_nulls_to_bools
-                        : (widget.displayTempMap == true)
-                            ? Colors.orangeAccent.withOpacity(0.5)
-                            : Colors.green[900]?.withOpacity(0.5),
-                    child: Text(element.time, style: const TextStyle(color: Colors.white, fontSize: 10)),
-                  ),
-          ),
-        );
-      }
-
-      keepLat = element.latitude;
-      keepLng = element.longitude;
+                      // ignore: use_if_null_to_convert_nulls_to_bools
+                      : (widget.displayTempMap == true)
+                          ? Colors.orangeAccent.withOpacity(0.5)
+                          : Colors.green[900]?.withOpacity(0.5),
+                  child: Text(element.time, style: const TextStyle(color: Colors.white, fontSize: 10)),
+                ),
+        ),
+      );
     }
   }
 
@@ -756,25 +674,5 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: list),
       ),
     );
-  }
-
-  ///
-  void addBeforeMonthGeolocToGStateList() {
-    final Map<String, List<GeolocModel>> allGeolocMap =
-        ref.watch(geolocControllerProvider.select((GeolocControllerState value) => value.allGeolocMap));
-
-    final List<String> monthGeolocAddMonthButtonLabelList =
-        ref.watch(appParamProvider.select((AppParamsResponseState value) => value.monthGeolocAddMonthButtonLabelList));
-
-    allGeolocMap.forEach((String key, List<GeolocModel> value) {
-      for (final String element in monthGeolocAddMonthButtonLabelList) {
-        if ('${key.split('-')[0]}-${key.split('-')[1]}' == element) {
-          for (int i = 0; i < value.length; i++) {
-            final GeolocModel element2 = value[i];
-            gStateList.add(element2);
-          }
-        }
-      }
-    });
   }
 }
