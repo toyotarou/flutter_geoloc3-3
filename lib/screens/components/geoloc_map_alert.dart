@@ -557,42 +557,47 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
     String keepLat = '';
     String keepLng = '';
 
-    gStateList
-      ..sort((GeolocModel a, GeolocModel b) => a.latitude.compareTo(b.latitude))
-      ..sort((GeolocModel a, GeolocModel b) => a.longitude.compareTo(b.longitude))
-      ..forEach((GeolocModel element) {
-        if (<String>{keepLat, keepLng, element.latitude, element.longitude}.toList().length >= 3) {
-          markerList.add(
-            Marker(
-              point: LatLng(element.latitude.toDouble(), element.longitude.toDouble()),
-              width: 40,
-              height: 40,
+    if (widget.displayMonthMap) {
+      gStateList
+        ..sort((GeolocModel a, GeolocModel b) => a.latitude.compareTo(b.latitude))
+        ..sort((GeolocModel a, GeolocModel b) => a.longitude.compareTo(b.longitude));
+    }
 
-              // ignore: use_if_null_to_convert_nulls_to_bools
-              child: (widget.displayMonthMap)
-                  ? Icon(
-                      Icons.ac_unit,
-                      size: 20,
-                      color: getMonthGeolocIconColor(geolocModel: element),
-                    )
-                  : CircleAvatar(
-                      // ignore: use_if_null_to_convert_nulls_to_bools
-                      backgroundColor: (selectedTimeGeoloc != null && selectedTimeGeoloc.time == element.time)
-                          ? Colors.redAccent.withOpacity(0.5)
+    mgmblList.sort((a, b) => a.compareTo(b) * -1);
 
-                          // ignore: use_if_null_to_convert_nulls_to_bools
-                          : (widget.displayTempMap == true)
-                              ? Colors.orangeAccent.withOpacity(0.5)
-                              : Colors.green[900]?.withOpacity(0.5),
-                      child: Text(element.time, style: const TextStyle(color: Colors.white, fontSize: 10)),
-                    ),
-            ),
-          );
-        }
+    for (final GeolocModel element in gStateList) {
+      if (<String>{keepLat, keepLng, element.latitude, element.longitude}.toList().length >= 3) {
+        markerList.add(
+          Marker(
+            point: LatLng(element.latitude.toDouble(), element.longitude.toDouble()),
+            width: 40,
+            height: 40,
 
-        keepLat = element.latitude;
-        keepLng = element.longitude;
-      });
+            // ignore: use_if_null_to_convert_nulls_to_bools
+            child: (widget.displayMonthMap)
+                ? Icon(
+                    Icons.ac_unit,
+                    size: 20,
+                    color: getMonthGeolocIconColor(geolocModel: element),
+                  )
+                : CircleAvatar(
+                    // ignore: use_if_null_to_convert_nulls_to_bools
+                    backgroundColor: (selectedTimeGeoloc != null && selectedTimeGeoloc.time == element.time)
+                        ? Colors.redAccent.withOpacity(0.5)
+
+                        // ignore: use_if_null_to_convert_nulls_to_bools
+                        : (widget.displayTempMap == true)
+                            ? Colors.orangeAccent.withOpacity(0.5)
+                            : Colors.green[900]?.withOpacity(0.5),
+                    child: Text(element.time, style: const TextStyle(color: Colors.white, fontSize: 10)),
+                  ),
+          ),
+        );
+      }
+
+      keepLat = element.latitude;
+      keepLng = element.longitude;
+    }
   }
 
   ///
@@ -601,7 +606,11 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
     //
     // final int pos = mgmblList.indexWhere((element) => element == '${geolocModel.year}-${geolocModel.month}');
     //
-    //
+    // print('aaaaaaaaaaa');
+    // print(mgmblList);
+    // print('${geolocModel.year}-${geolocModel.month}');
+    // print(pos);
+    // print('aaaaaaaaaaa');
 
     return Colors.redAccent;
   }
