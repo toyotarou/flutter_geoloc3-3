@@ -432,7 +432,9 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                         height: 60,
                         margin: const EdgeInsets.all(5),
                         decoration: BoxDecoration(
-                          color: Colors.black.withOpacity(0.3),
+                          color: (appParamState.monthGeolocAddMonthButtonLabelList.contains(addYm))
+                              ? Colors.redAccent.withOpacity(0.5)
+                              : Colors.black.withOpacity(0.3),
                           borderRadius: BorderRadius.circular(10),
                         ),
                         child: Column(
@@ -563,7 +565,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
         ..sort((GeolocModel a, GeolocModel b) => a.longitude.compareTo(b.longitude));
     }
 
-    mgmblList.sort((a, b) => a.compareTo(b) * -1);
+    mgmblList.sort((String a, String b) => a.compareTo(b) * -1);
 
     for (final GeolocModel element in gStateList) {
       if (<String>{keepLat, keepLng, element.latitude, element.longitude}.toList().length >= 3) {
@@ -575,11 +577,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
 
             // ignore: use_if_null_to_convert_nulls_to_bools
             child: (widget.displayMonthMap)
-                ? Icon(
-                    Icons.ac_unit,
-                    size: 20,
-                    color: getMonthGeolocIconColor(geolocModel: element),
-                  )
+                ? const Icon(Icons.ac_unit, size: 20, color: Colors.redAccent)
                 : CircleAvatar(
                     // ignore: use_if_null_to_convert_nulls_to_bools
                     backgroundColor: (selectedTimeGeoloc != null && selectedTimeGeoloc.time == element.time)
@@ -598,21 +596,6 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
       keepLat = element.latitude;
       keepLng = element.longitude;
     }
-  }
-
-  ///
-  Color getMonthGeolocIconColor({required GeolocModel geolocModel}) {
-    // var twelveColor = utility.getTwelveColor();
-    //
-    // final int pos = mgmblList.indexWhere((element) => element == '${geolocModel.year}-${geolocModel.month}');
-    //
-    // print('aaaaaaaaaaa');
-    // print(mgmblList);
-    // print('${geolocModel.year}-${geolocModel.month}');
-    // print(pos);
-    // print('aaaaaaaaaaa');
-
-    return Colors.redAccent;
   }
 
   ///
