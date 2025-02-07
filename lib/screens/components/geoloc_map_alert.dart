@@ -17,6 +17,7 @@ import '../../models/temple_photo_model.dart';
 import '../../models/walk_record_model.dart';
 import '../../utilities/tile_provider.dart';
 import '../../utilities/utilities.dart';
+import '../parts/button_error_overlay.dart';
 import '../parts/geoloc_dialog.dart';
 import 'geoloc_map_control_panel_alert.dart';
 
@@ -84,6 +85,8 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
 
   Utility utility = Utility();
 
+  List<GlobalKey> globalKeyList = <GlobalKey<State<StatefulWidget>>>[];
+
   ///
   @override
   void initState() {
@@ -95,6 +98,9 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
 
     scrollController = ScrollController();
 
+    // ignore: always_specify_types
+    globalKeyList = List.generate(100, (int index) => GlobalKey());
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() => isLoading = true);
 
@@ -102,9 +108,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
       Future.delayed(const Duration(seconds: 2), () {
         setDefaultBoundsMap();
 
-        setState(() {
-          isLoading = false;
-        });
+        setState(() => isLoading = false);
       });
     });
   }
@@ -239,10 +243,8 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                 Container(
                   width: context.screenSize.width,
                   padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.3),
-                    borderRadius: BorderRadius.circular(10),
-                  ),
+                  decoration:
+                      BoxDecoration(color: Colors.black.withOpacity(0.3), borderRadius: BorderRadius.circular(10)),
                   child: Row(
                     children: <Widget>[
                       Container(
@@ -349,14 +351,12 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
+                    if (widget.walkRecord.step == 0 || widget.walkRecord.distance == 0) ...<Widget>[Container()],
                     if (widget.walkRecord.step != 0 && widget.walkRecord.distance != 0) ...<Widget>[
                       Text(
                         'step: ${widget.walkRecord.step} / distance: ${widget.walkRecord.distance}',
                         style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
                       ),
-                    ],
-                    if (widget.walkRecord.step == 0 || widget.walkRecord.distance == 0) ...<Widget>[
-                      Container(),
                     ],
                     Text(
                       gStateList.length.toString(),
@@ -401,85 +401,72 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
             Positioned(
               bottom: 0,
               child: SizedBox(
-                width: context.screenSize.width - 60,
+                width: context.screenSize.width,
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    Row(
-                      children: mgmblList.map((String e) {
-                        final String addYm = DateTime(e.split('-')[0].toInt(), e.split('-')[1].toInt() - 1).yyyymm;
+                  children: mgmblList.map((String e) {
+                    final String addYm = DateTime(e.split('-')[0].toInt(), e.split('-')[1].toInt() - 1).yyyymm;
+
+                    final int monthdiff = monthDiff(DateTime.parse('$e-01 00:00:00'), widget.date);
+
+                    if (!mgmblList.contains(addYm) && mgmblList.length >= 3) {
+                      return Container();
+                    }
+
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() => isLoading = true);
 
                         if (!mgmblList.contains(addYm) && mgmblList.length >= 3) {
-                          return Container();
+                          return;
                         }
 
-                        return GestureDetector(
-                          onTap: () {
-                            if (!mgmblList.contains(addYm) && mgmblList.length >= 3) {
-                              return;
-                            }
+                        if (appParamState.monthGeolocAddMonthButtonLabelList.length > 1 && monthdiff == 1) {
+                          showButtonErrorOverlay(
+                            context: context,
+                            buttonKey: globalKeyList[monthdiff],
+                            message: '途中月のgeolocは削除不可',
+                            displayDuration: const Duration(seconds: 2),
+                          );
 
-                            ref.read(appParamProvider.notifier).setMonthGeolocAddMonthButtonLabelList(str: addYm);
+                          return;
+                        }
 
-                            // setState(() => isLoading = true);
-                            //
-                            // // ignore: always_specify_types
-                            // Future.delayed(const Duration(seconds: 2), () {
-                            //   setDefaultBoundsMap();
-                            //
-                            //   setState(() => isLoading = false);
-                            // });
-                          },
-                          child: Container(
-                            width: 60,
-                            height: 60,
-                            margin: const EdgeInsets.all(5),
-                            decoration: BoxDecoration(
-                              color: (appParamState.monthGeolocAddMonthButtonLabelList.contains(addYm))
-                                  ? Colors.redAccent.withOpacity(0.5)
-                                  : Colors.black.withOpacity(0.3),
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Column(
-                              children: <Widget>[
-                                const SizedBox(height: 10),
-                                Text(
-                                  '-${monthDiff(DateTime.parse('$e-01 00:00:00'), widget.date)}month',
-                                  style: const TextStyle(fontSize: 10),
-                                ),
-                                const SizedBox(height: 5),
-                                Text(e),
-                              ],
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                    Container(
-                      width: 60,
-                      height: 60,
-                      margin: const EdgeInsets.all(5),
-                      decoration: BoxDecoration(
-                        color: Colors.blue.withOpacity(0.3),
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      child: IconButton(
-                        onPressed: () {
-                          makeMinMaxLatLng();
+                        ref.read(appParamProvider.notifier).setMonthGeolocAddMonthButtonLabelList(str: addYm);
 
+                        // ignore: always_specify_types
+                        Future.delayed(const Duration(seconds: 2), () {
                           setDefaultBoundsMap();
-                        },
-                        icon: const Icon(Icons.pages_outlined),
+
+                          setState(() => isLoading = false);
+                        });
+                      },
+                      child: Container(
+                        key: globalKeyList[monthdiff],
+                        width: 60,
+                        height: 60,
+                        margin: const EdgeInsets.all(5),
+                        decoration: BoxDecoration(
+                          color: (appParamState.monthGeolocAddMonthButtonLabelList.contains(addYm))
+                              ? Colors.redAccent.withOpacity(0.5)
+                              : Colors.black.withOpacity(0.3),
+                          borderRadius: BorderRadius.circular(10),
+                        ),
+                        child: Column(
+                          children: <Widget>[
+                            const SizedBox(height: 10),
+                            Text('-${monthdiff}month', style: const TextStyle(fontSize: 10)),
+                            const SizedBox(height: 5),
+                            Text(e),
+                          ],
+                        ),
                       ),
-                    )
-                  ],
+                    );
+                  }).toList(),
                 ),
               ),
             ),
           ],
-          if (isLoading) ...<Widget>[
-            const Center(child: CircularProgressIndicator()),
-          ],
+          if (isLoading) ...<Widget>[const Center(child: CircularProgressIndicator())],
         ],
       ),
     );
