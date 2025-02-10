@@ -523,7 +523,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
       ..sort((String a, String b) => a.compareTo(b))
       ..forEach((String element) {
         if (map[element] != null) {
-          map2[map[element]!] = i;
+          map2[map[element]!] = i + 1;
 
           i++;
         }
@@ -809,11 +809,15 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
       }
     }
 
+    int i = 0;
+
     list2.toSet().toList()
       ..sort((String a, String b) => a.compareTo(b))
       ..forEach((String element) {
         if (map[element] != null) {
-          list.add(Text(element));
+          list.add(Text('${(i + 1).toString().padLeft(3, '0')}. $element'));
+
+          i++;
         }
       });
 
