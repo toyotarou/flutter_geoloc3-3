@@ -16,6 +16,7 @@ import '../../models/temple_latlng_model.dart';
 import '../../models/temple_photo_model.dart';
 import '../../models/walk_record_model.dart';
 import '../../utilities/tile_provider.dart';
+import '../parts/error_dialog.dart';
 import '../parts/geoloc_dialog.dart';
 import 'geoloc_map_control_panel_alert.dart';
 
@@ -78,6 +79,12 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
   Map<String, List<TemplePhotoModel>> templePhotoDateMap = <String, List<TemplePhotoModel>>{};
 
   List<GeolocModel> gStateList = <GeolocModel>[];
+
+  Set<LatLng> emphasisMarkers = <LatLng>{};
+
+  Map<LatLng, int> emphasisMarkersIndices = <LatLng, int>{};
+
+  List<GeolocModel> emphasisMarkersPositions = <GeolocModel>[];
 
   ///
   @override
@@ -356,14 +363,44 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: <Widget>[
-                    Container(),
-                    Row(
-                      children: <Widget>[
-                        IconButton(
-                            onPressed: () => _findEnclosedMarkers(), icon: const Icon(Icons.list, color: Colors.black)),
-                        IconButton(
-                            onPressed: () => _clearPolygon(), icon: const Icon(Icons.clear, color: Colors.black)),
-                      ],
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.purpleAccent.withOpacity(0.3),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        children: <Widget>[
+                          IconButton(
+                              onPressed: () => _findEnclosedMarkers(),
+                              icon: const Icon(Icons.list, color: Colors.purple)),
+                          IconButton(
+                              onPressed: () => _clearPolygon(), icon: const Icon(Icons.clear, color: Colors.purple)),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.redAccent.withOpacity(0.3),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        children: <Widget>[
+                          IconButton(
+                              onPressed: () => restrictionAreaMarkerEmphasis(),
+                              icon: const Icon(Icons.check_box, color: Colors.red)),
+                          IconButton(
+                              onPressed: () => displayEmphasisMarkersList(),
+                              icon: const Icon(Icons.list, color: Colors.red)),
+                          IconButton(
+                            onPressed: () => setState(() {
+                              emphasisMarkers.clear();
+
+                              emphasisMarkersIndices.clear();
+                            }),
+                            icon: const Icon(Icons.clear, color: Colors.red),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -403,6 +440,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
 
                         return GestureDetector(
                           onTap: () {
+                            // ignore: avoid_print
                             print(blockYm);
                           },
                           child: Container(
@@ -429,10 +467,96 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
               ),
             ),
           ],
-          if (isLoading) ...<Widget>[
-            const Center(child: CircularProgressIndicator()),
-          ],
+          if (isLoading) ...<Widget>[const Center(child: CircularProgressIndicator())],
         ],
+      ),
+    );
+  }
+
+  ///
+  void restrictionAreaMarkerEmphasis() {
+    final LatLngBounds bounds = mapController.camera.visibleBounds;
+
+    final Set<LatLng> set = <LatLng>{};
+
+    for (final GeolocModel pos in gStateList) {
+      if (bounds.contains(LatLng(pos.latitude.toDouble(), pos.longitude.toDouble()))) {
+        set.add(LatLng(pos.latitude.toDouble(), pos.longitude.toDouble()));
+      }
+    }
+
+    if (set.length > 20) {
+      // ignore: always_specify_types
+      Future.delayed(
+        Duration.zero,
+        () => error_dialog(
+            // ignore: use_build_context_synchronously
+            context: context,
+            title: '処理続行不可',
+            content: 'ピックアップされたマーカーが多すぎます。'),
+      );
+
+      return;
+    }
+
+    final List<LatLng> list = <LatLng>[...set];
+
+    final Map<String, LatLng> map = <String, LatLng>{};
+
+    final List<String> list2 = <String>[];
+
+    final Map<LatLng, int> map2 = <LatLng, int>{};
+
+    for (final LatLng element in list) {
+      for (final GeolocModel element2 in gStateList) {
+        if (element.latitude == element2.latitude.toDouble() && element.longitude == element2.longitude.toDouble()) {
+          list2.add('${element2.year}-${element2.month}-${element2.day} ${element2.time}');
+
+          map['${element2.year}-${element2.month}-${element2.day} ${element2.time}'] = element;
+        }
+      }
+    }
+
+    int i = 0;
+
+    list2
+      ..sort((String a, String b) => a.compareTo(b))
+      ..forEach((String element) {
+        if (map[element] != null) {
+          map2[map[element]!] = i;
+
+          i++;
+        }
+      });
+
+    setState(() {
+      emphasisMarkers = set;
+
+      emphasisMarkersIndices = map2;
+    });
+  }
+
+  ///
+  void displayEmphasisMarkersList() {
+    final LatLngBounds bounds = mapController.camera.visibleBounds;
+
+    emphasisMarkersPositions = gStateList
+        .where((GeolocModel geolocModel) =>
+            bounds.contains(LatLng(geolocModel.latitude.toDouble(), geolocModel.longitude.toDouble())))
+        .toList();
+
+    // ignore: inference_failure_on_function_invocation
+    showDialog(
+      context: context,
+      builder: (BuildContext ctx) => AlertDialog(
+        title: const Text('可視範囲のマーカー座標'),
+        content: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: emphasisMarkersPositions.map((GeolocModel geolocModel) => Text(geolocModel.time)).toList(),
+          ),
+        ),
+        actions: <Widget>[TextButton(onPressed: () => Navigator.pop(ctx), child: const Text('閉じる'))],
       ),
     );
   }
@@ -504,6 +628,10 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
         ref.watch(appParamProvider.select((AppParamsResponseState value) => value.selectedTimeGeoloc));
 
     for (final GeolocModel element in gStateList) {
+      final bool isRed = emphasisMarkers.contains(LatLng(element.latitude.toDouble(), element.longitude.toDouble()));
+
+      final int? badgeIndex = emphasisMarkersIndices[LatLng(element.latitude.toDouble(), element.longitude.toDouble())];
+
       markerList.add(
         Marker(
           point: LatLng(element.latitude.toDouble(), element.longitude.toDouble()),
@@ -512,16 +640,37 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
           // ignore: use_if_null_to_convert_nulls_to_bools
           child: (widget.displayMonthMap)
               ? const Icon(Icons.ac_unit, size: 20, color: Colors.redAccent)
-              : CircleAvatar(
-                  // ignore: use_if_null_to_convert_nulls_to_bools
-                  backgroundColor: (selectedTimeGeoloc != null && selectedTimeGeoloc.time == element.time)
-                      ? Colors.redAccent.withOpacity(0.5)
-
+              : Stack(
+                  children: <Widget>[
+                    CircleAvatar(
                       // ignore: use_if_null_to_convert_nulls_to_bools
-                      : (widget.displayTempMap == true)
-                          ? Colors.orangeAccent.withOpacity(0.5)
-                          : Colors.green[900]?.withOpacity(0.5),
-                  child: Text(element.time, style: const TextStyle(color: Colors.white, fontSize: 10)),
+                      backgroundColor: isRed
+                          ? Colors.redAccent.withOpacity(0.5)
+                          : (selectedTimeGeoloc != null && selectedTimeGeoloc.time == element.time)
+                              ? Colors.redAccent.withOpacity(0.5)
+
+                              // ignore: use_if_null_to_convert_nulls_to_bools
+                              : (widget.displayTempMap == true)
+                                  ? Colors.orangeAccent.withOpacity(0.5)
+                                  : Colors.green[900]?.withOpacity(0.5),
+                      child: Text(element.time, style: const TextStyle(color: Colors.white, fontSize: 10)),
+                    ),
+                    if (badgeIndex != null)
+                      Positioned(
+                        top: 0,
+                        left: 0,
+                        child: Container(
+                          width: 16,
+                          height: 16,
+                          alignment: Alignment.center,
+                          decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                          child: Text(
+                            badgeIndex.toString(),
+                            style: const TextStyle(fontSize: 10, color: Colors.black),
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
         ),
       );
