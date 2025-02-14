@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:latlong2/latlong.dart';
 
 // import '../../controllers/app_params/app_params_notifier.dart';
@@ -375,30 +376,33 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
                         ],
                       ),
                     ),
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.redAccent.withOpacity(0.3),
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Row(
-                        children: <Widget>[
-                          IconButton(
-                              onPressed: () => restrictionAreaMarkerEmphasis(),
-                              icon: const Icon(Icons.check_box, color: Colors.red)),
-                          IconButton(
-                              onPressed: () => displayEmphasisMarkersList(),
-                              icon: const Icon(Icons.list, color: Colors.red)),
-                          IconButton(
-                            onPressed: () => setState(() {
-                              emphasisMarkers.clear();
+                    if (widget.displayMonthMap) ...<Widget>[Container()],
+                    if (!widget.displayMonthMap) ...<Widget>[
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.redAccent.withOpacity(0.3),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Row(
+                          children: <Widget>[
+                            IconButton(
+                                onPressed: () => restrictionAreaMarkerEmphasis(),
+                                icon: const Icon(Icons.check_box, color: Colors.red)),
+                            IconButton(
+                                onPressed: () => displayEmphasisMarkersList(),
+                                icon: const Icon(Icons.list, color: Colors.red)),
+                            IconButton(
+                              onPressed: () => setState(() {
+                                emphasisMarkers.clear();
 
-                              emphasisMarkersIndices.clear();
-                            }),
-                            icon: const Icon(Icons.clear, color: Colors.red),
-                          ),
-                        ],
+                                emphasisMarkersIndices.clear();
+                              }),
+                              icon: const Icon(Icons.clear, color: Colors.red),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
+                    ],
                   ],
                 ),
               ],
@@ -437,15 +441,34 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
 
                         return GestureDetector(
                           onTap: () {
-                            // ignore: avoid_print
-                            print(blockYm);
+                            if (e == 0) {
+                              if (appParamState.monthGeolocAddMonthButtonLabelList.length == 2) {
+                                // ignore: always_specify_types
+                                Future.delayed(
+                                  Duration.zero,
+                                  () => error_dialog(
+                                      // ignore: use_build_context_synchronously
+                                      context: context,
+                                      title: '削除不可',
+                                      content: '途中月の消去はできません。'),
+                                );
+
+                                return;
+                              }
+                            }
+
+                            appParamNotifier.setMonthGeolocAddMonthButtonLabelList(str: blockYm);
                           },
                           child: Container(
                             width: 60,
                             height: 60,
                             margin: const EdgeInsets.all(5),
                             decoration: BoxDecoration(
-                                color: Colors.black.withOpacity(0.3), borderRadius: BorderRadius.circular(10)),
+                              color: (appParamState.monthGeolocAddMonthButtonLabelList.contains(blockYm))
+                                  ? Colors.redAccent.withOpacity(0.3)
+                                  : Colors.black.withOpacity(0.3),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
                             child: Column(
                               children: <Widget>[
                                 const SizedBox(height: 10),
@@ -458,7 +481,15 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
                         );
                       }).toList(),
                     ),
-                    Expanded(child: Container()),
+                    const SizedBox(width: 150),
+                    Container(
+                      decoration:
+                          BoxDecoration(color: Colors.blue.withOpacity(0.3), borderRadius: BorderRadius.circular(10)),
+                      child: IconButton(
+                        onPressed: () => setDefaultBoundsMap(),
+                        icon: const Icon(FontAwesomeIcons.expand),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -573,7 +604,21 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
 
   ///
   void makeMinMaxLatLng() {
+    latList = <double>[];
+
+    lngList = <double>[];
+
     latLngList = <LatLng>[];
+
+    if (appParamState.monthGeolocAddMonthButtonLabelList.isNotEmpty) {
+      for (final String element in appParamState.monthGeolocAddMonthButtonLabelList) {
+        for (final GeolocModel element2 in geolocState.allGeolocList) {
+          if ('${element2.year}-${element2.month}' == element) {
+            gStateList.add(element2);
+          }
+        }
+      }
+    }
 
     for (final GeolocModel element in gStateList) {
       latList.add(element.latitude.toDouble());
