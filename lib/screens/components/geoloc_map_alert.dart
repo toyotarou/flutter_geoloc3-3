@@ -18,6 +18,7 @@ import '../../models/temple_latlng_model.dart';
 import '../../models/temple_photo_model.dart';
 import '../../models/walk_record_model.dart';
 import '../../utilities/tile_provider.dart';
+import '../parts/button_error_overlay.dart';
 import '../parts/error_dialog.dart';
 import '../parts/geoloc_dialog.dart';
 import 'geoloc_map_control_panel_alert.dart';
@@ -88,6 +89,8 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
 
   List<GeolocModel> emphasisMarkersPositions = <GeolocModel>[];
 
+  List<GlobalKey> globalKeyList = <GlobalKey>[];
+
   ///
   @override
   void initState() {
@@ -98,6 +101,9 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
     }
 
     scrollController = ScrollController();
+
+    // ignore: always_specify_types
+    globalKeyList = List.generate(1000, (int index) => GlobalKey());
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() => isLoading = true);
@@ -443,14 +449,11 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
                           onTap: () {
                             if (e == 0) {
                               if (appParamState.monthGeolocAddMonthButtonLabelList.length == 2) {
-                                // ignore: always_specify_types
-                                Future.delayed(
-                                  Duration.zero,
-                                  () => error_dialog(
-                                      // ignore: use_build_context_synchronously
-                                      context: context,
-                                      title: '削除不可',
-                                      content: '途中月の消去はできません。'),
+                                showButtonErrorOverlay(
+                                  context: context,
+                                  buttonKey: globalKeyList[e],
+                                  message: '途中月の消去はできません。',
+                                  displayDuration: const Duration(seconds: 2),
                                 );
 
                                 return;
@@ -459,14 +462,11 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
 
                             if (e == 1) {
                               if (appParamState.monthGeolocAddMonthButtonLabelList.isEmpty) {
-                                // ignore: always_specify_types
-                                Future.delayed(
-                                  Duration.zero,
-                                  () => error_dialog(
-                                      // ignore: use_build_context_synchronously
-                                      context: context,
-                                      title: '追加不可',
-                                      content: '飛び月の追加はできません。'),
+                                showButtonErrorOverlay(
+                                  context: context,
+                                  buttonKey: globalKeyList[e],
+                                  message: '飛び月の追加はできません。',
+                                  displayDuration: const Duration(seconds: 2),
                                 );
 
                                 return;
@@ -476,6 +476,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
                             appParamNotifier.setMonthGeolocAddMonthButtonLabelList(str: blockYm);
                           },
                           child: Container(
+                            key: globalKeyList[e],
                             width: 60,
                             height: 60,
                             margin: const EdgeInsets.all(5),
