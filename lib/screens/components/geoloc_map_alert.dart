@@ -457,6 +457,22 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
                               }
                             }
 
+                            if (e == 1) {
+                              if (appParamState.monthGeolocAddMonthButtonLabelList.isEmpty) {
+                                // ignore: always_specify_types
+                                Future.delayed(
+                                  Duration.zero,
+                                  () => error_dialog(
+                                      // ignore: use_build_context_synchronously
+                                      context: context,
+                                      title: '追加不可',
+                                      content: '飛び月の追加はできません。'),
+                                );
+
+                                return;
+                              }
+                            }
+
                             appParamNotifier.setMonthGeolocAddMonthButtonLabelList(str: blockYm);
                           },
                           child: Container(
