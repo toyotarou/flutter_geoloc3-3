@@ -4,8 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 
-import '../../controllers/app_params/app_params_notifier.dart';
-import '../../controllers/app_params/app_params_response_state.dart';
+import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/geoloc_model.dart';
 import '../../models/temple_latlng_model.dart';
@@ -43,7 +42,8 @@ class GeolocMapControlPanelAlert extends ConsumerStatefulWidget {
   ConsumerState<GeolocMapControlPanelAlert> createState() => _GeolocMapControlPanelAlertState();
 }
 
-class _GeolocMapControlPanelAlertState extends ConsumerState<GeolocMapControlPanelAlert> {
+class _GeolocMapControlPanelAlertState extends ConsumerState<GeolocMapControlPanelAlert>
+    with ControllersMixin<GeolocMapControlPanelAlert> {
   late ScrollController scrollController;
   final ItemScrollController itemScrollController = ItemScrollController();
   final ItemPositionsListener itemPositionsListener = ItemPositionsListener.create();
@@ -81,8 +81,6 @@ class _GeolocMapControlPanelAlertState extends ConsumerState<GeolocMapControlPan
       }
     }
 
-    final AppParamsResponseState appParamState = ref.watch(appParamProvider);
-
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: SafeArea(
@@ -99,14 +97,13 @@ class _GeolocMapControlPanelAlertState extends ConsumerState<GeolocMapControlPan
                     Row(
                       children: <Widget>[
                         GestureDetector(
-                          onTap: () =>
-                              ref.read(appParamProvider.notifier).setIsMarkerShow(flag: !appParamState.isMarkerShow),
+                          onTap: () => appParamNotifier.setIsMarkerShow(flag: !appParamState.isMarkerShow),
                           child: const Icon(Icons.stacked_line_chart),
                         ),
                         const SizedBox(width: 20),
                         GestureDetector(
                           onTap: () {
-                            ref.read(appParamProvider.notifier).setSelectedTimeGeoloc();
+                            appParamNotifier.setSelectedTimeGeoloc();
 
                             setDefaultBoundsMap();
                           },
@@ -126,7 +123,7 @@ class _GeolocMapControlPanelAlertState extends ConsumerState<GeolocMapControlPan
                           ),
                           onPressed: () {
                             if (widget.geolocStateList.length == 1 || appParamState.selectedTimeGeoloc != null) {
-                              ref.read(appParamProvider.notifier).setCurrentZoom(zoom: appParamState.currentZoom + 1);
+                              appParamNotifier.setCurrentZoom(zoom: appParamState.currentZoom + 1);
 
                               widget.mapController.move(
                                 (appParamState.selectedTimeGeoloc == null)
@@ -141,9 +138,7 @@ class _GeolocMapControlPanelAlertState extends ConsumerState<GeolocMapControlPan
                                 appParamState.currentZoom + 1,
                               );
                             } else {
-                              ref
-                                  .read(appParamProvider.notifier)
-                                  .setCurrentPaddingIndex(index: appParamState.currentPaddingIndex + 1);
+                              appParamNotifier.setCurrentPaddingIndex(index: appParamState.currentPaddingIndex + 1);
 
                               setDefaultBoundsMap();
                             }
@@ -167,7 +162,7 @@ class _GeolocMapControlPanelAlertState extends ConsumerState<GeolocMapControlPan
                           ),
                           onPressed: () {
                             if (widget.geolocStateList.length == 1 || appParamState.selectedTimeGeoloc != null) {
-                              ref.read(appParamProvider.notifier).setCurrentZoom(zoom: appParamState.currentZoom - 1);
+                              appParamNotifier.setCurrentZoom(zoom: appParamState.currentZoom - 1);
 
                               widget.mapController.move(
                                 (appParamState.selectedTimeGeoloc == null)
@@ -188,7 +183,7 @@ class _GeolocMapControlPanelAlertState extends ConsumerState<GeolocMapControlPan
                                 index = 1;
                               }
 
-                              ref.read(appParamProvider.notifier).setCurrentPaddingIndex(index: index);
+                              appParamNotifier.setCurrentPaddingIndex(index: index);
 
                               setDefaultBoundsMap();
                             }
@@ -229,7 +224,7 @@ class _GeolocMapControlPanelAlertState extends ConsumerState<GeolocMapControlPan
                         padding: const EdgeInsets.only(right: 10),
                         child: GestureDetector(
                           onTap: () {
-                            ref.read(appParamProvider.notifier).setSelectedTimeGeoloc(
+                            appParamNotifier.setSelectedTimeGeoloc(
                                 geoloc: widget.geolocStateList
                                     .firstWhere((GeolocModel e2) => e2.time == widget.selectedHourMap[e]?[0]));
 
@@ -270,23 +265,17 @@ class _GeolocMapControlPanelAlertState extends ConsumerState<GeolocMapControlPan
                         padding: const EdgeInsets.symmetric(horizontal: 5),
                         child: GestureDetector(
                           onTap: () {
-                            ref.read(appParamProvider.notifier).setIsMarkerShow(flag: true);
+                            appParamNotifier.setIsMarkerShow(flag: true);
 
-                            ref
-                                .read(appParamProvider.notifier)
-                                .setSelectedTimeGeoloc(geoloc: widget.geolocStateList[index]);
+                            appParamNotifier.setSelectedTimeGeoloc(geoloc: widget.geolocStateList[index]);
 
                             widget.mapController.move(
-                              LatLng(
-                                widget.geolocStateList[index].latitude.toDouble(),
-                                widget.geolocStateList[index].longitude.toDouble(),
-                              ),
+                              LatLng(widget.geolocStateList[index].latitude.toDouble(),
+                                  widget.geolocStateList[index].longitude.toDouble()),
                               appParamState.currentZoom,
                             );
 
-                            ref
-                                .read(appParamProvider.notifier)
-                                .setPolylineGeolocModel(model: widget.geolocStateList[index]);
+                            appParamNotifier.setPolylineGeolocModel(model: widget.geolocStateList[index]);
 
                             itemScrollController.jumpTo(index: index);
                           },
@@ -345,10 +334,8 @@ class _GeolocMapControlPanelAlertState extends ConsumerState<GeolocMapControlPan
                             ? Colors.orangeAccent.withOpacity(0.2)
                             : Colors.green[900]?.withOpacity(0.2),
                       ),
-                      onPressed: () => ref.read(appParamProvider.notifier).setTimeGeolocDisplay(
-                            start: currentRange.start.round(),
-                            end: currentRange.end.round(),
-                          ),
+                      onPressed: () => appParamNotifier.setTimeGeolocDisplay(
+                          start: currentRange.start.round(), end: currentRange.end.round()),
                       child: const Column(
                         children: <Widget>[
                           Text('set', style: TextStyle(color: Colors.white)),
@@ -368,28 +355,28 @@ class _GeolocMapControlPanelAlertState extends ConsumerState<GeolocMapControlPan
                       children: widget.templeInfoList!.map((TempleInfoModel element) {
                         return GestureDetector(
                           onTap: () {
-                            ref.read(appParamProvider.notifier).setSelectedTimeGeoloc(
-                                  geoloc: GeolocModel(
-                                    id: 0,
-                                    year: widget.geolocStateList[0].year,
-                                    month: widget.geolocStateList[0].month,
-                                    day: widget.geolocStateList[0].day,
-                                    time: '',
-                                    latitude: element.latitude,
-                                    longitude: element.longitude,
-                                  ),
-                                );
+                            appParamNotifier.setSelectedTimeGeoloc(
+                              geoloc: GeolocModel(
+                                id: 0,
+                                year: widget.geolocStateList[0].year,
+                                month: widget.geolocStateList[0].month,
+                                day: widget.geolocStateList[0].day,
+                                time: '',
+                                latitude: element.latitude,
+                                longitude: element.longitude,
+                              ),
+                            );
 
-                            ref.read(appParamProvider.notifier).setCurrentZoom(zoom: 17);
+                            appParamNotifier.setCurrentZoom(zoom: 17);
 
-                            ref.read(appParamProvider.notifier).setIsTempleCircleShow(flag: true);
+                            appParamNotifier.setIsTempleCircleShow(flag: true);
 
-                            ref.read(appParamProvider.notifier).setCurrentCenter(
+                            appParamNotifier.setCurrentCenter(
                                 latLng: LatLng(element.latitude.toDouble(), element.longitude.toDouble()));
 
-                            ref.read(appParamProvider.notifier).setSelectedTemple(temple: element);
+                            appParamNotifier.setSelectedTemple(temple: element);
 
-                            ref.read(appParamProvider.notifier).setTempleGeolocTimeCircleAvatarParams(
+                            appParamNotifier.setTempleGeolocTimeCircleAvatarParams(
                                 bigEntries: _bigEntries, setStateCallback: setState);
 
                             widget.mapController
@@ -412,13 +399,8 @@ class _GeolocMapControlPanelAlertState extends ConsumerState<GeolocMapControlPan
                               color: Colors.blueGrey.withOpacity(0.3),
                               initialPosition: Offset(context.screenSize.width * 0.7, 160),
                               widget: Consumer(builder: (BuildContext context, WidgetRef ref, Widget? child) {
-                                final AppParamsResponseState appParamState = ref.watch(appParamProvider);
-
                                 return displayTempleGeolocTimeCircleAvatarList(
-                                  temple: element,
-                                  appParamState: appParamState,
-                                  templephotos: templePhoto.templephotos,
-                                );
+                                    temple: element, templephotos: templePhoto.templephotos);
                               }),
                             );
                           },
@@ -451,9 +433,6 @@ class _GeolocMapControlPanelAlertState extends ConsumerState<GeolocMapControlPan
   ///
   void setDefaultBoundsMap() {
     if (widget.geolocStateList.length > 1) {
-      final int currentPaddingIndex =
-          ref.watch(appParamProvider.select((AppParamsResponseState value) => value.currentPaddingIndex));
-
       final LatLngBounds bounds = LatLngBounds.fromPoints(
         <LatLng>[
           LatLng(widget.minMaxLatLngMap['minLat']!, widget.minMaxLatLngMap['maxLng']!),
@@ -461,7 +440,8 @@ class _GeolocMapControlPanelAlertState extends ConsumerState<GeolocMapControlPan
         ],
       );
 
-      final CameraFit cameraFit = CameraFit.bounds(bounds: bounds, padding: EdgeInsets.all(currentPaddingIndex * 10));
+      final CameraFit cameraFit =
+          CameraFit.bounds(bounds: bounds, padding: EdgeInsets.all(appParamState.currentPaddingIndex * 10));
 
       widget.mapController.fitCamera(cameraFit);
 
@@ -470,15 +450,13 @@ class _GeolocMapControlPanelAlertState extends ConsumerState<GeolocMapControlPan
 
       final double newZoom = widget.mapController.camera.zoom;
 
-      ref.read(appParamProvider.notifier).setCurrentZoom(zoom: newZoom);
+      appParamNotifier.setCurrentZoom(zoom: newZoom);
     }
   }
 
   ///
   Widget displayTempleGeolocTimeCircleAvatarList(
-      {required TempleInfoModel temple,
-      required AppParamsResponseState appParamState,
-      required List<String> templephotos}) {
+      {required TempleInfoModel temple, required List<String> templephotos}) {
     final List<Widget> list = <Widget>[];
 
     String distance = '';
@@ -515,19 +493,19 @@ class _GeolocMapControlPanelAlertState extends ConsumerState<GeolocMapControlPan
                             : Colors.green[900]?.withOpacity(0.2),
               ),
               onPressed: () {
-                ref.read(appParamProvider.notifier).setIsMarkerShow(flag: true);
+                appParamNotifier.setIsMarkerShow(flag: true);
 
-                ref.read(appParamProvider.notifier).setSelectedTimeGeoloc(
-                      geoloc: GeolocModel(
-                        id: 0,
-                        year: widget.date.yyyymmdd.split('-')[0],
-                        month: widget.date.yyyymmdd.split('-')[1],
-                        day: widget.date.yyyymmdd.split('-')[2],
-                        time: element.time,
-                        latitude: element.latitude,
-                        longitude: element.longitude,
-                      ),
-                    );
+                appParamNotifier.setSelectedTimeGeoloc(
+                  geoloc: GeolocModel(
+                    id: 0,
+                    year: widget.date.yyyymmdd.split('-')[0],
+                    month: widget.date.yyyymmdd.split('-')[1],
+                    day: widget.date.yyyymmdd.split('-')[2],
+                    time: element.time,
+                    latitude: element.latitude,
+                    longitude: element.longitude,
+                  ),
+                );
 
                 widget.mapController.move(
                   LatLng(element.latitude.toDouble(), element.longitude.toDouble()),

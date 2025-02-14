@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../collections/geoloc.dart';
-import '../../controllers/app_params/app_params_notifier.dart';
-import '../../controllers/geoloc/geoloc.dart';
+
+import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/geoloc_model.dart';
 import '../../models/temple_latlng_model.dart';
@@ -26,7 +26,8 @@ class PickupGeolocDisplayAlert extends ConsumerStatefulWidget {
   ConsumerState<PickupGeolocDisplayAlert> createState() => _PickupGeolocDisplayAlertState();
 }
 
-class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAlert> {
+class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAlert>
+    with ControllersMixin<PickupGeolocDisplayAlert> {
   Utility utility = Utility();
 
   bool isLoading = false;
@@ -54,11 +55,9 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
                         if (widget.pickupGeolocList.length > 1) ...<Widget>[
                           GestureDetector(
                             onTap: () {
-                              ref.read(appParamProvider.notifier).setIsMarkerShow(flag: true);
+                              appParamNotifier.setIsMarkerShow(flag: true);
 
-                              ref.read(appParamProvider.notifier).setSelectedTimeGeoloc();
-
-                              //                          ref.read(appParamProvider.notifier).setSelectedHour(hour: '');
+                              appParamNotifier.setSelectedTimeGeoloc();
 
                               final List<GeolocModel> list = <GeolocModel>[];
                               for (final Geoloc element in widget.pickupGeolocList) {
@@ -214,9 +213,7 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
 
   ///
   Future<void> deletePickupGeoloc() async {
-    // ignore: always_specify_types
-    ref
-        .read(geolocControllerProvider.notifier)
+    geolocNotifier
         .deleteGeoloc(date: widget.date.yyyymmdd)
         // ignore: always_specify_types
         .then((value) {
@@ -232,45 +229,6 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
       }
     });
   }
-
-  // ///
-  // Future<void> inputPickupGeoloc() async {
-  //   setState(() => isLoading = true);
-  //
-  //   widget.pickupGeolocList
-  //     ..sort((Geoloc a, Geoloc b) => a.time.compareTo(b.time))
-  //     ..forEach((Geoloc element) async {
-  //       final Map<String, String> map = <String, String>{
-  //         'year': element.date.split('-')[0],
-  //         'month': element.date.split('-')[1],
-  //         'day': element.date.split('-')[2],
-  //         'time': element.time,
-  //         'latitude': element.latitude,
-  //         'longitude': element.longitude,
-  //       };
-  //
-  //       await ref.read(geolocControllerProvider.notifier).inputGeoloc(map: map);
-  //     });
-  //
-  //   if (mounted) {
-  //     ////////
-  //
-  //     // ignore: always_specify_types
-  //     Future.delayed(const Duration(seconds: 2), () {
-  //       // ignore: use_build_context_synchronously
-  //       Navigator.pop(context);
-  //       // ignore: use_build_context_synchronously
-  //       Navigator.pop(context);
-  //
-  //       Navigator.pushReplacement(
-  //         // ignore: use_build_context_synchronously
-  //         context,
-  //         // ignore: inference_failure_on_instance_creation, always_specify_types
-  //         MaterialPageRoute(builder: (BuildContext context) => HomeScreen(baseYm: widget.date.yyyymm)),
-  //       );
-  //     });
-  //   }
-  // }
 
   ///
   Future<void> inputPickupGeoloc() async {
@@ -291,7 +249,7 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
       };
 
       // 非同期処理を待機しながら順次実行
-      await ref.read(geolocControllerProvider.notifier).inputGeoloc(map: map);
+      geolocNotifier.inputGeoloc(map: map);
     }
 
     // 全ての非同期処理が完了した後に画面遷移を行う

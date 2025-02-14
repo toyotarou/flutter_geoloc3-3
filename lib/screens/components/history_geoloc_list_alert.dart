@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../controllers/geoloc/geoloc.dart';
+import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../home_screen.dart';
 
@@ -12,15 +12,16 @@ class HistoryGeolocListAlert extends ConsumerStatefulWidget {
   ConsumerState<HistoryGeolocListAlert> createState() => _HistoryGeolocListAlertState();
 }
 
-class _HistoryGeolocListAlertState extends ConsumerState<HistoryGeolocListAlert> {
+class _HistoryGeolocListAlertState extends ConsumerState<HistoryGeolocListAlert>
+    with ControllersMixin<HistoryGeolocListAlert> {
   ///
   @override
   void initState() {
     super.initState();
 
-    ref.read(geolocControllerProvider.notifier).getOldestGeoloc();
+    geolocNotifier.getOldestGeoloc();
 
-    ref.read(geolocControllerProvider.notifier).getRecentGeoloc();
+    geolocNotifier.getRecentGeoloc();
   }
 
   ///
@@ -44,21 +45,13 @@ class _HistoryGeolocListAlertState extends ConsumerState<HistoryGeolocListAlert>
   Widget displayHistoryGeolocYearMonthList() {
     final List<Widget> list = <Widget>[];
 
-    final GeolocControllerState geolocControllerState = ref.watch(geolocControllerProvider);
+    if (geolocState.oldestGeolocModel != null) {
+      if (geolocState.recentGeolocList.isNotEmpty) {
+        final DateTime startDate = DateTime(geolocState.oldestGeolocModel!.year.toInt(),
+            geolocState.oldestGeolocModel!.month.toInt(), geolocState.oldestGeolocModel!.day.toInt());
 
-    if (geolocControllerState.oldestGeolocModel != null) {
-      if (geolocControllerState.recentGeolocList.isNotEmpty) {
-        final DateTime startDate = DateTime(
-          geolocControllerState.oldestGeolocModel!.year.toInt(),
-          geolocControllerState.oldestGeolocModel!.month.toInt(),
-          geolocControllerState.oldestGeolocModel!.day.toInt(),
-        );
-
-        final DateTime endDate = DateTime(
-          geolocControllerState.recentGeolocList[0].year.toInt(),
-          geolocControllerState.recentGeolocList[0].month.toInt(),
-          geolocControllerState.recentGeolocList[0].day.toInt(),
-        );
+        final DateTime endDate = DateTime(geolocState.recentGeolocList[0].year.toInt(),
+            geolocState.recentGeolocList[0].month.toInt(), geolocState.recentGeolocList[0].day.toInt());
 
         final List<DateTime> dateList = generateDateList(startDate, endDate);
 

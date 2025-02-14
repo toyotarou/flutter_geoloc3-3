@@ -5,11 +5,12 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 
-import '../../controllers/app_params/app_params_notifier.dart';
-import '../../controllers/app_params/app_params_response_state.dart';
-import '../../controllers/geoloc/geoloc.dart';
-import '../../controllers/temple_photo/temple_photo_notifier.dart';
-import '../../controllers/temple_photo/temple_photo_response_state.dart';
+// import '../../controllers/app_params/app_params_notifier.dart';
+// import '../../controllers/app_params/app_params_response_state.dart';
+// import '../../controllers/geoloc/geoloc.dart';
+// import '../../controllers/temple_photo/temple_photo_notifier.dart';
+// import '../../controllers/temple_photo/temple_photo_response_state.dart';
+import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/geoloc_model.dart';
 import '../../models/temple_latlng_model.dart';
@@ -41,7 +42,7 @@ class GeolocMapAlert extends ConsumerStatefulWidget {
   ConsumerState<GeolocMapAlert> createState() => _GeolocMapAlertState();
 }
 
-class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
+class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with ControllersMixin<GeolocMapAlert> {
   List<double> latList = <double>[];
   List<double> lngList = <double>[];
 
@@ -92,7 +93,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
     super.initState();
 
     if (widget.displayMonthMap) {
-      ref.read(geolocControllerProvider.notifier).getAllGeoloc();
+      geolocNotifier.getAllGeoloc();
     }
 
     scrollController = ScrollController();
@@ -130,15 +131,11 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
 
     makeMarker();
 
-    final AppParamsResponseState appParamState = ref.watch(appParamProvider);
-
     polylineGeolocList = (!appParamState.isMarkerShow) ? gStateList : <GeolocModel>[];
 
     if (appParamState.polylineGeolocModel != null) {
       makePolylineGeolocList(geoloc: appParamState.polylineGeolocModel!);
     }
-
-    final TemplePhotoResponseState templePhotoState = ref.watch(templePhotoProvider);
 
     if (templePhotoState.templePhotoDateMap.value != null) {
       templePhotoDateMap = templePhotoState.templePhotoDateMap.value!;
@@ -155,7 +152,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
               initialZoom: currentZoomEightTeen,
               onPositionChanged: (MapCamera position, bool isMoving) {
                 if (isMoving) {
-                  ref.read(appParamProvider.notifier).setCurrentZoom(zoom: position.zoom);
+                  appParamNotifier.setCurrentZoom(zoom: position.zoom);
                 }
               },
               onTap: (TapPosition tapPosition, LatLng latlng) => setState(() => tappedPoints.add(latlng)),
@@ -305,7 +302,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                                     color: Colors.black.withOpacity(0.3), borderRadius: BorderRadius.circular(10)),
                                 child: IconButton(
                                   onPressed: () {
-                                    ref.read(appParamProvider.notifier).setTimeGeolocDisplay(start: -1, end: 23);
+                                    appParamNotifier.setTimeGeolocDisplay(start: -1, end: 23);
 
                                     GeolocDialog(
                                       context: context,
@@ -600,12 +597,10 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
   ///
   void setDefaultBoundsMap() {
     if (gStateList.length > 1) {
-      final int currentPaddingIndex =
-          ref.watch(appParamProvider.select((AppParamsResponseState value) => value.currentPaddingIndex));
-
       final LatLngBounds bounds = LatLngBounds.fromPoints(<LatLng>[LatLng(minLat, maxLng), LatLng(maxLat, minLng)]);
 
-      final CameraFit cameraFit = CameraFit.bounds(bounds: bounds, padding: EdgeInsets.all(currentPaddingIndex * 10));
+      final CameraFit cameraFit =
+          CameraFit.bounds(bounds: bounds, padding: EdgeInsets.all(appParamState.currentPaddingIndex * 10));
 
       mapController.fitCamera(cameraFit);
 
@@ -616,16 +611,13 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
 
       setState(() => currentZoom = newZoom);
 
-      ref.read(appParamProvider.notifier).setCurrentZoom(zoom: newZoom);
+      appParamNotifier.setCurrentZoom(zoom: newZoom);
     }
   }
 
   ///
   void makeMarker() {
     markerList = <Marker>[];
-
-    final GeolocModel? selectedTimeGeoloc =
-        ref.watch(appParamProvider.select((AppParamsResponseState value) => value.selectedTimeGeoloc));
 
     for (final GeolocModel element in gStateList) {
       final bool isRed = emphasisMarkers.contains(LatLng(element.latitude.toDouble(), element.longitude.toDouble()));
@@ -646,7 +638,8 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> {
                       // ignore: use_if_null_to_convert_nulls_to_bools
                       backgroundColor: isRed
                           ? Colors.redAccent.withOpacity(0.5)
-                          : (selectedTimeGeoloc != null && selectedTimeGeoloc.time == element.time)
+                          : (appParamState.selectedTimeGeoloc != null &&
+                                  appParamState.selectedTimeGeoloc!.time == element.time)
                               ? Colors.redAccent.withOpacity(0.5)
 
                               // ignore: use_if_null_to_convert_nulls_to_bools

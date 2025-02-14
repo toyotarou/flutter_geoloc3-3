@@ -1,12 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../controllers/app_params/app_params_notifier.dart';
-import '../../controllers/geoloc/geoloc.dart';
-import '../../controllers/temple/temple.dart';
-import '../../controllers/temple_photo/temple_photo_notifier.dart';
-import '../../controllers/temple_photo/temple_photo_response_state.dart';
-import '../../controllers/walk_record/walk_record.dart';
+import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../models/geoloc_model.dart';
 import '../../models/temple_latlng_model.dart';
@@ -22,7 +17,8 @@ class TempleVisitedDateDisplayAlert extends ConsumerStatefulWidget {
   ConsumerState<TempleVisitedDateDisplayAlert> createState() => _TempleVisitedDateDisplayAlertState();
 }
 
-class _TempleVisitedDateDisplayAlertState extends ConsumerState<TempleVisitedDateDisplayAlert> {
+class _TempleVisitedDateDisplayAlertState extends ConsumerState<TempleVisitedDateDisplayAlert>
+    with ControllersMixin<TempleVisitedDateDisplayAlert> {
   Map<String, List<TemplePhotoModel>> templePhotoDateMap = <String, List<TemplePhotoModel>>{};
 
   ///
@@ -30,9 +26,9 @@ class _TempleVisitedDateDisplayAlertState extends ConsumerState<TempleVisitedDat
   void initState() {
     super.initState();
 
-    ref.read(geolocControllerProvider.notifier).getAllGeoloc();
+    geolocNotifier.getAllGeoloc();
 
-    ref.read(walkRecordControllerProvider.notifier).getAllWalkRecord();
+    walkRecordNotifier.getAllWalkRecord();
   }
 
   ///
@@ -57,25 +53,11 @@ class _TempleVisitedDateDisplayAlertState extends ConsumerState<TempleVisitedDat
   Widget displayTempleVisitedDateList() {
     final List<Widget> list = <Widget>[];
 
-    final Map<String, List<String>> yearVisitedDateMap =
-        ref.watch(templeControllerProvider.select((TempleControllerState value) => value.yearVisitedDateMap));
-
-    final Map<String, List<TempleInfoModel>> templeInfoMap =
-        ref.watch(templeControllerProvider.select((TempleControllerState value) => value.templeInfoMap));
-
-    final Map<String, WalkRecordModel> walkRecordMap =
-        ref.watch(walkRecordControllerProvider.select((WalkRecordControllerState value) => value.walkRecordMap));
-
-    final Map<String, List<GeolocModel>> allGeolocMap =
-        ref.watch(geolocControllerProvider.select((GeolocControllerState value) => value.allGeolocMap));
-
-    final TemplePhotoResponseState templePhotoState = ref.watch(templePhotoProvider);
-
     if (templePhotoState.templePhotoDateMap.value != null) {
       templePhotoDateMap = templePhotoState.templePhotoDateMap.value!;
     }
 
-    yearVisitedDateMap.forEach(
+    templeState.yearVisitedDateMap.forEach(
       (String year, List<String> value) {
         if (year.toInt() >= 2023) {
           final List<Widget> list2 = <Widget>[];
@@ -94,17 +76,17 @@ class _TempleVisitedDateDisplayAlertState extends ConsumerState<TempleVisitedDat
                         children: <Widget>[
                           GestureDetector(
                             onTap: () {
-                              ref.read(appParamProvider.notifier).setIsMarkerShow(flag: false);
+                              appParamNotifier.setIsMarkerShow(flag: false);
 
                               GeolocDialog(
                                 context: context,
                                 widget: GeolocMapAlert(
                                   date: DateTime.parse('$date 00:00:00'),
-                                  geolocStateList: allGeolocMap[date] ?? <GeolocModel>[],
+                                  geolocStateList: geolocState.allGeolocMap[date] ?? <GeolocModel>[],
                                   displayMonthMap: false,
-                                  walkRecord: walkRecordMap[date] ??
+                                  walkRecord: walkRecordState.walkRecordMap[date] ??
                                       WalkRecordModel(id: 0, year: '', month: '', day: '', step: 0, distance: 0),
-                                  templeInfoList: templeInfoMap[date],
+                                  templeInfoList: templeState.templeInfoMap[date],
                                 ),
                                 executeFunctionWhenDialogClose: true,
                                 ref: ref,
@@ -121,9 +103,9 @@ class _TempleVisitedDateDisplayAlertState extends ConsumerState<TempleVisitedDat
                           Positioned(
                             right: 100,
                             child: Text(
-                              (walkRecordMap[date] == null)
+                              (walkRecordState.walkRecordMap[date] == null)
                                   ? '-'
-                                  : '${(walkRecordMap[date]!.distance / 1000).toString().split('.')[0]} Km',
+                                  : '${(walkRecordState.walkRecordMap[date]!.distance / 1000).toString().split('.')[0]} Km',
                               style: TextStyle(fontSize: 20, color: Colors.yellowAccent.withOpacity(0.5)),
                             ),
                           ),
@@ -131,11 +113,13 @@ class _TempleVisitedDateDisplayAlertState extends ConsumerState<TempleVisitedDat
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: <Widget>[
                               Text(
-                                (walkRecordMap[date] == null)
+                                (walkRecordState.walkRecordMap[date] == null)
                                     ? '-'
-                                    : 'step: ${walkRecordMap[date]!.step} / distance: ${walkRecordMap[date]!.distance}',
+                                    : 'step: ${walkRecordState.walkRecordMap[date]!.step} / distance: ${walkRecordState.walkRecordMap[date]!.distance}',
                               ),
-                              Text((allGeolocMap[date] == null) ? '-' : allGeolocMap[date]!.length.toString()),
+                              Text((geolocState.allGeolocMap[date] == null)
+                                  ? '-'
+                                  : geolocState.allGeolocMap[date]!.length.toString()),
                             ],
                           ),
                         ],
@@ -145,12 +129,12 @@ class _TempleVisitedDateDisplayAlertState extends ConsumerState<TempleVisitedDat
                 ),
               );
 
-              if (templeInfoMap[date] != null) {
+              if (templeState.templeInfoMap[date] != null) {
                 list2.add(
                   SingleChildScrollView(
                     scrollDirection: Axis.horizontal,
                     child: Row(
-                      children: templeInfoMap[date]!.map(
+                      children: templeState.templeInfoMap[date]!.map(
                         (TempleInfoModel e) {
                           TemplePhotoModel templePhoto =
                               TemplePhotoModel(date: DateTime.now(), temple: '', templephotos: <String>[]);
