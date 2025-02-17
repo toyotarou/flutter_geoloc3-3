@@ -127,9 +127,7 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
               ],
             ),
           )),
-          if (isLoading) ...<Widget>[
-            const Center(child: CircularProgressIndicator()),
-          ],
+          if (isLoading) ...<Widget>[const Center(child: CircularProgressIndicator())],
         ],
       ),
     );
@@ -213,19 +211,29 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
 
   ///
   Future<void> deletePickupGeoloc() async {
+    setState(() => isLoading = true);
+
     geolocNotifier
         .deleteGeoloc(date: widget.date.yyyymmdd)
         // ignore: always_specify_types
         .then((value) {
       if (mounted) {
-        Navigator.pop(context);
-        Navigator.pop(context);
+        // ignore: always_specify_types
+        Future.delayed(const Duration(seconds: 2), () {
+          setState(() => isLoading = false);
 
-        Navigator.pushReplacement(
-          context,
-          // ignore: inference_failure_on_instance_creation, always_specify_types
-          MaterialPageRoute(builder: (BuildContext context) => HomeScreen(baseYm: widget.date.yyyymm)),
-        );
+          // ignore: use_build_context_synchronously
+          Navigator.pop(context);
+          // ignore: use_build_context_synchronously
+          Navigator.pop(context);
+
+          Navigator.pushReplacement(
+            // ignore: use_build_context_synchronously
+            context,
+            // ignore: inference_failure_on_instance_creation, always_specify_types
+            MaterialPageRoute(builder: (BuildContext context) => HomeScreen(baseYm: widget.date.yyyymm)),
+          );
+        });
       }
     });
   }
@@ -254,20 +262,23 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
 
     // 全ての非同期処理が完了した後に画面遷移を行う
     if (mounted) {
-      Navigator.pop(context);
-      Navigator.pop(context);
-      Navigator.pushReplacement(
-        context,
-        // ignore: inference_failure_on_instance_creation, always_specify_types
-        MaterialPageRoute(
-          builder: (BuildContext context) => HomeScreen(baseYm: widget.date.yyyymm),
-        ),
-      );
-    }
+      // ignore: always_specify_types
+      Future.delayed(const Duration(seconds: 2), () {
+        setState(() => isLoading = false);
 
-    // ローディング状態を解除
-    if (mounted) {
-      setState(() => isLoading = false);
+        // ignore: use_build_context_synchronously
+        Navigator.pop(context);
+        // ignore: use_build_context_synchronously
+        Navigator.pop(context);
+        Navigator.pushReplacement(
+          // ignore: use_build_context_synchronously
+          context,
+          // ignore: inference_failure_on_instance_creation, always_specify_types
+          MaterialPageRoute(
+            builder: (BuildContext context) => HomeScreen(baseYm: widget.date.yyyymm),
+          ),
+        );
+      });
     }
   }
 }
