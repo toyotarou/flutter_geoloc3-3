@@ -38,6 +38,8 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
 
   bool isLoading = false;
 
+  bool isGeolocMapCreated = false;
+
   ///
   void _init() => _makeGeolocList();
 
@@ -69,41 +71,45 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
                     Row(
                       children: <Widget>[
                         GestureDetector(
-                          onTap: () async {
-                            bool errFlg = false;
-                            String contentStr = '';
+                          onTap: isGeolocMapCreated
+                              ? () async {
+                                  bool errFlg = false;
+                                  String contentStr = '';
 
-                            if (widget.geolocStateList.isEmpty) {
-                              errFlg = true;
-                              contentStr = 'mysqlデータがありません。';
-                            }
+                                  if (widget.geolocStateList.isEmpty) {
+                                    errFlg = true;
+                                    contentStr = 'mysqlデータがありません。';
+                                  }
 
-                            if (geolocMap.isEmpty) {
-                              errFlg = true;
-                              contentStr = 'geolocMapが作成されていません。';
-                            }
+                                  if (geolocMap.isEmpty) {
+                                    errFlg = true;
+                                    contentStr = 'geolocMapが作成されていません。';
+                                  }
 
-                            if (errFlg) {
-                              // ignore: always_specify_types
-                              Future.delayed(
-                                Duration.zero,
-                                () => error_dialog(
-                                    // ignore: use_build_context_synchronously
-                                    context: context,
-                                    title: 'isarデータを削除できません。',
-                                    content: contentStr),
-                              );
+                                  if (errFlg) {
+                                    // ignore: always_specify_types
+                                    Future.delayed(
+                                      Duration.zero,
+                                      () => error_dialog(
+                                          // ignore: use_build_context_synchronously
+                                          context: context,
+                                          title: 'isarデータを削除できません。',
+                                          content: contentStr),
+                                    );
 
-                              return;
-                            }
+                                    return;
+                                  }
 
-                            _showDeleteDialog(geolocList: geolocMap[widget.date.yyyymmdd]);
-                          },
+                                  _showDeleteDialog(geolocList: geolocMap[widget.date.yyyymmdd]);
+                                }
+                              : null,
                           child: Column(
                             children: <Widget>[
                               const Text('delete'),
                               Icon(Icons.delete,
-                                  color: (widget.geolocStateList.isEmpty) ? Colors.grey : Colors.lightBlueAccent),
+                                  color: (widget.geolocStateList.isEmpty || !isGeolocMapCreated)
+                                      ? Colors.grey
+                                      : Colors.lightBlueAccent),
                               const Text('isar'),
                             ],
                           ),
@@ -162,6 +168,8 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
               geolocMap[element.date]?.add(element);
             }
           }
+
+          isGeolocMapCreated = geolocMap.isNotEmpty;
         });
       }
     });
