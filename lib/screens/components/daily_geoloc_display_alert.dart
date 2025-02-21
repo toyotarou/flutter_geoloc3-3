@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import '../../collections/geoloc.dart';
@@ -40,15 +42,32 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
 
   bool isGeolocMapCreated = false;
 
+  Timer? timer;
+
   ///
-  void _init() => _makeGeolocList();
+  @override
+  void initState() {
+    super.initState();
+
+    _makeGeolocList();
+
+    timer = Timer.periodic(
+      const Duration(milliseconds: 500),
+      (Timer timer) {
+        if (geolocMap.isNotEmpty) {
+          if (mounted) {
+            setState(() => isGeolocMapCreated = true);
+          }
+
+          timer.cancel();
+        }
+      },
+    );
+  }
 
   ///
   @override
   Widget build(BuildContext context) {
-    // ignore: always_specify_types
-    Future(_init);
-
     makeDiffSeconds();
 
     makePickupGeolocList();
@@ -168,8 +187,6 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
               geolocMap[element.date]?.add(element);
             }
           }
-
-          isGeolocMapCreated = geolocMap.isNotEmpty;
         });
       }
     });
