@@ -1,6 +1,9 @@
-import 'dart:math';
+// import 'dart:math';
+//
+//
 
 import 'package:flutter/material.dart';
+import 'package:latlong2/latlong.dart';
 
 class Utility {
   /// 背景取得
@@ -43,16 +46,22 @@ class Utility {
     return color;
   }
 
-  ///
-  String calcDistance(
-      {required double originLat, required double originLng, required double destLat, required double destLng}) {
-    final double distanceKm = 6371 *
-        acos(
-          cos(originLat / 180 * pi) * cos((destLng - originLng) / 180 * pi) * cos(destLat / 180 * pi) +
-              sin(originLat / 180 * pi) * sin(destLat / 180 * pi),
-        );
+  // ///
+  // String calcDistance(
+  //     {required double originLat, required double originLng, required double destLat, required double destLng}) {
+  //   final double distanceKm = 6371 *
+  //       acos(
+  //         cos(originLat / 180 * pi) * cos((destLng - originLng) / 180 * pi) * cos(destLat / 180 * pi) +
+  //             sin(originLat / 180 * pi) * sin(destLat / 180 * pi),
+  //       );
+  //
+  //   return distanceKm.toString();
+  // }
 
-    return distanceKm.toString();
+  ///
+  double calculateDistance(LatLng p1, LatLng p2) {
+    const Distance distance = Distance();
+    return distance.as(LengthUnit.Meter, p1, p2);
   }
 
   ///

@@ -459,73 +459,85 @@ class _GeolocMapControlPanelAlertState extends ConsumerState<GeolocMapControlPan
       {required TempleInfoModel temple, required List<String> templephotos}) {
     final List<Widget> list = <Widget>[];
 
-    String distance = '';
+    // String distance = '';
+    //
+    //
+    //
 
     for (final GeolocModel element in widget.geolocStateList) {
-      final String di = utility.calcDistance(
-        originLat: temple.latitude.toDouble(),
-        originLng: temple.longitude.toDouble(),
-        destLat: element.latitude.toDouble(),
-        destLng: element.longitude.toDouble(),
+      //
+      //
+      // final String di = utility.calcDistance(
+      //   originLat: temple.latitude.toDouble(),
+      //   originLng: temple.longitude.toDouble(),
+      //   destLat: element.latitude.toDouble(),
+      //   destLng: element.longitude.toDouble(),
+      // );
+      //
+      // final double dis = di.toDouble() * 1000;
+      //
+      // final List<String> exDis = dis.toString().split('.');
+      //
+      // distance = exDis[0];
+      //
+      // final int? dist = int.tryParse(distance);
+      //
+      //
+      //
+      //
+
+      final double dist = utility.calculateDistance(
+        LatLng(temple.latitude.toDouble(), temple.longitude.toDouble()),
+        LatLng(element.latitude.toDouble(), element.longitude.toDouble()),
       );
 
-      final double dis = di.toDouble() * 1000;
-
-      final List<String> exDis = dis.toString().split('.');
-
-      distance = exDis[0];
-
-      final int? dist = int.tryParse(distance);
-
-      if (dist != null) {
-        if (dist <= 100) {
-          list.add(
-            OutlinedButton(
-              style: OutlinedButton.styleFrom(
-                padding: EdgeInsets.zero,
-                // ignore: use_if_null_to_convert_nulls_to_bools
-                backgroundColor:
-                    (appParamState.selectedTimeGeoloc != null && appParamState.selectedTimeGeoloc!.time == element.time)
-                        ? Colors.redAccent.withOpacity(0.5)
-                        // ignore: use_if_null_to_convert_nulls_to_bools
-                        : (widget.displayTempMap == true)
-                            ? Colors.orangeAccent.withOpacity(0.2)
-                            : Colors.green[900]?.withOpacity(0.2),
-              ),
-              onPressed: () {
-                appParamNotifier.setIsMarkerShow(flag: true);
-
-                appParamNotifier.setSelectedTimeGeoloc(
-                  geoloc: GeolocModel(
-                    id: 0,
-                    year: widget.date.yyyymmdd.split('-')[0],
-                    month: widget.date.yyyymmdd.split('-')[1],
-                    day: widget.date.yyyymmdd.split('-')[2],
-                    time: element.time,
-                    latitude: element.latitude,
-                    longitude: element.longitude,
-                  ),
-                );
-
-                widget.mapController.move(
-                  LatLng(element.latitude.toDouble(), element.longitude.toDouble()),
-                  appParamState.currentZoom,
-                );
-
-                final int pos =
-                    widget.geolocStateList.indexWhere((GeolocModel element2) => element2.time == element.time);
-
-                itemScrollController.jumpTo(index: pos);
-              },
-              child: Column(
-                children: <Widget>[
-                  Text(element.time, style: const TextStyle(color: Colors.white, fontSize: 10)),
-                  Container(width: context.screenSize.width),
-                ],
-              ),
+      if (dist <= 100.0) {
+        list.add(
+          OutlinedButton(
+            style: OutlinedButton.styleFrom(
+              padding: EdgeInsets.zero,
+              // ignore: use_if_null_to_convert_nulls_to_bools
+              backgroundColor:
+                  (appParamState.selectedTimeGeoloc != null && appParamState.selectedTimeGeoloc!.time == element.time)
+                      ? Colors.redAccent.withOpacity(0.5)
+                      // ignore: use_if_null_to_convert_nulls_to_bools
+                      : (widget.displayTempMap == true)
+                          ? Colors.orangeAccent.withOpacity(0.2)
+                          : Colors.green[900]?.withOpacity(0.2),
             ),
-          );
-        }
+            onPressed: () {
+              appParamNotifier.setIsMarkerShow(flag: true);
+
+              appParamNotifier.setSelectedTimeGeoloc(
+                geoloc: GeolocModel(
+                  id: 0,
+                  year: widget.date.yyyymmdd.split('-')[0],
+                  month: widget.date.yyyymmdd.split('-')[1],
+                  day: widget.date.yyyymmdd.split('-')[2],
+                  time: element.time,
+                  latitude: element.latitude,
+                  longitude: element.longitude,
+                ),
+              );
+
+              widget.mapController.move(
+                LatLng(element.latitude.toDouble(), element.longitude.toDouble()),
+                appParamState.currentZoom,
+              );
+
+              final int pos =
+                  widget.geolocStateList.indexWhere((GeolocModel element2) => element2.time == element.time);
+
+              itemScrollController.jumpTo(index: pos);
+            },
+            child: Column(
+              children: <Widget>[
+                Text(element.time, style: const TextStyle(color: Colors.white, fontSize: 10)),
+                Container(width: context.screenSize.width),
+              ],
+            ),
+          ),
+        );
       }
     }
 
