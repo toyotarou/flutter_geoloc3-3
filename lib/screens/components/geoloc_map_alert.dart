@@ -86,7 +86,6 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
 
   List<GlobalKey> globalKeyList = <GlobalKey>[];
 
-
   final List<OverlayEntry> _secondEntries = <OverlayEntry>[];
 
   ///
@@ -171,6 +170,22 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
 
               if (appParamState.isMarkerShow) ...<Widget>[MarkerLayer(markers: markerList)],
 
+              if (!appParamState.isMarkerShow) ...<Widget>[
+                // ignore: always_specify_types
+                PolylineLayer(
+                  polylines: <Polyline<Object>>[
+                    // ignore: always_specify_types
+                    Polyline(
+                      points: widget.geolocStateList
+                          .map((GeolocModel e) => LatLng(e.latitude.toDouble(), e.longitude.toDouble()))
+                          .toList(),
+                      color: Colors.redAccent,
+                      strokeWidth: 5,
+                    ),
+                  ],
+                ),
+              ],
+
               // ignore: always_specify_types
               PolylineLayer(
                 polylines: <Polyline<Object>>[
@@ -179,7 +194,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
                     points: polylineGeolocList
                         .map((GeolocModel e) => LatLng(e.latitude.toDouble(), e.longitude.toDouble()))
                         .toList(),
-                    color: Colors.redAccent,
+                    color: Colors.orangeAccent,
                     strokeWidth: 5,
                   ),
                 ],

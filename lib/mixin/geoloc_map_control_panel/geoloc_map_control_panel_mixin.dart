@@ -38,6 +38,9 @@ mixin GeolocMapControlPanelAlertMixin on ConsumerState<GeolocMapControlPanelWidg
       }
     }
 
+    // ignore: always_specify_types
+    final List<GlobalKey> globalKeyList = List.generate(1000, (int index) => GlobalKey());
+
     return Column(
       children: <Widget>[
         //============================================
@@ -57,6 +60,39 @@ mixin GeolocMapControlPanelAlertMixin on ConsumerState<GeolocMapControlPanelWidg
                     setDefaultBoundsMap();
                   },
                   child: const Icon(Icons.center_focus_strong),
+                ),
+                const SizedBox(width: 20),
+                GestureDetector(
+                  onTap: () {
+                    int pos = 0;
+
+                    if (appParamState.selectedTimeGeoloc != null) {
+                      pos = widget.geolocStateList
+                          .indexWhere((GeolocModel element) => element.time == appParamState.selectedTimeGeoloc!.time);
+                    }
+
+                    int nextPos = pos + 1;
+
+                    if (nextPos >= widget.geolocStateList.length) {
+                      nextPos = pos;
+                    }
+
+                    appParamNotifier.setIsMarkerShow(flag: true);
+                    appParamNotifier.setSelectedTimeGeoloc(geoloc: widget.geolocStateList[nextPos]);
+
+                    widget.mapController.move(
+                      LatLng(
+                        widget.geolocStateList[nextPos].latitude.toDouble(),
+                        widget.geolocStateList[nextPos].longitude.toDouble(),
+                      ),
+                      appParamState.currentZoom,
+                    );
+
+                    appParamNotifier.setPolylineGeolocModel(model: widget.geolocStateList[nextPos]);
+
+                    scrollToIndex(index: nextPos, globalKeyList: globalKeyList);
+                  },
+                  child: const Icon(Icons.play_arrow),
                 ),
               ],
             ),
@@ -87,8 +123,13 @@ mixin GeolocMapControlPanelAlertMixin on ConsumerState<GeolocMapControlPanelWidg
                       setDefaultBoundsMap();
                     }
                   },
-                  child: const Column(
-                    children: <Widget>[Text('狭域', style: TextStyle(color: Colors.white, fontSize: 10))],
+                  child: Column(
+                    children: <Widget>[
+                      Text(
+                        (appParamState.selectedTimeGeoloc != null) ? '狭域' : '広域',
+                        style: const TextStyle(color: Colors.white, fontSize: 10),
+                      ),
+                    ],
                   ),
                 ),
                 OutlinedButton(
@@ -120,8 +161,13 @@ mixin GeolocMapControlPanelAlertMixin on ConsumerState<GeolocMapControlPanelWidg
                       setDefaultBoundsMap();
                     }
                   },
-                  child: const Column(
-                    children: <Widget>[Text('広域', style: TextStyle(color: Colors.white, fontSize: 10))],
+                  child: Column(
+                    children: <Widget>[
+                      Text(
+                        (appParamState.selectedTimeGeoloc != null) ? '広域' : '狭域',
+                        style: const TextStyle(color: Colors.white, fontSize: 10),
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -136,6 +182,8 @@ mixin GeolocMapControlPanelAlertMixin on ConsumerState<GeolocMapControlPanelWidg
             scrollDirection: Axis.horizontal,
             child: Row(
               children: widget.geolocStateList.map((GeolocModel e) {
+                final int pos = widget.geolocStateList.indexWhere((GeolocModel element) => element.time == e.time);
+
                 if (appParamState.timeGeolocDisplayStart != -1 && appParamState.timeGeolocDisplayEnd != -1) {
                   final int num = int.parse(e.time.split(':')[0]);
                   if (num < appParamState.timeGeolocDisplayStart || num > appParamState.timeGeolocDisplayEnd) {
@@ -144,16 +192,15 @@ mixin GeolocMapControlPanelAlertMixin on ConsumerState<GeolocMapControlPanelWidg
                 }
 
                 return Padding(
+                  key: globalKeyList[pos],
                   padding: const EdgeInsets.symmetric(horizontal: 5),
                   child: GestureDetector(
                     onTap: () {
                       appParamNotifier.setIsMarkerShow(flag: true);
                       appParamNotifier.setSelectedTimeGeoloc(geoloc: e);
 
-                      widget.mapController.move(
-                        LatLng(e.latitude.toDouble(), e.longitude.toDouble()),
-                        appParamState.currentZoom,
-                      );
+                      widget.mapController
+                          .move(LatLng(e.latitude.toDouble(), e.longitude.toDouble()), appParamState.currentZoom);
 
                       appParamNotifier.setPolylineGeolocModel(model: e);
                     },
@@ -301,6 +348,14 @@ mixin GeolocMapControlPanelAlertMixin on ConsumerState<GeolocMapControlPanelWidg
   }
 
   ///
+  Future<void> scrollToIndex(
+      {required int index, required List<GlobalKey<State<StatefulWidget>>> globalKeyList}) async {
+    final BuildContext target = globalKeyList[index].currentContext!;
+
+    await Scrollable.ensureVisible(target, duration: const Duration(milliseconds: 1000));
+  }
+
+  ///
   void setDefaultBoundsMap() {
     final AppParamNotifier appParamNotifier = ref.read(appParamProvider.notifier);
     final AppParamsResponseState appParamState = ref.watch(appParamProvider);
@@ -365,10 +420,8 @@ mixin GeolocMapControlPanelAlertMixin on ConsumerState<GeolocMapControlPanelWidg
                 ),
               );
 
-              widget.mapController.move(
-                LatLng(element.latitude.toDouble(), element.longitude.toDouble()),
-                appParamState.currentZoom,
-              );
+              widget.mapController
+                  .move(LatLng(element.latitude.toDouble(), element.longitude.toDouble()), appParamState.currentZoom);
             },
             child: Column(
               children: <Widget>[
