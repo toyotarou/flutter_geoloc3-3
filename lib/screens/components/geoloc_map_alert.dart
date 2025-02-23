@@ -6,13 +6,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:latlong2/latlong.dart';
 
-// import '../../controllers/app_params/app_params_notifier.dart';
-// import '../../controllers/app_params/app_params_response_state.dart';
-// import '../../controllers/geoloc/geoloc.dart';
-// import '../../controllers/temple_photo/temple_photo_notifier.dart';
-// import '../../controllers/temple_photo/temple_photo_response_state.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
+import '../../mixin/geoloc_map_control_panel/geoloc_map_control_panel_widget.dart';
 import '../../models/geoloc_model.dart';
 import '../../models/temple_latlng_model.dart';
 import '../../models/temple_photo_model.dart';
@@ -21,7 +17,6 @@ import '../../utilities/tile_provider.dart';
 import '../parts/button_error_overlay.dart';
 import '../parts/error_dialog.dart';
 import '../parts/geoloc_dialog.dart';
-import 'geoloc_map_control_panel_alert.dart';
 
 class GeolocMapAlert extends ConsumerStatefulWidget {
   const GeolocMapAlert(
@@ -313,7 +308,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
 
                                     GeolocDialog(
                                       context: context,
-                                      widget: GeolocMapControlPanelAlert(
+                                      widget: GeolocMapControlPanelWidget(
                                         date: widget.date,
                                         geolocStateList: gStateList,
                                         templeInfoList: widget.templeInfoList,
