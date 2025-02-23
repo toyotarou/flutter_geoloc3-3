@@ -16,7 +16,7 @@ import '../../models/walk_record_model.dart';
 import '../../utilities/tile_provider.dart';
 import '../parts/button_error_overlay.dart';
 import '../parts/error_dialog.dart';
-import '../parts/geoloc_dialog.dart';
+import '../parts/geoloc_overlay.dart';
 
 class GeolocMapAlert extends ConsumerStatefulWidget {
   const GeolocMapAlert(
@@ -85,6 +85,9 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
   List<GeolocModel> emphasisMarkersPositions = <GeolocModel>[];
 
   List<GlobalKey> globalKeyList = <GlobalKey>[];
+
+
+  final List<OverlayEntry> _secondEntries = <OverlayEntry>[];
 
   ///
   @override
@@ -306,8 +309,16 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
                                   onPressed: () {
                                     appParamNotifier.setTimeGeolocDisplay(start: -1, end: 23);
 
-                                    GeolocDialog(
+                                    appParamNotifier.setSecondOverlayParams(secondEntries: _secondEntries);
+
+                                    addSecondOverlay(
                                       context: context,
+                                      secondEntries: _secondEntries,
+                                      setStateCallback: setState,
+                                      width: context.screenSize.width,
+                                      height: context.screenSize.height * 0.3,
+                                      color: Colors.blueGrey.withOpacity(0.3),
+                                      initialPosition: Offset(0, context.screenSize.height * 0.7),
                                       widget: GeolocMapControlPanelWidget(
                                         date: widget.date,
                                         geolocStateList: gStateList,
@@ -325,10 +336,9 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
                                         templePhotoDateList:
                                             templePhotoDateMap[widget.date.yyyymmdd] ?? <TemplePhotoModel>[],
                                       ),
-                                      paddingTop: (widget.templeInfoList != null)
-                                          ? context.screenSize.height * 0.55
-                                          : context.screenSize.height * 0.6,
-                                      clearBarrierColor: true,
+                                      onPositionChanged: (Offset newPos) =>
+                                          appParamNotifier.updateOverlayPosition(newPos),
+                                      fixedFlag: true,
                                     );
                                   },
                                   icon: const Icon(Icons.info),

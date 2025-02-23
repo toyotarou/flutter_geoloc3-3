@@ -40,8 +40,7 @@ class GeolocMapControlPanelWidget extends ConsumerStatefulWidget {
 ///
 class _GeolocMapControlPanelWidgetState extends ConsumerState<GeolocMapControlPanelWidget>
     with ControllersMixin<GeolocMapControlPanelWidget>, GeolocMapControlPanelAlertMixin {
+  ///
   @override
-  Widget build(BuildContext context) {
-    return buildContent(context);
-  }
+  Widget build(BuildContext context) => buildContent(context);
 }
