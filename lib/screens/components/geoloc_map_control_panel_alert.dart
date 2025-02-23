@@ -54,6 +54,10 @@ class _GeolocMapControlPanelAlertState extends ConsumerState<GeolocMapControlPan
 
   Utility utility = Utility();
 
+  final List<OverlayEntry> _firstEntries = <OverlayEntry>[];
+
+  final List<OverlayEntry> _secondEntries = <OverlayEntry>[];
+
   ///
   @override
   void initState() {
@@ -390,9 +394,11 @@ class _GeolocMapControlPanelAlertState extends ConsumerState<GeolocMapControlPan
                                   .firstWhere((TemplePhotoModel element2) => element2.temple == element.temple);
                             }
 
-                            addBigOverlay(
+                            appParamNotifier.setFirstOverlayParams(firstEntries: _firstEntries);
+
+                            addFirstOverlay(
                               context: context,
-                              bigEntries: _bigEntries,
+//                              bigEntries: _bigEntries,
                               setStateCallback: setState,
                               width: context.screenSize.width * 0.3,
                               height: 390,
@@ -402,6 +408,10 @@ class _GeolocMapControlPanelAlertState extends ConsumerState<GeolocMapControlPan
                                 return displayTempleGeolocTimeCircleAvatarList(
                                     temple: element, templephotos: templePhoto.templephotos);
                               }),
+                              firstEntries: _firstEntries,
+                              secondEntries: _secondEntries,
+
+                              onPositionChanged: (Offset newPos) => appParamNotifier.updateOverlayPosition(newPos),
                             );
                           },
                           child: Container(

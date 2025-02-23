@@ -68,4 +68,17 @@ class AppParamNotifier extends StateNotifier<AppParamsResponseState> {
 
     state = state.copyWith(monthGeolocAddMonthButtonLabelList: list);
   }
+
+  ///////////////////////////////
+
+  ///
+  void updateOverlayPosition(Offset newPos) => state = state.copyWith(overlayPosition: newPos);
+
+  ///
+  void setFirstOverlayParams({required List<OverlayEntry>? firstEntries}) =>
+      state = state.copyWith(firstEntries: firstEntries);
+
+  ///
+  void setSecondOverlayParams({required List<OverlayEntry>? secondEntries}) =>
+      state = state.copyWith(secondEntries: secondEntries);
 }

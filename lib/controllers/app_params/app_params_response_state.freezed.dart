@@ -32,7 +32,11 @@ mixin _$AppParamsResponseState {
   void Function(void Function())? get setStateCallback =>
       throw _privateConstructorUsedError;
   List<String> get monthGeolocAddMonthButtonLabelList =>
-      throw _privateConstructorUsedError;
+      throw _privateConstructorUsedError; ///////////////////////////////////
+  Offset? get overlayPosition => throw _privateConstructorUsedError;
+  List<OverlayEntry>? get firstEntries => throw _privateConstructorUsedError;
+  List<OverlayEntry>? get secondEntries => throw _privateConstructorUsedError;
+  bool get visitedTempleMapDisplayFinish => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $AppParamsResponseStateCopyWith<AppParamsResponseState> get copyWith =>
@@ -60,7 +64,11 @@ abstract class $AppParamsResponseStateCopyWith<$Res> {
       int timeGeolocDisplayEnd,
       List<OverlayEntry>? bigEntries,
       void Function(void Function())? setStateCallback,
-      List<String> monthGeolocAddMonthButtonLabelList});
+      List<String> monthGeolocAddMonthButtonLabelList,
+      Offset? overlayPosition,
+      List<OverlayEntry>? firstEntries,
+      List<OverlayEntry>? secondEntries,
+      bool visitedTempleMapDisplayFinish});
 }
 
 /// @nodoc
@@ -92,6 +100,10 @@ class _$AppParamsResponseStateCopyWithImpl<$Res,
     Object? bigEntries = freezed,
     Object? setStateCallback = freezed,
     Object? monthGeolocAddMonthButtonLabelList = null,
+    Object? overlayPosition = freezed,
+    Object? firstEntries = freezed,
+    Object? secondEntries = freezed,
+    Object? visitedTempleMapDisplayFinish = null,
   }) {
     return _then(_value.copyWith(
       calendarSelectedDate: freezed == calendarSelectedDate
@@ -155,6 +167,22 @@ class _$AppParamsResponseStateCopyWithImpl<$Res,
           ? _value.monthGeolocAddMonthButtonLabelList
           : monthGeolocAddMonthButtonLabelList // ignore: cast_nullable_to_non_nullable
               as List<String>,
+      overlayPosition: freezed == overlayPosition
+          ? _value.overlayPosition
+          : overlayPosition // ignore: cast_nullable_to_non_nullable
+              as Offset?,
+      firstEntries: freezed == firstEntries
+          ? _value.firstEntries
+          : firstEntries // ignore: cast_nullable_to_non_nullable
+              as List<OverlayEntry>?,
+      secondEntries: freezed == secondEntries
+          ? _value.secondEntries
+          : secondEntries // ignore: cast_nullable_to_non_nullable
+              as List<OverlayEntry>?,
+      visitedTempleMapDisplayFinish: null == visitedTempleMapDisplayFinish
+          ? _value.visitedTempleMapDisplayFinish
+          : visitedTempleMapDisplayFinish // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -183,7 +211,11 @@ abstract class _$$AppParamsResponseStateImplCopyWith<$Res>
       int timeGeolocDisplayEnd,
       List<OverlayEntry>? bigEntries,
       void Function(void Function())? setStateCallback,
-      List<String> monthGeolocAddMonthButtonLabelList});
+      List<String> monthGeolocAddMonthButtonLabelList,
+      Offset? overlayPosition,
+      List<OverlayEntry>? firstEntries,
+      List<OverlayEntry>? secondEntries,
+      bool visitedTempleMapDisplayFinish});
 }
 
 /// @nodoc
@@ -214,6 +246,10 @@ class __$$AppParamsResponseStateImplCopyWithImpl<$Res>
     Object? bigEntries = freezed,
     Object? setStateCallback = freezed,
     Object? monthGeolocAddMonthButtonLabelList = null,
+    Object? overlayPosition = freezed,
+    Object? firstEntries = freezed,
+    Object? secondEntries = freezed,
+    Object? visitedTempleMapDisplayFinish = null,
   }) {
     return _then(_$AppParamsResponseStateImpl(
       calendarSelectedDate: freezed == calendarSelectedDate
@@ -277,6 +313,22 @@ class __$$AppParamsResponseStateImplCopyWithImpl<$Res>
           ? _value._monthGeolocAddMonthButtonLabelList
           : monthGeolocAddMonthButtonLabelList // ignore: cast_nullable_to_non_nullable
               as List<String>,
+      overlayPosition: freezed == overlayPosition
+          ? _value.overlayPosition
+          : overlayPosition // ignore: cast_nullable_to_non_nullable
+              as Offset?,
+      firstEntries: freezed == firstEntries
+          ? _value._firstEntries
+          : firstEntries // ignore: cast_nullable_to_non_nullable
+              as List<OverlayEntry>?,
+      secondEntries: freezed == secondEntries
+          ? _value._secondEntries
+          : secondEntries // ignore: cast_nullable_to_non_nullable
+              as List<OverlayEntry>?,
+      visitedTempleMapDisplayFinish: null == visitedTempleMapDisplayFinish
+          ? _value.visitedTempleMapDisplayFinish
+          : visitedTempleMapDisplayFinish // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -299,10 +351,16 @@ class _$AppParamsResponseStateImpl implements _AppParamsResponseState {
       this.timeGeolocDisplayEnd = -1,
       final List<OverlayEntry>? bigEntries,
       this.setStateCallback,
-      final List<String> monthGeolocAddMonthButtonLabelList = const []})
+      final List<String> monthGeolocAddMonthButtonLabelList = const <String>[],
+      this.overlayPosition,
+      final List<OverlayEntry>? firstEntries,
+      final List<OverlayEntry>? secondEntries,
+      this.visitedTempleMapDisplayFinish = false})
       : _bigEntries = bigEntries,
         _monthGeolocAddMonthButtonLabelList =
-            monthGeolocAddMonthButtonLabelList;
+            monthGeolocAddMonthButtonLabelList,
+        _firstEntries = firstEntries,
+        _secondEntries = secondEntries;
 
   @override
   final DateTime? calendarSelectedDate;
@@ -357,9 +415,36 @@ class _$AppParamsResponseStateImpl implements _AppParamsResponseState {
     return EqualUnmodifiableListView(_monthGeolocAddMonthButtonLabelList);
   }
 
+///////////////////////////////////
+  @override
+  final Offset? overlayPosition;
+  final List<OverlayEntry>? _firstEntries;
+  @override
+  List<OverlayEntry>? get firstEntries {
+    final value = _firstEntries;
+    if (value == null) return null;
+    if (_firstEntries is EqualUnmodifiableListView) return _firstEntries;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
+
+  final List<OverlayEntry>? _secondEntries;
+  @override
+  List<OverlayEntry>? get secondEntries {
+    final value = _secondEntries;
+    if (value == null) return null;
+    if (_secondEntries is EqualUnmodifiableListView) return _secondEntries;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
+
+  @override
+  @JsonKey()
+  final bool visitedTempleMapDisplayFinish;
+
   @override
   String toString() {
-    return 'AppParamsResponseState(calendarSelectedDate: $calendarSelectedDate, selectedTimeGeoloc: $selectedTimeGeoloc, isMarkerShow: $isMarkerShow, selectedHour: $selectedHour, currentZoom: $currentZoom, currentPaddingIndex: $currentPaddingIndex, currentCenter: $currentCenter, isTempleCircleShow: $isTempleCircleShow, polylineGeolocModel: $polylineGeolocModel, selectedTemple: $selectedTemple, timeGeolocDisplayStart: $timeGeolocDisplayStart, timeGeolocDisplayEnd: $timeGeolocDisplayEnd, bigEntries: $bigEntries, setStateCallback: $setStateCallback, monthGeolocAddMonthButtonLabelList: $monthGeolocAddMonthButtonLabelList)';
+    return 'AppParamsResponseState(calendarSelectedDate: $calendarSelectedDate, selectedTimeGeoloc: $selectedTimeGeoloc, isMarkerShow: $isMarkerShow, selectedHour: $selectedHour, currentZoom: $currentZoom, currentPaddingIndex: $currentPaddingIndex, currentCenter: $currentCenter, isTempleCircleShow: $isTempleCircleShow, polylineGeolocModel: $polylineGeolocModel, selectedTemple: $selectedTemple, timeGeolocDisplayStart: $timeGeolocDisplayStart, timeGeolocDisplayEnd: $timeGeolocDisplayEnd, bigEntries: $bigEntries, setStateCallback: $setStateCallback, monthGeolocAddMonthButtonLabelList: $monthGeolocAddMonthButtonLabelList, overlayPosition: $overlayPosition, firstEntries: $firstEntries, secondEntries: $secondEntries, visitedTempleMapDisplayFinish: $visitedTempleMapDisplayFinish)';
   }
 
   @override
@@ -397,27 +482,43 @@ class _$AppParamsResponseStateImpl implements _AppParamsResponseState {
                 other.setStateCallback == setStateCallback) &&
             const DeepCollectionEquality().equals(
                 other._monthGeolocAddMonthButtonLabelList,
-                _monthGeolocAddMonthButtonLabelList));
+                _monthGeolocAddMonthButtonLabelList) &&
+            (identical(other.overlayPosition, overlayPosition) ||
+                other.overlayPosition == overlayPosition) &&
+            const DeepCollectionEquality()
+                .equals(other._firstEntries, _firstEntries) &&
+            const DeepCollectionEquality()
+                .equals(other._secondEntries, _secondEntries) &&
+            (identical(other.visitedTempleMapDisplayFinish,
+                    visitedTempleMapDisplayFinish) ||
+                other.visitedTempleMapDisplayFinish ==
+                    visitedTempleMapDisplayFinish));
   }
 
   @override
-  int get hashCode => Object.hash(
-      runtimeType,
-      calendarSelectedDate,
-      selectedTimeGeoloc,
-      isMarkerShow,
-      selectedHour,
-      currentZoom,
-      currentPaddingIndex,
-      currentCenter,
-      isTempleCircleShow,
-      polylineGeolocModel,
-      selectedTemple,
-      timeGeolocDisplayStart,
-      timeGeolocDisplayEnd,
-      const DeepCollectionEquality().hash(_bigEntries),
-      setStateCallback,
-      const DeepCollectionEquality().hash(_monthGeolocAddMonthButtonLabelList));
+  int get hashCode => Object.hashAll([
+        runtimeType,
+        calendarSelectedDate,
+        selectedTimeGeoloc,
+        isMarkerShow,
+        selectedHour,
+        currentZoom,
+        currentPaddingIndex,
+        currentCenter,
+        isTempleCircleShow,
+        polylineGeolocModel,
+        selectedTemple,
+        timeGeolocDisplayStart,
+        timeGeolocDisplayEnd,
+        const DeepCollectionEquality().hash(_bigEntries),
+        setStateCallback,
+        const DeepCollectionEquality()
+            .hash(_monthGeolocAddMonthButtonLabelList),
+        overlayPosition,
+        const DeepCollectionEquality().hash(_firstEntries),
+        const DeepCollectionEquality().hash(_secondEntries),
+        visitedTempleMapDisplayFinish
+      ]);
 
   @JsonKey(ignore: true)
   @override
@@ -429,22 +530,25 @@ class _$AppParamsResponseStateImpl implements _AppParamsResponseState {
 
 abstract class _AppParamsResponseState implements AppParamsResponseState {
   const factory _AppParamsResponseState(
-          {final DateTime? calendarSelectedDate,
-          final GeolocModel? selectedTimeGeoloc,
-          final bool isMarkerShow,
-          final String selectedHour,
-          final double currentZoom,
-          final int currentPaddingIndex,
-          final LatLng? currentCenter,
-          final bool isTempleCircleShow,
-          final GeolocModel? polylineGeolocModel,
-          final TempleInfoModel? selectedTemple,
-          final int timeGeolocDisplayStart,
-          final int timeGeolocDisplayEnd,
-          final List<OverlayEntry>? bigEntries,
-          final void Function(void Function())? setStateCallback,
-          final List<String> monthGeolocAddMonthButtonLabelList}) =
-      _$AppParamsResponseStateImpl;
+      {final DateTime? calendarSelectedDate,
+      final GeolocModel? selectedTimeGeoloc,
+      final bool isMarkerShow,
+      final String selectedHour,
+      final double currentZoom,
+      final int currentPaddingIndex,
+      final LatLng? currentCenter,
+      final bool isTempleCircleShow,
+      final GeolocModel? polylineGeolocModel,
+      final TempleInfoModel? selectedTemple,
+      final int timeGeolocDisplayStart,
+      final int timeGeolocDisplayEnd,
+      final List<OverlayEntry>? bigEntries,
+      final void Function(void Function())? setStateCallback,
+      final List<String> monthGeolocAddMonthButtonLabelList,
+      final Offset? overlayPosition,
+      final List<OverlayEntry>? firstEntries,
+      final List<OverlayEntry>? secondEntries,
+      final bool visitedTempleMapDisplayFinish}) = _$AppParamsResponseStateImpl;
 
   @override
   DateTime? get calendarSelectedDate;
@@ -476,6 +580,14 @@ abstract class _AppParamsResponseState implements AppParamsResponseState {
   void Function(void Function())? get setStateCallback;
   @override
   List<String> get monthGeolocAddMonthButtonLabelList;
+  @override ///////////////////////////////////
+  Offset? get overlayPosition;
+  @override
+  List<OverlayEntry>? get firstEntries;
+  @override
+  List<OverlayEntry>? get secondEntries;
+  @override
+  bool get visitedTempleMapDisplayFinish;
   @override
   @JsonKey(ignore: true)
   _$$AppParamsResponseStateImplCopyWith<_$AppParamsResponseStateImpl>

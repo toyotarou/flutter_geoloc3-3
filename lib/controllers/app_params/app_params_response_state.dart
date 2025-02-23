@@ -25,5 +25,11 @@ class AppParamsResponseState with _$AppParamsResponseState {
     List<OverlayEntry>? bigEntries,
     void Function(VoidCallback fn)? setStateCallback,
     @Default(<String>[]) List<String> monthGeolocAddMonthButtonLabelList,
+
+    ///////////////////////////////////
+    Offset? overlayPosition,
+    List<OverlayEntry>? firstEntries,
+    List<OverlayEntry>? secondEntries,
+    @Default(false) bool visitedTempleMapDisplayFinish,
   }) = _AppParamsResponseState;
 }
