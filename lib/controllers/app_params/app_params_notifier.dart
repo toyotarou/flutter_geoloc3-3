@@ -81,4 +81,7 @@ class AppParamNotifier extends StateNotifier<AppParamsResponseState> {
   ///
   void setSecondOverlayParams({required List<OverlayEntry>? secondEntries}) =>
       state = state.copyWith(secondEntries: secondEntries);
+
+  ///
+  void setSelectedTimeGeolocIndex({required int index}) => state = state.copyWith(selectedTimeGeolocIndex: index);
 }

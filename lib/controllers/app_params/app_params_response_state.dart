@@ -31,5 +31,6 @@ class AppParamsResponseState with _$AppParamsResponseState {
     List<OverlayEntry>? firstEntries,
     List<OverlayEntry>? secondEntries,
     @Default(false) bool visitedTempleMapDisplayFinish,
+    @Default(-1) int selectedTimeGeolocIndex,
   }) = _AppParamsResponseState;
 }
