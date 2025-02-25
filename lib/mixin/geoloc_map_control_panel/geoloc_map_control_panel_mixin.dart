@@ -30,6 +30,8 @@ mixin GeolocMapControlPanelAlertMixin on ConsumerState<GeolocMapControlPanelWidg
 
   int _taskId = 0;
 
+  late double changeZoomDuringAutoPlay;
+
   ///
   void mapControllerBgColorChange() {
     setState(() => _bgColor = Colors.blue.withOpacity(0.3));
@@ -119,6 +121,8 @@ mixin GeolocMapControlPanelAlertMixin on ConsumerState<GeolocMapControlPanelWidg
                   const SizedBox(width: 20),
                   GestureDetector(
                     onTap: () async {
+                      changeZoomDuringAutoPlay = appParamState.currentZoom;
+
                       _taskId++;
                       final int currentTaskId = _taskId;
 
@@ -140,7 +144,9 @@ mixin GeolocMapControlPanelAlertMixin on ConsumerState<GeolocMapControlPanelWidg
                             widget.geolocStateList[_currentIndex].latitude.toDouble(),
                             widget.geolocStateList[_currentIndex].longitude.toDouble(),
                           ),
-                          appParamState.currentZoom,
+                          (appParamState.currentZoom == changeZoomDuringAutoPlay)
+                              ? appParamState.currentZoom
+                              : changeZoomDuringAutoPlay,
                         );
 
                         appParamNotifier.setPolylineGeolocModel(model: widget.geolocStateList[_currentIndex]);
@@ -184,6 +190,8 @@ mixin GeolocMapControlPanelAlertMixin on ConsumerState<GeolocMapControlPanelWidg
                       if (widget.geolocStateList.length == 1 || appParamState.selectedTimeGeoloc != null) {
                         appParamNotifier.setCurrentZoom(zoom: appParamState.currentZoom + 1);
 
+                        setState(() => changeZoomDuringAutoPlay = appParamState.currentZoom + 1);
+
                         widget.mapController.move(
                           (appParamState.selectedTimeGeoloc == null)
                               ? LatLng(widget.geolocStateList[0].latitude.toDouble(),
@@ -217,6 +225,8 @@ mixin GeolocMapControlPanelAlertMixin on ConsumerState<GeolocMapControlPanelWidg
                     onPressed: () {
                       if (widget.geolocStateList.length == 1 || appParamState.selectedTimeGeoloc != null) {
                         appParamNotifier.setCurrentZoom(zoom: appParamState.currentZoom - 1);
+
+                        setState(() => changeZoomDuringAutoPlay = appParamState.currentZoom - 1);
 
                         widget.mapController.move(
                           (appParamState.selectedTimeGeoloc == null)
