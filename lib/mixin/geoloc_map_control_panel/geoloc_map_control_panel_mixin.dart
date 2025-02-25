@@ -18,7 +18,20 @@ import 'geoloc_map_control_panel_widget.dart';
 mixin GeolocMapControlPanelAlertMixin on ConsumerState<GeolocMapControlPanelWidget> {
   Color _bgColor = Colors.transparent;
 
-  void _changeColorTemporarily() {
+  RangeValues currentRange = const RangeValues(0, 23);
+
+  final List<OverlayEntry> _bigEntries = <OverlayEntry>[];
+  final List<OverlayEntry> _firstEntries = <OverlayEntry>[];
+  final List<OverlayEntry> _secondEntries = <OverlayEntry>[];
+
+  Utility utility = Utility();
+
+  int _currentIndex = 0;
+
+  int _taskId = 0;
+
+  ///
+  void mapControllerBgColorChange() {
     setState(() => _bgColor = Colors.blue.withOpacity(0.3));
 
     // ignore: always_specify_types
@@ -30,14 +43,6 @@ mixin GeolocMapControlPanelAlertMixin on ConsumerState<GeolocMapControlPanelWidg
       setState(() => _bgColor = Colors.transparent);
     });
   }
-
-  RangeValues currentRange = const RangeValues(0, 23);
-
-  final List<OverlayEntry> _bigEntries = <OverlayEntry>[];
-  final List<OverlayEntry> _firstEntries = <OverlayEntry>[];
-  final List<OverlayEntry> _secondEntries = <OverlayEntry>[];
-
-  Utility utility = Utility();
 
   ///
   Widget buildContent(BuildContext context) {
@@ -107,14 +112,50 @@ mixin GeolocMapControlPanelAlertMixin on ConsumerState<GeolocMapControlPanelWidg
                       scrollToIndex(index: nextPos, globalKeyList: globalKeyList);
                       appParamNotifier.setSelectedTimeGeolocIndex(index: nextPos);
 
-                      _changeColorTemporarily();
+                      mapControllerBgColorChange();
                     },
                     child: const Icon(Icons.play_arrow),
                   ),
                   const SizedBox(width: 20),
                   GestureDetector(
-                    onTap: () {
-                      _changeColorTemporarily();
+                    onTap: () async {
+                      _taskId++;
+                      final int currentTaskId = _taskId;
+
+                      setState(() => _currentIndex = 0);
+
+                      //--------------------------------------------------------------//
+                      for (int i = 0; i < widget.geolocStateList.length; i++) {
+                        if (currentTaskId != _taskId) {
+                          return;
+                        }
+
+                        setState(() => _currentIndex = i);
+
+                        appParamNotifier.setIsMarkerShow(flag: true);
+                        appParamNotifier.setSelectedTimeGeoloc(geoloc: widget.geolocStateList[_currentIndex]);
+
+                        widget.mapController.move(
+                          LatLng(
+                            widget.geolocStateList[_currentIndex].latitude.toDouble(),
+                            widget.geolocStateList[_currentIndex].longitude.toDouble(),
+                          ),
+                          appParamState.currentZoom,
+                        );
+
+                        appParamNotifier.setPolylineGeolocModel(model: widget.geolocStateList[_currentIndex]);
+
+                        appParamNotifier.setSelectedTimeGeolocIndex(index: _currentIndex);
+
+                        if (i < widget.geolocStateList.length - 1) {
+                          // ignore: inference_failure_on_instance_creation, always_specify_types
+                          await Future.delayed(const Duration(seconds: 1));
+                        }
+                      }
+
+                      //--------------------------------------------------------------//
+
+                      mapControllerBgColorChange();
                     },
                     child: const Icon(Icons.double_arrow),
                   ),
