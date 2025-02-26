@@ -87,6 +87,7 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
                                 ),
                                 executeFunctionWhenDialogClose: true,
                                 ref: ref,
+                                from: 'PickupGeolocDisplayAlert',
                               );
                             },
                             child: const Column(

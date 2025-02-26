@@ -79,6 +79,7 @@ mixin GeolocMapControlPanelAlertMixin on ConsumerState<GeolocMapControlPanelWidg
                   const SizedBox(width: 20),
                   GestureDetector(
                     onTap: () {
+                      appParamNotifier.setIsMarkerShow(flag: true);
                       appParamNotifier.setSelectedTimeGeoloc();
                       setDefaultBoundsMap();
                     },
@@ -155,7 +156,7 @@ mixin GeolocMapControlPanelAlertMixin on ConsumerState<GeolocMapControlPanelWidg
 
                         if (i < widget.geolocStateList.length - 1) {
                           // ignore: inference_failure_on_instance_creation, always_specify_types
-                          await Future.delayed(const Duration(seconds: 1));
+                          await Future.delayed(const Duration(seconds: 2));
                         }
                       }
 

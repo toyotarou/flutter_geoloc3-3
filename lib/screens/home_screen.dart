@@ -318,6 +318,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                       ),
                       executeFunctionWhenDialogClose: true,
                       ref: ref,
+                      from: 'HomeScreen',
                     );
                   },
                   child: const Text('month')),
@@ -663,6 +664,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                                   ),
                                                   executeFunctionWhenDialogClose: true,
                                                   ref: ref,
+                                                  from: 'HomeScreen',
                                                 );
                                               },
                                         child: Text(

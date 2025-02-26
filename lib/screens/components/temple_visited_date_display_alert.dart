@@ -90,6 +90,7 @@ class _TempleVisitedDateDisplayAlertState extends ConsumerState<TempleVisitedDat
                                 ),
                                 executeFunctionWhenDialogClose: true,
                                 ref: ref,
+                                from: 'TempleVisitedDateDisplayAlert',
                               );
                             },
                             child: CircleAvatar(radius: 12, backgroundColor: Colors.white.withOpacity(0.2)),

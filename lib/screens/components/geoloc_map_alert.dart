@@ -7,9 +7,11 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:latlong2/latlong.dart';
 
 import '../../controllers/controllers_mixin.dart';
+import '../../controllers/lat_lng_address/lat_lng_address.dart';
 import '../../extensions/extensions.dart';
 import '../../mixin/geoloc_map_control_panel/geoloc_map_control_panel_widget.dart';
 import '../../models/geoloc_model.dart';
+import '../../models/lat_lng_address.dart';
 import '../../models/temple_latlng_model.dart';
 import '../../models/temple_photo_model.dart';
 import '../../models/walk_record_model.dart';
@@ -243,6 +245,9 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
                 ),
             ],
           ),
+
+          ////////------------------------
+
           Positioned(
             top: 5,
             right: 5,
@@ -434,6 +439,9 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
               ],
             ),
           ),
+
+          ///////
+
           if (enclosedMarkers.isNotEmpty)
             Positioned(
               bottom: 20,
@@ -450,6 +458,9 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
                 child: displayInnerPolygonTime(),
               ),
             ),
+
+          //////
+
           if (widget.displayMonthMap) ...<Widget>[
             Positioned(
               bottom: 0,
@@ -532,7 +543,21 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
               ),
             ),
           ],
+
+          /////
+
           if (isLoading) ...<Widget>[const Center(child: CircularProgressIndicator())],
+
+          /////
+
+          if (!widget.displayMonthMap) ...<Widget>[
+            if (appParamState.selectedTimeGeoloc != null) ...<Widget>[
+              Positioned(
+                top: 150,
+                child: displayLatLngAddress(),
+              ),
+            ],
+          ],
         ],
       ),
     );
@@ -900,6 +925,42 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
       child: DefaultTextStyle(
         style: const TextStyle(color: Colors.black),
         child: Column(crossAxisAlignment: CrossAxisAlignment.start, children: list),
+      ),
+    );
+  }
+
+  ///
+  Widget displayLatLngAddress() {
+    final AsyncValue<LatLngAddressControllerState> latLngAddressControllerState = ref.watch(
+        latLngAddressControllerProvider(
+            latitude: appParamState.selectedTimeGeoloc!.latitude,
+            longitude: appParamState.selectedTimeGeoloc!.longitude));
+
+    final List<LatLngAddressDetailModel>? latLngAddressList = latLngAddressControllerState.value?.latLngAddressList;
+
+    final List<String> addressList = <String>[];
+    latLngAddressList?.forEach(
+        (LatLngAddressDetailModel element) => addressList.add('${element.prefecture}${element.city}${element.town}'));
+
+    if (latLngAddressControllerState.value == null || latLngAddressList == null || addressList.isEmpty) {
+      return Container();
+    }
+
+    return SizedBox(
+      height: 100,
+      child: Container(
+        width: context.screenSize.width * 0.7,
+        margin: const EdgeInsets.only(right: 10, left: 10),
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(color: Colors.orangeAccent.withOpacity(0.2)),
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: addressList
+                .map((String e) => Text(e, style: const TextStyle(color: Colors.black, fontSize: 12)))
+                .toList(),
+          ),
+        ),
       ),
     );
   }

@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../controllers/app_params/app_params_notifier.dart';
 import 'geoloc_overlay.dart';
 
 Future<void> GeolocDialog({
@@ -15,6 +16,7 @@ Future<void> GeolocDialog({
   bool clearBarrierColor = false,
   bool? executeFunctionWhenDialogClose,
   WidgetRef? ref,
+  String? from,
 }) {
   // ignore: inference_failure_on_function_invocation
   return showDialog(
@@ -39,6 +41,12 @@ Future<void> GeolocDialog({
         final ModalRoute<Object?>? route = ModalRoute.of(context);
         if (route != null && route.isCurrent) {
           closeAllOverlays(ref: ref!);
+        }
+
+        if (from == 'PickupGeolocDisplayAlert' || from == 'TempleVisitedDateDisplayAlert' || from == 'HomeScreen') {
+          if (ref != null) {
+            ref.read(appParamProvider.notifier).setSelectedTimeGeoloc();
+          }
         }
       });
     }
