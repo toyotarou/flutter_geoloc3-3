@@ -7,7 +7,7 @@ part of 'lat_lng_address.dart';
 // **************************************************************************
 
 String _$latLngAddressControllerHash() =>
-    r'd5f7e9b95aaff98163911137b6a4860e99fb7505';
+    r'54462075d114606dd9a9475edcb2392b2618a9a9';
 
 /// Copied from Dart SDK
 class _SystemHash {

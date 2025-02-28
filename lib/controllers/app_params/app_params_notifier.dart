@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:latlong2/latlong.dart';
+import '../../enums/map_type.dart';
 import '../../models/geoloc_model.dart';
 import '../../models/temple_latlng_model.dart';
 import 'app_params_response_state.dart';
@@ -84,4 +85,7 @@ class AppParamNotifier extends StateNotifier<AppParamsResponseState> {
 
   ///
   void setSelectedTimeGeolocIndex({required int index}) => state = state.copyWith(selectedTimeGeolocIndex: index);
+
+  ///
+  void setMapType({required MapType type}) => state = state.copyWith(mapType: type);
 }

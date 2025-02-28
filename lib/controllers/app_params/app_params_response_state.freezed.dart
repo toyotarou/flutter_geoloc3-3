@@ -38,6 +38,7 @@ mixin _$AppParamsResponseState {
   List<OverlayEntry>? get secondEntries => throw _privateConstructorUsedError;
   bool get visitedTempleMapDisplayFinish => throw _privateConstructorUsedError;
   int get selectedTimeGeolocIndex => throw _privateConstructorUsedError;
+  MapType? get mapType => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
   $AppParamsResponseStateCopyWith<AppParamsResponseState> get copyWith =>
@@ -70,7 +71,8 @@ abstract class $AppParamsResponseStateCopyWith<$Res> {
       List<OverlayEntry>? firstEntries,
       List<OverlayEntry>? secondEntries,
       bool visitedTempleMapDisplayFinish,
-      int selectedTimeGeolocIndex});
+      int selectedTimeGeolocIndex,
+      MapType? mapType});
 }
 
 /// @nodoc
@@ -107,6 +109,7 @@ class _$AppParamsResponseStateCopyWithImpl<$Res,
     Object? secondEntries = freezed,
     Object? visitedTempleMapDisplayFinish = null,
     Object? selectedTimeGeolocIndex = null,
+    Object? mapType = freezed,
   }) {
     return _then(_value.copyWith(
       calendarSelectedDate: freezed == calendarSelectedDate
@@ -190,6 +193,10 @@ class _$AppParamsResponseStateCopyWithImpl<$Res,
           ? _value.selectedTimeGeolocIndex
           : selectedTimeGeolocIndex // ignore: cast_nullable_to_non_nullable
               as int,
+      mapType: freezed == mapType
+          ? _value.mapType
+          : mapType // ignore: cast_nullable_to_non_nullable
+              as MapType?,
     ) as $Val);
   }
 }
@@ -223,7 +230,8 @@ abstract class _$$AppParamsResponseStateImplCopyWith<$Res>
       List<OverlayEntry>? firstEntries,
       List<OverlayEntry>? secondEntries,
       bool visitedTempleMapDisplayFinish,
-      int selectedTimeGeolocIndex});
+      int selectedTimeGeolocIndex,
+      MapType? mapType});
 }
 
 /// @nodoc
@@ -259,6 +267,7 @@ class __$$AppParamsResponseStateImplCopyWithImpl<$Res>
     Object? secondEntries = freezed,
     Object? visitedTempleMapDisplayFinish = null,
     Object? selectedTimeGeolocIndex = null,
+    Object? mapType = freezed,
   }) {
     return _then(_$AppParamsResponseStateImpl(
       calendarSelectedDate: freezed == calendarSelectedDate
@@ -342,6 +351,10 @@ class __$$AppParamsResponseStateImplCopyWithImpl<$Res>
           ? _value.selectedTimeGeolocIndex
           : selectedTimeGeolocIndex // ignore: cast_nullable_to_non_nullable
               as int,
+      mapType: freezed == mapType
+          ? _value.mapType
+          : mapType // ignore: cast_nullable_to_non_nullable
+              as MapType?,
     ));
   }
 }
@@ -369,7 +382,8 @@ class _$AppParamsResponseStateImpl implements _AppParamsResponseState {
       final List<OverlayEntry>? firstEntries,
       final List<OverlayEntry>? secondEntries,
       this.visitedTempleMapDisplayFinish = false,
-      this.selectedTimeGeolocIndex = -1})
+      this.selectedTimeGeolocIndex = -1,
+      this.mapType})
       : _bigEntries = bigEntries,
         _monthGeolocAddMonthButtonLabelList =
             monthGeolocAddMonthButtonLabelList,
@@ -458,10 +472,12 @@ class _$AppParamsResponseStateImpl implements _AppParamsResponseState {
   @override
   @JsonKey()
   final int selectedTimeGeolocIndex;
+  @override
+  final MapType? mapType;
 
   @override
   String toString() {
-    return 'AppParamsResponseState(calendarSelectedDate: $calendarSelectedDate, selectedTimeGeoloc: $selectedTimeGeoloc, isMarkerShow: $isMarkerShow, selectedHour: $selectedHour, currentZoom: $currentZoom, currentPaddingIndex: $currentPaddingIndex, currentCenter: $currentCenter, isTempleCircleShow: $isTempleCircleShow, polylineGeolocModel: $polylineGeolocModel, selectedTemple: $selectedTemple, timeGeolocDisplayStart: $timeGeolocDisplayStart, timeGeolocDisplayEnd: $timeGeolocDisplayEnd, bigEntries: $bigEntries, setStateCallback: $setStateCallback, monthGeolocAddMonthButtonLabelList: $monthGeolocAddMonthButtonLabelList, overlayPosition: $overlayPosition, firstEntries: $firstEntries, secondEntries: $secondEntries, visitedTempleMapDisplayFinish: $visitedTempleMapDisplayFinish, selectedTimeGeolocIndex: $selectedTimeGeolocIndex)';
+    return 'AppParamsResponseState(calendarSelectedDate: $calendarSelectedDate, selectedTimeGeoloc: $selectedTimeGeoloc, isMarkerShow: $isMarkerShow, selectedHour: $selectedHour, currentZoom: $currentZoom, currentPaddingIndex: $currentPaddingIndex, currentCenter: $currentCenter, isTempleCircleShow: $isTempleCircleShow, polylineGeolocModel: $polylineGeolocModel, selectedTemple: $selectedTemple, timeGeolocDisplayStart: $timeGeolocDisplayStart, timeGeolocDisplayEnd: $timeGeolocDisplayEnd, bigEntries: $bigEntries, setStateCallback: $setStateCallback, monthGeolocAddMonthButtonLabelList: $monthGeolocAddMonthButtonLabelList, overlayPosition: $overlayPosition, firstEntries: $firstEntries, secondEntries: $secondEntries, visitedTempleMapDisplayFinish: $visitedTempleMapDisplayFinish, selectedTimeGeolocIndex: $selectedTimeGeolocIndex, mapType: $mapType)';
   }
 
   @override
@@ -512,7 +528,8 @@ class _$AppParamsResponseStateImpl implements _AppParamsResponseState {
                     visitedTempleMapDisplayFinish) &&
             (identical(
                     other.selectedTimeGeolocIndex, selectedTimeGeolocIndex) ||
-                other.selectedTimeGeolocIndex == selectedTimeGeolocIndex));
+                other.selectedTimeGeolocIndex == selectedTimeGeolocIndex) &&
+            (identical(other.mapType, mapType) || other.mapType == mapType));
   }
 
   @override
@@ -538,7 +555,8 @@ class _$AppParamsResponseStateImpl implements _AppParamsResponseState {
         const DeepCollectionEquality().hash(_firstEntries),
         const DeepCollectionEquality().hash(_secondEntries),
         visitedTempleMapDisplayFinish,
-        selectedTimeGeolocIndex
+        selectedTimeGeolocIndex,
+        mapType
       ]);
 
   @JsonKey(ignore: true)
@@ -570,7 +588,8 @@ abstract class _AppParamsResponseState implements AppParamsResponseState {
       final List<OverlayEntry>? firstEntries,
       final List<OverlayEntry>? secondEntries,
       final bool visitedTempleMapDisplayFinish,
-      final int selectedTimeGeolocIndex}) = _$AppParamsResponseStateImpl;
+      final int selectedTimeGeolocIndex,
+      final MapType? mapType}) = _$AppParamsResponseStateImpl;
 
   @override
   DateTime? get calendarSelectedDate;
@@ -612,6 +631,8 @@ abstract class _AppParamsResponseState implements AppParamsResponseState {
   bool get visitedTempleMapDisplayFinish;
   @override
   int get selectedTimeGeolocIndex;
+  @override
+  MapType? get mapType;
   @override
   @JsonKey(ignore: true)
   _$$AppParamsResponseStateImplCopyWith<_$AppParamsResponseStateImpl>

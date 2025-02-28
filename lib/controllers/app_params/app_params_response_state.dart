@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:latlong2/latlong.dart';
 
+import '../../enums/map_type.dart';
 import '../../models/geoloc_model.dart';
 import '../../models/temple_latlng_model.dart';
 
@@ -32,5 +33,6 @@ class AppParamsResponseState with _$AppParamsResponseState {
     List<OverlayEntry>? secondEntries,
     @Default(false) bool visitedTempleMapDisplayFinish,
     @Default(-1) int selectedTimeGeolocIndex,
+    MapType? mapType,
   }) = _AppParamsResponseState;
 }
