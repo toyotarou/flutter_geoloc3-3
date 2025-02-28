@@ -72,17 +72,21 @@ mixin GeolocMapControlPanelAlertMixin on ConsumerState<GeolocMapControlPanelWidg
       color: _bgColor,
       child: Column(
         children: <Widget>[
-          //============================================
+          /// コントロール上部のアイコンリスト
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
+              ///
               Row(
                 children: <Widget>[
+                  ///
                   GestureDetector(
                     onTap: () => appParamNotifier.setIsMarkerShow(flag: !appParamState.isMarkerShow),
                     child: const Icon(Icons.stacked_line_chart),
                   ),
                   const SizedBox(width: 20),
+
+                  ///
                   GestureDetector(
                     onTap: () {
                       appParamNotifier.setIsMarkerShow(flag: true);
@@ -92,6 +96,8 @@ mixin GeolocMapControlPanelAlertMixin on ConsumerState<GeolocMapControlPanelWidg
                     child: const Icon(Icons.center_focus_strong),
                   ),
                   const SizedBox(width: 20),
+
+                  ///
                   GestureDetector(
                     onTap: () {
                       int pos = 0;
@@ -126,6 +132,8 @@ mixin GeolocMapControlPanelAlertMixin on ConsumerState<GeolocMapControlPanelWidg
                     child: const Icon(Icons.play_arrow),
                   ),
                   const SizedBox(width: 20),
+
+                  ///
                   GestureDetector(
                     onTap: () async {
                       changeZoomDuringAutoPlay = appParamState.currentZoom;
@@ -160,6 +168,8 @@ mixin GeolocMapControlPanelAlertMixin on ConsumerState<GeolocMapControlPanelWidg
 
                         appParamNotifier.setSelectedTimeGeolocIndex(index: _currentIndex);
 
+                        scrollToIndex(index: i, globalKeyList: globalKeyList);
+
                         if (i < widget.geolocStateList.length - 1) {
                           // ignore: inference_failure_on_instance_creation, always_specify_types
                           await Future.delayed(const Duration(seconds: 2));
@@ -174,8 +184,11 @@ mixin GeolocMapControlPanelAlertMixin on ConsumerState<GeolocMapControlPanelWidg
                   ),
                 ],
               ),
+
+              ///
               Row(
                 children: <Widget>[
+                  ///
                   SizedBox(
                     width: 60,
                     child: Column(
@@ -185,6 +198,8 @@ mixin GeolocMapControlPanelAlertMixin on ConsumerState<GeolocMapControlPanelWidg
                       ],
                     ),
                   ),
+
+                  ///
                   OutlinedButton(
                     style: OutlinedButton.styleFrom(
                       padding: EdgeInsets.zero,
@@ -221,6 +236,8 @@ mixin GeolocMapControlPanelAlertMixin on ConsumerState<GeolocMapControlPanelWidg
                       ],
                     ),
                   ),
+
+                  ///
                   OutlinedButton(
                     style: OutlinedButton.styleFrom(
                       padding: EdgeInsets.zero,
@@ -265,7 +282,8 @@ mixin GeolocMapControlPanelAlertMixin on ConsumerState<GeolocMapControlPanelWidg
               ),
             ],
           ),
-          //============================================
+
+          /// geolocのCircleAvatar
           SizedBox(
             height: 60,
             child: SingleChildScrollView(
@@ -318,8 +336,7 @@ mixin GeolocMapControlPanelAlertMixin on ConsumerState<GeolocMapControlPanelWidg
             ),
           ),
 
-          //============================================
-
+          /// 表示時間限定スライダー
           Row(
             children: <Widget>[
               Expanded(
@@ -352,16 +369,16 @@ mixin GeolocMapControlPanelAlertMixin on ConsumerState<GeolocMapControlPanelWidg
                       ? Colors.orangeAccent.withOpacity(0.2)
                       : Colors.green[900]?.withOpacity(0.2),
                 ),
-                onPressed: () {
-                  appParamNotifier.setTimeGeolocDisplay(
-                      start: currentRange.start.round(), end: currentRange.end.round());
-                },
+                onPressed: () => appParamNotifier.setTimeGeolocDisplay(
+                  start: currentRange.start.round(),
+                  end: currentRange.end.round(),
+                ),
                 child: const Column(children: <Widget>[Text('set', style: TextStyle(color: Colors.white))]),
               ),
             ],
           ),
-          //============================================
 
+          /// コントロールパネル下部のテンプルリスト
           if (widget.templeInfoList != null) ...<Widget>[
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -436,7 +453,6 @@ mixin GeolocMapControlPanelAlertMixin on ConsumerState<GeolocMapControlPanelWidg
               ),
             ),
           ],
-          //============================================
         ],
       ),
     );
