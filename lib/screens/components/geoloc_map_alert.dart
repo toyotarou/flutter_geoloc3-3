@@ -8,7 +8,6 @@ import 'package:latlong2/latlong.dart';
 
 import '../../controllers/controllers_mixin.dart';
 import '../../controllers/lat_lng_address/lat_lng_address.dart';
-import '../../enums/map_type.dart';
 import '../../extensions/extensions.dart';
 import '../../mixin/geoloc_map_control_panel/geoloc_map_control_panel_widget.dart';
 import '../../models/geoloc_model.dart';
@@ -26,6 +25,7 @@ class GeolocMapAlert extends ConsumerStatefulWidget {
       {super.key,
       required this.geolocStateList,
       this.displayTempMap,
+      required this.displayMonthMap,
       required this.walkRecord,
       this.templeInfoList,
       required this.date});
@@ -33,6 +33,7 @@ class GeolocMapAlert extends ConsumerStatefulWidget {
   final DateTime date;
   final List<GeolocModel> geolocStateList;
   final bool? displayTempMap;
+  final bool displayMonthMap;
   final WalkRecordModel walkRecord;
   final List<TempleInfoModel>? templeInfoList;
 
@@ -94,7 +95,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
   void initState() {
     super.initState();
 
-    if (appParamState.mapType == MapType.monthly) {
+    if (widget.displayMonthMap) {
       geolocNotifier.getAllGeoloc();
     }
 
@@ -245,325 +246,319 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
             ],
           ),
 
-          ////////////////////////////////////////////////
+          ////////------------------------
 
-          dispMapStackPartsUpper(),
-
-          ////////////////////////////////////////////////
-
-          if (enclosedMarkers.isNotEmpty) ...<Widget>[dispMapStackPartsEnclosedMarkersInfoDisplay()],
-
-          ////////////////////////////////////////////////
-
-          if (appParamState.mapType == MapType.monthly) ...<Widget>[dispMapStackPartsMonthlyBottom()],
-
-          ////////////////////////////////////////////////
-
-          if (appParamState.mapType == MapType.daily) ...<Widget>[
-            if (appParamState.selectedTimeGeoloc != null) ...<Widget>[
-              Positioned(top: 150, child: displayLatLngAddress()),
-            ],
-          ],
-
-          ////////////////////////////////////////////////
-
-          if (isLoading) ...<Widget>[const Center(child: CircularProgressIndicator())],
-
-          ////////////////////////////////////////////////
-        ],
-      ),
-    );
-  }
-
-  ///
-  Widget dispMapStackPartsUpper() {
-    return Positioned(
-      top: 5,
-      right: 5,
-      left: 5,
-      child: Column(
-        children: <Widget>[
-          Container(
-            width: context.screenSize.width,
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.3),
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Row(
+          Positioned(
+            top: 5,
+            right: 5,
+            left: 5,
+            child: Column(
               children: <Widget>[
                 Container(
-                  width: 100,
-                  alignment: Alignment.topLeft,
+                  width: context.screenSize.width,
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: Colors.black.withOpacity(0.3),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                   child: Row(
                     children: <Widget>[
-                      Column(
-                        children: <Widget>[
-                          Text(widget.date.yyyymmdd),
-                          if (appParamState.selectedTimeGeoloc != null) ...<Widget>[
-                            Text(
-                              appParamState.selectedTimeGeoloc!.time,
-                              style: const TextStyle(fontSize: 20),
+                      Container(
+                        width: 100,
+                        alignment: Alignment.topLeft,
+                        child: Row(
+                          children: <Widget>[
+                            Column(
+                              children: <Widget>[
+                                Text(widget.date.yyyymmdd),
+                                if (appParamState.selectedTimeGeoloc != null) ...<Widget>[
+                                  Text(
+                                    appParamState.selectedTimeGeoloc!.time,
+                                    style: const TextStyle(fontSize: 20),
+                                  ),
+                                ],
+                              ],
                             ),
+                            const SizedBox(width: 20),
                           ],
-                        ],
+                        ),
                       ),
-                      const SizedBox(width: 20),
+                      Expanded(
+                        child: Row(
+                          children: <Widget>[
+                            Expanded(
+                              child: Column(
+                                children: <Widget>[
+                                  Row(
+                                    children: <Widget>[
+                                      const SizedBox(width: 70, child: Text('size: ')),
+                                      Expanded(
+                                        child: Container(
+                                          alignment: Alignment.topRight,
+                                          child: Text(
+                                            appParamState.currentZoom.toStringAsFixed(2),
+                                            style: const TextStyle(fontSize: 20),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  Row(
+                                    children: <Widget>[
+                                      const SizedBox(width: 70, child: Text('padding: ')),
+                                      Expanded(
+                                        child: Container(
+                                          alignment: Alignment.topRight,
+                                          child: Text(
+                                            '${appParamState.currentPaddingIndex * 10} px',
+                                            style: const TextStyle(fontSize: 20),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                            ),
+                            if (!widget.displayMonthMap) ...<Widget>[
+                              const SizedBox(width: 20),
+                              Container(
+                                decoration: BoxDecoration(
+                                    color: Colors.black.withOpacity(0.3), borderRadius: BorderRadius.circular(10)),
+                                child: IconButton(
+                                  onPressed: () {
+                                    appParamNotifier.setTimeGeolocDisplay(start: -1, end: 23);
+
+                                    appParamNotifier.setSecondOverlayParams(secondEntries: _secondEntries);
+
+                                    addSecondOverlay(
+                                      context: context,
+                                      secondEntries: _secondEntries,
+                                      setStateCallback: setState,
+                                      width: context.screenSize.width,
+                                      height: context.screenSize.height * 0.3,
+                                      color: Colors.blueGrey.withOpacity(0.3),
+                                      initialPosition: Offset(0, context.screenSize.height * 0.7),
+                                      widget: GeolocMapControlPanelWidget(
+                                        date: widget.date,
+                                        geolocStateList: gStateList,
+                                        templeInfoList: widget.templeInfoList,
+                                        mapController: mapController,
+                                        currentZoomEightTeen: currentZoomEightTeen,
+                                        selectedHourMap: selectedHourMap,
+                                        minMaxLatLngMap: <String, double>{
+                                          'minLat': minLat,
+                                          'maxLng': maxLng,
+                                          'maxLat': maxLat,
+                                          'minLng': minLng,
+                                        },
+                                        displayTempMap: widget.displayTempMap,
+                                        templePhotoDateList:
+                                            templePhotoDateMap[widget.date.yyyymmdd] ?? <TemplePhotoModel>[],
+                                      ),
+                                      onPositionChanged: (Offset newPos) =>
+                                          appParamNotifier.updateOverlayPosition(newPos),
+                                      fixedFlag: true,
+                                    );
+                                  },
+                                  icon: const Icon(Icons.info),
+                                ),
+                              ),
+                            ],
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 ),
-                Expanded(
-                  child: Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: Column(
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    if (widget.walkRecord.step != 0 && widget.walkRecord.distance != 0) ...<Widget>[
+                      Text(
+                        'step: ${widget.walkRecord.step} / distance: ${widget.walkRecord.distance}',
+                        style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                    if (widget.walkRecord.step == 0 || widget.walkRecord.distance == 0) ...<Widget>[
+                      Container(),
+                    ],
+                    Text(
+                      gStateList.length.toString(),
+                      style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Container(
+                      decoration: BoxDecoration(
+                        color: Colors.purpleAccent.withOpacity(0.3),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        children: <Widget>[
+                          IconButton(
+                              onPressed: () => _findEnclosedMarkers(),
+                              icon: const Icon(Icons.list, color: Colors.purple)),
+                          IconButton(
+                              onPressed: () => _clearPolygon(), icon: const Icon(Icons.clear, color: Colors.purple)),
+                        ],
+                      ),
+                    ),
+                    if (widget.displayMonthMap) ...<Widget>[Container()],
+                    if (!widget.displayMonthMap) ...<Widget>[
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.redAccent.withOpacity(0.3),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Row(
                           children: <Widget>[
-                            Row(
-                              children: <Widget>[
-                                const SizedBox(width: 70, child: Text('size: ')),
-                                Expanded(
-                                  child: Container(
-                                    alignment: Alignment.topRight,
-                                    child: Text(
-                                      appParamState.currentZoom.toStringAsFixed(2),
-                                      style: const TextStyle(fontSize: 20),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              children: <Widget>[
-                                const SizedBox(width: 70, child: Text('padding: ')),
-                                Expanded(
-                                  child: Container(
-                                    alignment: Alignment.topRight,
-                                    child: Text(
-                                      '${appParamState.currentPaddingIndex * 10} px',
-                                      style: const TextStyle(fontSize: 20),
-                                    ),
-                                  ),
-                                ),
-                              ],
+                            IconButton(
+                                onPressed: () => restrictionAreaMarkerEmphasis(),
+                                icon: const Icon(Icons.check_box, color: Colors.red)),
+                            IconButton(
+                                onPressed: () => displayEmphasisMarkersList(),
+                                icon: const Icon(Icons.list, color: Colors.red)),
+                            IconButton(
+                              onPressed: () => setState(() {
+                                emphasisMarkers.clear();
+
+                                emphasisMarkersIndices.clear();
+                              }),
+                              icon: const Icon(Icons.clear, color: Colors.red),
                             ),
                           ],
                         ),
                       ),
-                      if (appParamState.mapType == MapType.daily) ...<Widget>[
-                        const SizedBox(width: 20),
-                        Container(
-                          decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(0.3), borderRadius: BorderRadius.circular(10)),
-                          child: IconButton(
-                            onPressed: () {
-                              appParamNotifier.setTimeGeolocDisplay(start: -1, end: 23);
-
-                              appParamNotifier.setSecondOverlayParams(secondEntries: _secondEntries);
-
-                              addSecondOverlay(
-                                context: context,
-                                secondEntries: _secondEntries,
-                                setStateCallback: setState,
-                                width: context.screenSize.width,
-                                height: context.screenSize.height * 0.3,
-                                color: Colors.blueGrey.withOpacity(0.3),
-                                initialPosition: Offset(0, context.screenSize.height * 0.7),
-                                widget: GeolocMapControlPanelWidget(
-                                  date: widget.date,
-                                  geolocStateList: gStateList,
-                                  templeInfoList: widget.templeInfoList,
-                                  mapController: mapController,
-                                  currentZoomEightTeen: currentZoomEightTeen,
-                                  selectedHourMap: selectedHourMap,
-                                  minMaxLatLngMap: <String, double>{
-                                    'minLat': minLat,
-                                    'maxLng': maxLng,
-                                    'maxLat': maxLat,
-                                    'minLng': minLng,
-                                  },
-                                  displayTempMap: widget.displayTempMap,
-                                  templePhotoDateList: templePhotoDateMap[widget.date.yyyymmdd] ?? <TemplePhotoModel>[],
-                                ),
-                                onPositionChanged: (Offset newPos) => appParamNotifier.updateOverlayPosition(newPos),
-                                fixedFlag: true,
-                              );
-                            },
-                            icon: const Icon(Icons.info),
-                          ),
-                        ),
-                      ],
                     ],
-                  ),
+                  ],
                 ),
               ],
             ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              if (widget.walkRecord.step != 0 && widget.walkRecord.distance != 0) ...<Widget>[
-                Text(
-                  'step: ${widget.walkRecord.step} / distance: ${widget.walkRecord.distance}',
-                  style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-                ),
-              ],
-              if (widget.walkRecord.step == 0 || widget.walkRecord.distance == 0) ...<Widget>[
-                Container(),
-              ],
-              Text(
-                gStateList.length.toString(),
-                style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: <Widget>[
-              Container(
+
+          ///////
+
+          if (enclosedMarkers.isNotEmpty)
+            Positioned(
+              bottom: 20,
+              left: 20,
+              right: 20,
+              child: Container(
+                padding: const EdgeInsets.all(10),
                 decoration: BoxDecoration(
-                  color: Colors.purpleAccent.withOpacity(0.3),
-                  borderRadius: BorderRadius.circular(20),
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(10),
+                  boxShadow: <BoxShadow>[BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 10)],
                 ),
+                height: context.screenSize.height * 0.3,
+                child: displayInnerPolygonTime(),
+              ),
+            ),
+
+          //////
+
+          if (widget.displayMonthMap) ...<Widget>[
+            Positioned(
+              bottom: 0,
+              child: SizedBox(
+                width: context.screenSize.width,
                 child: Row(
                   children: <Widget>[
-                    IconButton(
-                        onPressed: () => _findEnclosedMarkers(), icon: const Icon(Icons.list, color: Colors.purple)),
-                    IconButton(onPressed: () => _clearPolygon(), icon: const Icon(Icons.clear, color: Colors.purple)),
+                    Row(
+                      // ignore: always_specify_types
+                      children: List.generate(2, (int index) => index).map((int e) {
+                        final String blockYm = DateTime(
+                          widget.date.yyyymmdd.split('-')[0].toInt(),
+                          widget.date.yyyymmdd.split('-')[1].toInt() - (e + 1),
+                        ).yyyymm;
+
+                        return GestureDetector(
+                          onTap: () {
+                            if (e == 0) {
+                              if (appParamState.monthGeolocAddMonthButtonLabelList.length == 2) {
+                                showButtonErrorOverlay(
+                                  context: context,
+                                  buttonKey: globalKeyList[e],
+                                  message: '途中月の消去はできません。',
+                                  displayDuration: const Duration(seconds: 2),
+                                );
+
+                                return;
+                              }
+                            }
+
+                            if (e == 1) {
+                              if (appParamState.monthGeolocAddMonthButtonLabelList.isEmpty) {
+                                showButtonErrorOverlay(
+                                  context: context,
+                                  buttonKey: globalKeyList[e],
+                                  message: '飛び月の追加はできません。',
+                                  displayDuration: const Duration(seconds: 2),
+                                );
+
+                                return;
+                              }
+                            }
+
+                            appParamNotifier.setMonthGeolocAddMonthButtonLabelList(str: blockYm);
+                          },
+                          child: Container(
+                            key: globalKeyList[e],
+                            width: 60,
+                            height: 60,
+                            margin: const EdgeInsets.all(5),
+                            decoration: BoxDecoration(
+                              color: (appParamState.monthGeolocAddMonthButtonLabelList.contains(blockYm))
+                                  ? Colors.redAccent.withOpacity(0.3)
+                                  : Colors.black.withOpacity(0.3),
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Column(
+                              children: <Widget>[
+                                const SizedBox(height: 10),
+                                Text('-${e + 1}month', style: const TextStyle(fontSize: 10)),
+                                const SizedBox(height: 5),
+                                Text(blockYm),
+                              ],
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                    const SizedBox(width: 150),
+                    Container(
+                      decoration:
+                          BoxDecoration(color: Colors.blue.withOpacity(0.3), borderRadius: BorderRadius.circular(10)),
+                      child: IconButton(
+                        onPressed: () => setDefaultBoundsMap(),
+                        icon: const Icon(FontAwesomeIcons.expand),
+                      ),
+                    ),
                   ],
                 ),
               ),
-              if (appParamState.mapType == MapType.monthly) ...<Widget>[Container()],
-              if (appParamState.mapType == MapType.daily) ...<Widget>[
-                Container(
-                  decoration: BoxDecoration(
-                    color: Colors.redAccent.withOpacity(0.3),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Row(
-                    children: <Widget>[
-                      IconButton(
-                          onPressed: () => restrictionAreaMarkerEmphasis(),
-                          icon: const Icon(Icons.check_box, color: Colors.red)),
-                      IconButton(
-                          onPressed: () => displayEmphasisMarkersList(),
-                          icon: const Icon(Icons.list, color: Colors.red)),
-                      IconButton(
-                        onPressed: () => setState(() {
-                          emphasisMarkers.clear();
-
-                          emphasisMarkersIndices.clear();
-                        }),
-                        icon: const Icon(Icons.clear, color: Colors.red),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  ///
-  Widget dispMapStackPartsEnclosedMarkersInfoDisplay() {
-    return Positioned(
-      bottom: 20,
-      left: 20,
-      right: 20,
-      child: Container(
-        padding: const EdgeInsets.all(10),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(10),
-          boxShadow: <BoxShadow>[BoxShadow(color: Colors.black.withOpacity(0.1), blurRadius: 10)],
-        ),
-        height: context.screenSize.height * 0.3,
-        child: displayInnerPolygonTime(),
-      ),
-    );
-  }
-
-  ///
-  Widget dispMapStackPartsMonthlyBottom() {
-    return Positioned(
-      bottom: 0,
-      child: SizedBox(
-        width: context.screenSize.width,
-        child: Row(
-          children: <Widget>[
-            Row(
-              // ignore: always_specify_types
-              children: List.generate(2, (int index) => index).map((int e) {
-                final String blockYm = DateTime(
-                  widget.date.yyyymmdd.split('-')[0].toInt(),
-                  widget.date.yyyymmdd.split('-')[1].toInt() - (e + 1),
-                ).yyyymm;
-
-                return GestureDetector(
-                  onTap: () {
-                    if (e == 0) {
-                      if (appParamState.monthGeolocAddMonthButtonLabelList.length == 2) {
-                        showButtonErrorOverlay(
-                          context: context,
-                          buttonKey: globalKeyList[e],
-                          message: '途中月の消去はできません。',
-                          displayDuration: const Duration(seconds: 2),
-                        );
-
-                        return;
-                      }
-                    }
-
-                    if (e == 1) {
-                      if (appParamState.monthGeolocAddMonthButtonLabelList.isEmpty) {
-                        showButtonErrorOverlay(
-                          context: context,
-                          buttonKey: globalKeyList[e],
-                          message: '飛び月の追加はできません。',
-                          displayDuration: const Duration(seconds: 2),
-                        );
-
-                        return;
-                      }
-                    }
-
-                    appParamNotifier.setMonthGeolocAddMonthButtonLabelList(str: blockYm);
-                  },
-                  child: Container(
-                    key: globalKeyList[e],
-                    width: 60,
-                    height: 60,
-                    margin: const EdgeInsets.all(5),
-                    decoration: BoxDecoration(
-                      color: (appParamState.monthGeolocAddMonthButtonLabelList.contains(blockYm))
-                          ? Colors.redAccent.withOpacity(0.3)
-                          : Colors.black.withOpacity(0.3),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    child: Column(
-                      children: <Widget>[
-                        const SizedBox(height: 10),
-                        Text('-${e + 1}month', style: const TextStyle(fontSize: 10)),
-                        const SizedBox(height: 5),
-                        Text(blockYm),
-                      ],
-                    ),
-                  ),
-                );
-              }).toList(),
-            ),
-            const SizedBox(width: 150),
-            Container(
-              decoration: BoxDecoration(color: Colors.blue.withOpacity(0.3), borderRadius: BorderRadius.circular(10)),
-              child: IconButton(
-                onPressed: () => setDefaultBoundsMap(),
-                icon: const Icon(FontAwesomeIcons.expand),
-              ),
             ),
           ],
-        ),
+
+          /////
+
+          if (isLoading) ...<Widget>[const Center(child: CircularProgressIndicator())],
+
+          /////
+
+          if (!widget.displayMonthMap) ...<Widget>[
+            if (appParamState.selectedTimeGeoloc != null) ...<Widget>[
+              Positioned(
+                top: 150,
+                child: displayLatLngAddress(),
+              ),
+            ],
+          ],
+        ],
       ),
     );
   }
@@ -742,7 +737,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
           width: 40,
           height: 40,
           // ignore: use_if_null_to_convert_nulls_to_bools
-          child: (appParamState.mapType == MapType.monthly)
+          child: (widget.displayMonthMap)
               ? const Icon(Icons.ac_unit, size: 20, color: Colors.redAccent)
               : Stack(
                   children: <Widget>[
