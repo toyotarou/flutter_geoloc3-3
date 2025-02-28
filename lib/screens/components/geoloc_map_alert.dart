@@ -130,6 +130,8 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
 
   bool firstDisplayFinished = false;
 
+  late GeolocModel geolocStateListFirstRecord;
+
   ///
   @override
   Widget build(BuildContext context) {
@@ -141,11 +143,32 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
 
         makeMinMaxLatLng();
       } else {
-        gStateList = widget.geolocStateList
-            .where((GeolocModel element) =>
-                '${element.year}-${element.month}-${element.day}' ==
-                DateTime(widget.date.year, widget.date.month).yyyymmdd)
-            .toList();
+        geolocStateListFirstRecord = widget.geolocStateList.first;
+
+        if (widget.date.yyyymm == '${geolocStateListFirstRecord.year}-${geolocStateListFirstRecord.month}') {
+          gStateList = widget.geolocStateList
+              .where(
+                (GeolocModel element) =>
+                    '${element.year}-${element.month}-${element.day}' ==
+                    DateTime(
+                      geolocStateListFirstRecord.year.toInt(),
+                      geolocStateListFirstRecord.month.toInt(),
+                      geolocStateListFirstRecord.day.toInt(),
+                    ).yyyymmdd,
+              )
+              .toList();
+        } else {
+          gStateList = widget.geolocStateList
+              .where(
+                (GeolocModel element) =>
+                    '${element.year}-${element.month}-${element.day}' ==
+                    DateTime(
+                      widget.date.year,
+                      widget.date.month,
+                    ).yyyymmdd,
+              )
+              .toList();
+        }
       }
 
       firstDisplayFinished = true;
@@ -295,11 +318,17 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
     );
   }
 
+  PageController pageController = PageController(initialPage: 0);
+
   ///
   Widget displayMapStackPartsUpper() {
     int monthEnd = 0;
     if (appParamState.mapType == MapType.monthDays) {
       monthEnd = DateTime(widget.date.year, widget.date.month + 1, 0).day;
+    }
+
+    if (widget.date.yyyymm == '${geolocStateListFirstRecord.year}-${geolocStateListFirstRecord.month}') {
+      pageController = PageController(initialPage: geolocStateListFirstRecord.day.toInt() - 1);
     }
 
     return Positioned(
@@ -512,6 +541,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
                   width: 60,
                   height: 60,
                   child: PageView.builder(
+                    controller: pageController,
                     itemCount: monthEnd,
                     scrollDirection: Axis.vertical,
                     onPageChanged: (int index) {
