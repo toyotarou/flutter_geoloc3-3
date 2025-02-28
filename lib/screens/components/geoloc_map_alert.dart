@@ -128,14 +128,28 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
     super.dispose();
   }
 
+  bool firstDisplay = false;
+
   ///
   @override
   Widget build(BuildContext context) {
-    gStateList = <GeolocModel>[...widget.geolocStateList];
+    if (!firstDisplay) {
+      if (appParamState.mapType == MapType.daily || appParamState.mapType == MapType.monthly) {
+        gStateList = <GeolocModel>[...widget.geolocStateList];
 
-    makeSelectedHourMap();
+        makeSelectedHourMap();
 
-    makeMinMaxLatLng();
+        makeMinMaxLatLng();
+      } else {
+        gStateList = widget.geolocStateList
+            .where((GeolocModel element) =>
+                '${element.year}-${element.month}-${element.day}' ==
+                DateTime(widget.date.year, widget.date.month).yyyymmdd)
+            .toList();
+      }
+
+      firstDisplay = true;
+    }
 
     makeMarker();
 
@@ -175,19 +189,21 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
               if (appParamState.isMarkerShow) ...<Widget>[MarkerLayer(markers: markerList)],
 
               if (!appParamState.isMarkerShow) ...<Widget>[
-                // ignore: always_specify_types
-                PolylineLayer(
-                  polylines: <Polyline<Object>>[
-                    // ignore: always_specify_types
-                    Polyline(
-                      points: widget.geolocStateList
-                          .map((GeolocModel e) => LatLng(e.latitude.toDouble(), e.longitude.toDouble()))
-                          .toList(),
-                      color: Colors.redAccent,
-                      strokeWidth: 5,
-                    ),
-                  ],
-                ),
+                if (appParamState.mapType == MapType.daily || appParamState.mapType == MapType.monthly) ...<Widget>[
+                  // ignore: always_specify_types
+                  PolylineLayer(
+                    polylines: <Polyline<Object>>[
+                      // ignore: always_specify_types
+                      Polyline(
+                        points: widget.geolocStateList
+                            .map((GeolocModel e) => LatLng(e.latitude.toDouble(), e.longitude.toDouble()))
+                            .toList(),
+                        color: Colors.redAccent,
+                        strokeWidth: 5,
+                      ),
+                    ],
+                  ),
+                ],
               ],
 
               // ignore: always_specify_types
@@ -281,7 +297,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
 
   ///
   Widget displayMapStackPartsUpper() {
-    var monthEnd = 0;
+    int monthEnd = 0;
     if (appParamState.mapType == MapType.monthDays) {
       monthEnd = DateTime(widget.date.year, widget.date.month + 1, 0).day;
     }
@@ -308,7 +324,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
                     children: <Widget>[
                       Column(
                         children: <Widget>[
-                          Text(widget.date.yyyymmdd),
+                          Text((appParamState.mapType == MapType.daily) ? widget.date.yyyymmdd : widget.date.yyyymm),
                           if (appParamState.selectedTimeGeoloc != null) ...<Widget>[
                             Text(
                               appParamState.selectedTimeGeoloc!.time,
@@ -462,15 +478,6 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
 
               //:::::::::::::::::::::::::::::::::::::::::::::::::://
 
-              if (appParamState.mapType == MapType.monthly) ...<Widget>[Container()],
-
-              if (appParamState.mapType == MapType.monthDays) ...<Widget>[
-                Text(
-                  '01 - ${monthEnd}',
-                  style: TextStyle(color: Colors.purpleAccent),
-                )
-              ],
-
               if (appParamState.mapType == MapType.daily) ...<Widget>[
                 Container(
                   decoration: BoxDecoration(
@@ -498,12 +505,52 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
                 ),
               ],
 
+              if (appParamState.mapType == MapType.monthly) ...<Widget>[Container()],
+
+              if (appParamState.mapType == MapType.monthDays) ...<Widget>[
+                SizedBox(
+                  width: 60,
+                  height: 60,
+                  child: PageView.builder(
+                    itemCount: monthEnd,
+                    scrollDirection: Axis.vertical,
+                    onPageChanged: (int index) {
+                      updateGStateListWhenMonthDays(day: index + 1);
+                    },
+                    itemBuilder: (BuildContext context, int index) {
+                      final String youbi = DateTime(widget.date.year, widget.date.month, index + 1).youbiStr;
+
+                      return CircleAvatar(
+                        backgroundColor: Colors.blueAccent.withOpacity(0.3),
+                        child: Text(
+                          '${index + 1} ${youbi.substring(0, 3)}',
+                          style: const TextStyle(fontSize: 12, color: Colors.black),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+
               //:::::::::::::::::::::::::::::::::::::::::::::::::://
             ],
           ),
         ],
       ),
     );
+  }
+
+  ///
+  void updateGStateListWhenMonthDays({required int day}) {
+    setState(() {
+      gStateList = widget.geolocStateList
+          .where((GeolocModel element) =>
+              '${element.year}-${element.month}-${element.day}' ==
+              DateTime(widget.date.year, widget.date.month, day).yyyymmdd)
+          .toList();
+    });
+
+    setDefaultBoundsMap();
   }
 
   ///
@@ -749,6 +796,21 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
   ///
   void setDefaultBoundsMap() {
     if (gStateList.length > 1) {
+      if (appParamState.mapType == MapType.monthDays) {
+        final List<double> monthDaysLatList = <double>[];
+        final List<double> monthDaysLngList = <double>[];
+
+        for (final GeolocModel element in gStateList) {
+          monthDaysLatList.add(element.latitude.toDouble());
+          monthDaysLngList.add(element.longitude.toDouble());
+        }
+
+        minLat = monthDaysLatList.reduce(min);
+        maxLat = monthDaysLatList.reduce(max);
+        minLng = monthDaysLngList.reduce(min);
+        maxLng = monthDaysLngList.reduce(max);
+      }
+
       final LatLngBounds bounds = LatLngBounds.fromPoints(<LatLng>[LatLng(minLat, maxLng), LatLng(maxLat, minLng)]);
 
       final CameraFit cameraFit =
@@ -771,57 +833,54 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
   void makeMarker() {
     markerList = <Marker>[];
 
-    if (appParamState.mapType == MapType.daily || appParamState.mapType == MapType.monthly) {
-      for (final GeolocModel element in gStateList) {
-        final bool isRed = emphasisMarkers.contains(LatLng(element.latitude.toDouble(), element.longitude.toDouble()));
+    for (final GeolocModel element in gStateList) {
+      final bool isRed = emphasisMarkers.contains(LatLng(element.latitude.toDouble(), element.longitude.toDouble()));
 
-        final int? badgeIndex =
-            emphasisMarkersIndices[LatLng(element.latitude.toDouble(), element.longitude.toDouble())];
+      final int? badgeIndex = emphasisMarkersIndices[LatLng(element.latitude.toDouble(), element.longitude.toDouble())];
 
-        markerList.add(
-          Marker(
-            point: LatLng(element.latitude.toDouble(), element.longitude.toDouble()),
-            width: 40,
-            height: 40,
-            // ignore: use_if_null_to_convert_nulls_to_bools
-            child: (appParamState.mapType == MapType.monthly)
-                ? const Icon(Icons.ac_unit, size: 20, color: Colors.redAccent)
-                : Stack(
-                    children: <Widget>[
-                      CircleAvatar(
-                        // ignore: use_if_null_to_convert_nulls_to_bools
-                        backgroundColor: isRed
-                            ? Colors.redAccent.withOpacity(0.5)
-                            : (appParamState.selectedTimeGeoloc != null &&
-                                    appParamState.selectedTimeGeoloc!.time == element.time)
-                                ? Colors.redAccent.withOpacity(0.5)
+      markerList.add(
+        Marker(
+          point: LatLng(element.latitude.toDouble(), element.longitude.toDouble()),
+          width: 40,
+          height: 40,
+          // ignore: use_if_null_to_convert_nulls_to_bools
+          child: (appParamState.mapType == MapType.monthly)
+              ? const Icon(Icons.ac_unit, size: 20, color: Colors.redAccent)
+              : Stack(
+                  children: <Widget>[
+                    CircleAvatar(
+                      // ignore: use_if_null_to_convert_nulls_to_bools
+                      backgroundColor: isRed
+                          ? Colors.redAccent.withOpacity(0.5)
+                          : (appParamState.selectedTimeGeoloc != null &&
+                                  appParamState.selectedTimeGeoloc!.time == element.time)
+                              ? Colors.redAccent.withOpacity(0.5)
 
-                                // ignore: use_if_null_to_convert_nulls_to_bools
-                                : (widget.displayTempMap == true)
-                                    ? Colors.orangeAccent.withOpacity(0.5)
-                                    : Colors.green[900]?.withOpacity(0.5),
-                        child: Text(element.time, style: const TextStyle(color: Colors.white, fontSize: 10)),
-                      ),
-                      if (badgeIndex != null)
-                        Positioned(
-                          top: 0,
-                          left: 0,
-                          child: Container(
-                            width: 16,
-                            height: 16,
-                            alignment: Alignment.center,
-                            decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-                            child: Text(
-                              badgeIndex.toString(),
-                              style: const TextStyle(fontSize: 10, color: Colors.black),
-                            ),
+                              // ignore: use_if_null_to_convert_nulls_to_bools
+                              : (widget.displayTempMap == true)
+                                  ? Colors.orangeAccent.withOpacity(0.5)
+                                  : Colors.green[900]?.withOpacity(0.5),
+                      child: Text(element.time, style: const TextStyle(color: Colors.white, fontSize: 10)),
+                    ),
+                    if (badgeIndex != null)
+                      Positioned(
+                        top: 0,
+                        left: 0,
+                        child: Container(
+                          width: 16,
+                          height: 16,
+                          alignment: Alignment.center,
+                          decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                          child: Text(
+                            badgeIndex.toString(),
+                            style: const TextStyle(fontSize: 10, color: Colors.black),
                           ),
                         ),
-                    ],
-                  ),
-          ),
-        );
-      }
+                      ),
+                  ],
+                ),
+        ),
+      );
     }
   }
 

@@ -276,7 +276,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
             Positioned(
               bottom: 10,
               right: 10,
-              child: Column(
+              child: Row(
                 children: <Widget>[
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
@@ -313,6 +313,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
                     },
                     child: const Text('month days'),
                   ),
+                  const SizedBox(width: 10),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
                     onPressed: () {
