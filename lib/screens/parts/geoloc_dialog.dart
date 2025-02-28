@@ -3,7 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../controllers/app_params/app_params_notifier.dart';
+import '../../controllers/app_params/app_params.dart';
 import 'geoloc_overlay.dart';
 
 Future<void> GeolocDialog({
@@ -45,7 +45,7 @@ Future<void> GeolocDialog({
 
         if (from == 'PickupGeolocDisplayAlert' || from == 'TempleVisitedDateDisplayAlert' || from == 'HomeScreen') {
           if (ref != null) {
-            ref.read(appParamProvider.notifier).setSelectedTimeGeoloc();
+            ref.read(appParamsProvider.notifier).setSelectedTimeGeoloc();
           }
         }
       });

@@ -1,19 +1,50 @@
 import 'package:flutter/material.dart';
-import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
 import '../../enums/map_type.dart';
 import '../../models/geoloc_model.dart';
 import '../../models/temple_latlng_model.dart';
-import 'app_params_response_state.dart';
 
-final AutoDisposeStateNotifierProvider<AppParamNotifier, AppParamsResponseState> appParamProvider =
-    StateNotifierProvider.autoDispose<AppParamNotifier, AppParamsResponseState>(
-        (AutoDisposeStateNotifierProviderRef<AppParamNotifier, AppParamsResponseState> ref) {
-  return AppParamNotifier(const AppParamsResponseState());
-});
+part 'app_params.freezed.dart';
 
-class AppParamNotifier extends StateNotifier<AppParamsResponseState> {
-  AppParamNotifier(super.state);
+part 'app_params.g.dart';
+
+@freezed
+class AppParamsState with _$AppParamsState {
+  const factory AppParamsState({
+    DateTime? calendarSelectedDate,
+    GeolocModel? selectedTimeGeoloc,
+    @Default(true) bool isMarkerShow,
+    @Default('') String selectedHour,
+    @Default(0) double currentZoom,
+    @Default(5) int currentPaddingIndex,
+    LatLng? currentCenter,
+    @Default(false) bool isTempleCircleShow,
+    GeolocModel? polylineGeolocModel,
+    TempleInfoModel? selectedTemple,
+    @Default(-1) int timeGeolocDisplayStart,
+    @Default(-1) int timeGeolocDisplayEnd,
+    List<OverlayEntry>? bigEntries,
+    void Function(VoidCallback fn)? setStateCallback,
+    @Default(<String>[]) List<String> monthGeolocAddMonthButtonLabelList,
+
+    ///////////////////////////////////
+    Offset? overlayPosition,
+    List<OverlayEntry>? firstEntries,
+    List<OverlayEntry>? secondEntries,
+    @Default(false) bool visitedTempleMapDisplayFinish,
+    @Default(-1) int selectedTimeGeolocIndex,
+    MapType? mapType,
+  }) = _AppParamsState;
+}
+
+@Riverpod(keepAlive: true)
+class AppParams extends _$AppParams {
+  ///
+  @override
+  AppParamsState build() => const AppParamsState();
 
   ///
   void setCalendarSelectedDate({required DateTime date}) => state = state.copyWith(calendarSelectedDate: date);

@@ -3,8 +3,7 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:latlong2/latlong.dart';
 
-import '../../controllers/app_params/app_params_notifier.dart';
-import '../../controllers/app_params/app_params_response_state.dart';
+import '../../controllers/app_params/app_params.dart';
 import '../../extensions/extensions.dart';
 import '../../models/geoloc_model.dart';
 import '../../models/temple_latlng_model.dart';
@@ -48,8 +47,8 @@ mixin GeolocMapControlPanelAlertMixin on ConsumerState<GeolocMapControlPanelWidg
 
   ///
   Widget buildContent(BuildContext context) {
-    final AppParamNotifier appParamNotifier = ref.read(appParamProvider.notifier);
-    final AppParamsResponseState appParamState = ref.watch(appParamProvider);
+    final AppParams appParamNotifier = ref.read(appParamsProvider.notifier);
+    final AppParamsState appParamState = ref.watch(appParamsProvider);
 
     // final List<String> timeList = <String>[];
     // for (final GeolocModel element in widget.geolocStateList) {
@@ -467,8 +466,8 @@ mixin GeolocMapControlPanelAlertMixin on ConsumerState<GeolocMapControlPanelWidg
 
   ///
   void setDefaultBoundsMap() {
-    final AppParamNotifier appParamNotifier = ref.read(appParamProvider.notifier);
-    final AppParamsResponseState appParamState = ref.watch(appParamProvider);
+    final AppParams appParamNotifier = ref.read(appParamsProvider.notifier);
+    final AppParamsState appParamState = ref.watch(appParamsProvider);
 
     if (widget.geolocStateList.length > 1) {
       final LatLngBounds bounds = LatLngBounds.fromPoints(
@@ -491,8 +490,8 @@ mixin GeolocMapControlPanelAlertMixin on ConsumerState<GeolocMapControlPanelWidg
   ///
   Widget displayTempleGeolocTimeCircleAvatarList(
       {required TempleInfoModel temple, required List<String> templephotos}) {
-    final AppParamNotifier appParamNotifier = ref.read(appParamProvider.notifier);
-    final AppParamsResponseState appParamState = ref.watch(appParamProvider);
+    final AppParams appParamNotifier = ref.read(appParamsProvider.notifier);
+    final AppParamsState appParamState = ref.watch(appParamsProvider);
 
     final List<Widget> list = <Widget>[];
 

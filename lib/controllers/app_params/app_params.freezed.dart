@@ -3,7 +3,7 @@
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
-part of 'app_params_response_state.dart';
+part of 'app_params.dart';
 
 // **************************************************************************
 // FreezedGenerator
@@ -15,7 +15,7 @@ final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 /// @nodoc
-mixin _$AppParamsResponseState {
+mixin _$AppParamsState {
   DateTime? get calendarSelectedDate => throw _privateConstructorUsedError;
   GeolocModel? get selectedTimeGeoloc => throw _privateConstructorUsedError;
   bool get isMarkerShow => throw _privateConstructorUsedError;
@@ -41,15 +41,15 @@ mixin _$AppParamsResponseState {
   MapType? get mapType => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
-  $AppParamsResponseStateCopyWith<AppParamsResponseState> get copyWith =>
+  $AppParamsStateCopyWith<AppParamsState> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $AppParamsResponseStateCopyWith<$Res> {
-  factory $AppParamsResponseStateCopyWith(AppParamsResponseState value,
-          $Res Function(AppParamsResponseState) then) =
-      _$AppParamsResponseStateCopyWithImpl<$Res, AppParamsResponseState>;
+abstract class $AppParamsStateCopyWith<$Res> {
+  factory $AppParamsStateCopyWith(
+          AppParamsState value, $Res Function(AppParamsState) then) =
+      _$AppParamsStateCopyWithImpl<$Res, AppParamsState>;
   @useResult
   $Res call(
       {DateTime? calendarSelectedDate,
@@ -76,10 +76,9 @@ abstract class $AppParamsResponseStateCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$AppParamsResponseStateCopyWithImpl<$Res,
-        $Val extends AppParamsResponseState>
-    implements $AppParamsResponseStateCopyWith<$Res> {
-  _$AppParamsResponseStateCopyWithImpl(this._value, this._then);
+class _$AppParamsStateCopyWithImpl<$Res, $Val extends AppParamsState>
+    implements $AppParamsStateCopyWith<$Res> {
+  _$AppParamsStateCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
@@ -202,12 +201,11 @@ class _$AppParamsResponseStateCopyWithImpl<$Res,
 }
 
 /// @nodoc
-abstract class _$$AppParamsResponseStateImplCopyWith<$Res>
-    implements $AppParamsResponseStateCopyWith<$Res> {
-  factory _$$AppParamsResponseStateImplCopyWith(
-          _$AppParamsResponseStateImpl value,
-          $Res Function(_$AppParamsResponseStateImpl) then) =
-      __$$AppParamsResponseStateImplCopyWithImpl<$Res>;
+abstract class _$$AppParamsStateImplCopyWith<$Res>
+    implements $AppParamsStateCopyWith<$Res> {
+  factory _$$AppParamsStateImplCopyWith(_$AppParamsStateImpl value,
+          $Res Function(_$AppParamsStateImpl) then) =
+      __$$AppParamsStateImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -235,13 +233,11 @@ abstract class _$$AppParamsResponseStateImplCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$AppParamsResponseStateImplCopyWithImpl<$Res>
-    extends _$AppParamsResponseStateCopyWithImpl<$Res,
-        _$AppParamsResponseStateImpl>
-    implements _$$AppParamsResponseStateImplCopyWith<$Res> {
-  __$$AppParamsResponseStateImplCopyWithImpl(
-      _$AppParamsResponseStateImpl _value,
-      $Res Function(_$AppParamsResponseStateImpl) _then)
+class __$$AppParamsStateImplCopyWithImpl<$Res>
+    extends _$AppParamsStateCopyWithImpl<$Res, _$AppParamsStateImpl>
+    implements _$$AppParamsStateImplCopyWith<$Res> {
+  __$$AppParamsStateImplCopyWithImpl(
+      _$AppParamsStateImpl _value, $Res Function(_$AppParamsStateImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -269,7 +265,7 @@ class __$$AppParamsResponseStateImplCopyWithImpl<$Res>
     Object? selectedTimeGeolocIndex = null,
     Object? mapType = freezed,
   }) {
-    return _then(_$AppParamsResponseStateImpl(
+    return _then(_$AppParamsStateImpl(
       calendarSelectedDate: freezed == calendarSelectedDate
           ? _value.calendarSelectedDate
           : calendarSelectedDate // ignore: cast_nullable_to_non_nullable
@@ -361,8 +357,8 @@ class __$$AppParamsResponseStateImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$AppParamsResponseStateImpl implements _AppParamsResponseState {
-  const _$AppParamsResponseStateImpl(
+class _$AppParamsStateImpl implements _AppParamsState {
+  const _$AppParamsStateImpl(
       {this.calendarSelectedDate,
       this.selectedTimeGeoloc,
       this.isMarkerShow = true,
@@ -477,14 +473,14 @@ class _$AppParamsResponseStateImpl implements _AppParamsResponseState {
 
   @override
   String toString() {
-    return 'AppParamsResponseState(calendarSelectedDate: $calendarSelectedDate, selectedTimeGeoloc: $selectedTimeGeoloc, isMarkerShow: $isMarkerShow, selectedHour: $selectedHour, currentZoom: $currentZoom, currentPaddingIndex: $currentPaddingIndex, currentCenter: $currentCenter, isTempleCircleShow: $isTempleCircleShow, polylineGeolocModel: $polylineGeolocModel, selectedTemple: $selectedTemple, timeGeolocDisplayStart: $timeGeolocDisplayStart, timeGeolocDisplayEnd: $timeGeolocDisplayEnd, bigEntries: $bigEntries, setStateCallback: $setStateCallback, monthGeolocAddMonthButtonLabelList: $monthGeolocAddMonthButtonLabelList, overlayPosition: $overlayPosition, firstEntries: $firstEntries, secondEntries: $secondEntries, visitedTempleMapDisplayFinish: $visitedTempleMapDisplayFinish, selectedTimeGeolocIndex: $selectedTimeGeolocIndex, mapType: $mapType)';
+    return 'AppParamsState(calendarSelectedDate: $calendarSelectedDate, selectedTimeGeoloc: $selectedTimeGeoloc, isMarkerShow: $isMarkerShow, selectedHour: $selectedHour, currentZoom: $currentZoom, currentPaddingIndex: $currentPaddingIndex, currentCenter: $currentCenter, isTempleCircleShow: $isTempleCircleShow, polylineGeolocModel: $polylineGeolocModel, selectedTemple: $selectedTemple, timeGeolocDisplayStart: $timeGeolocDisplayStart, timeGeolocDisplayEnd: $timeGeolocDisplayEnd, bigEntries: $bigEntries, setStateCallback: $setStateCallback, monthGeolocAddMonthButtonLabelList: $monthGeolocAddMonthButtonLabelList, overlayPosition: $overlayPosition, firstEntries: $firstEntries, secondEntries: $secondEntries, visitedTempleMapDisplayFinish: $visitedTempleMapDisplayFinish, selectedTimeGeolocIndex: $selectedTimeGeolocIndex, mapType: $mapType)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$AppParamsResponseStateImpl &&
+            other is _$AppParamsStateImpl &&
             (identical(other.calendarSelectedDate, calendarSelectedDate) ||
                 other.calendarSelectedDate == calendarSelectedDate) &&
             (identical(other.selectedTimeGeoloc, selectedTimeGeoloc) ||
@@ -562,13 +558,13 @@ class _$AppParamsResponseStateImpl implements _AppParamsResponseState {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$AppParamsResponseStateImplCopyWith<_$AppParamsResponseStateImpl>
-      get copyWith => __$$AppParamsResponseStateImplCopyWithImpl<
-          _$AppParamsResponseStateImpl>(this, _$identity);
+  _$$AppParamsStateImplCopyWith<_$AppParamsStateImpl> get copyWith =>
+      __$$AppParamsStateImplCopyWithImpl<_$AppParamsStateImpl>(
+          this, _$identity);
 }
 
-abstract class _AppParamsResponseState implements AppParamsResponseState {
-  const factory _AppParamsResponseState(
+abstract class _AppParamsState implements AppParamsState {
+  const factory _AppParamsState(
       {final DateTime? calendarSelectedDate,
       final GeolocModel? selectedTimeGeoloc,
       final bool isMarkerShow,
@@ -589,7 +585,7 @@ abstract class _AppParamsResponseState implements AppParamsResponseState {
       final List<OverlayEntry>? secondEntries,
       final bool visitedTempleMapDisplayFinish,
       final int selectedTimeGeolocIndex,
-      final MapType? mapType}) = _$AppParamsResponseStateImpl;
+      final MapType? mapType}) = _$AppParamsStateImpl;
 
   @override
   DateTime? get calendarSelectedDate;
@@ -635,6 +631,6 @@ abstract class _AppParamsResponseState implements AppParamsResponseState {
   MapType? get mapType;
   @override
   @JsonKey(ignore: true)
-  _$$AppParamsResponseStateImplCopyWith<_$AppParamsResponseStateImpl>
-      get copyWith => throw _privateConstructorUsedError;
+  _$$AppParamsStateImplCopyWith<_$AppParamsStateImpl> get copyWith =>
+      throw _privateConstructorUsedError;
 }

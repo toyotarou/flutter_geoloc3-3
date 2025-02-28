@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import 'app_params/app_params_notifier.dart';
-import 'app_params/app_params_response_state.dart';
+import 'app_params/app_params.dart';
+
 import 'calendars/calendars_notifier.dart';
 import 'calendars/calendars_response_state.dart';
 import 'geoloc/geoloc.dart';
@@ -15,9 +15,9 @@ import 'walk_record/walk_record.dart';
 mixin ControllersMixin<T extends ConsumerStatefulWidget> on ConsumerState<T> {
   //==========================================//
 
-  AppParamsResponseState get appParamState => ref.watch(appParamProvider);
+  AppParamsState get appParamState => ref.watch(appParamsProvider);
 
-  AppParamNotifier get appParamNotifier => ref.read(appParamProvider.notifier);
+  AppParams get appParamNotifier => ref.read(appParamsProvider.notifier);
 
 //==========================================//
 

@@ -288,6 +288,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
                     GeolocDialog(
                       context: context,
                       widget: GeolocMapAlert(
+                        displayMonthMap: true,
+
+                        ///
+
                         date: (widget.baseYm == null) ? DateTime.now() : DateTime.parse('${widget.baseYm}-01 00:00:00'),
                         geolocStateList: monthGeolocModelList,
                         walkRecord: WalkRecordModel(
@@ -632,6 +636,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
                                                 GeolocDialog(
                                                   context: context,
                                                   widget: GeolocMapAlert(
+                                                    displayMonthMap: false,
+
+                                                    ///
+
                                                     date: DateTime.parse('$generateYmd 00:00:00'),
                                                     geolocStateList: geolocStateMap[generateYmd] ?? <GeolocModel>[],
                                                     walkRecord: walkRecordMap[generateYmd] ??

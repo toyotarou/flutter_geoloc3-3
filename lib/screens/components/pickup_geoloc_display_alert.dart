@@ -81,6 +81,10 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
                               GeolocDialog(
                                 context: context,
                                 widget: GeolocMapAlert(
+                                  displayMonthMap: false,
+
+                                  ///
+
                                   date: widget.date,
                                   geolocStateList: list,
                                   displayTempMap: true,

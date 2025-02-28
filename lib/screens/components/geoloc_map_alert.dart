@@ -95,6 +95,18 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
   void initState() {
     super.initState();
 
+    // print('----- 001');
+    // print(appParamState.mapType);
+    // print('----- 001');
+    //
+    //
+    //
+
+
+
+
+
+
     if (widget.displayMonthMap) {
       geolocNotifier.getAllGeoloc();
     }
@@ -146,6 +158,10 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
     if (templePhotoState.templePhotoDateMap.value != null) {
       templePhotoDateMap = templePhotoState.templePhotoDateMap.value!;
     }
+
+    print('----- 002');
+    print(appParamState.mapType);
+    print('----- 002');
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -724,6 +740,10 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
 
   ///
   void makeMarker() {
+    print('----- 003');
+    print(appParamState.mapType);
+    print('----- 003');
+
     markerList = <Marker>[];
 
     for (final GeolocModel element in gStateList) {

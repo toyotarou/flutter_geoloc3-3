@@ -84,6 +84,10 @@ class _TempleVisitedDateDisplayAlertState extends ConsumerState<TempleVisitedDat
                               GeolocDialog(
                                 context: context,
                                 widget: GeolocMapAlert(
+                                  displayMonthMap: false,
+
+                                  ///
+
                                   date: DateTime.parse('$date 00:00:00'),
                                   geolocStateList: geolocState.allGeolocMap[date] ?? <GeolocModel>[],
                                   walkRecord: walkRecordState.walkRecordMap[date] ??
