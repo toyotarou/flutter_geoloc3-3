@@ -8,6 +8,7 @@ import 'package:latlong2/latlong.dart';
 
 import '../../controllers/controllers_mixin.dart';
 import '../../controllers/lat_lng_address/lat_lng_address.dart';
+import '../../enums/map_type.dart';
 import '../../extensions/extensions.dart';
 import '../../mixin/geoloc_map_control_panel/geoloc_map_control_panel_widget.dart';
 import '../../models/geoloc_model.dart';
@@ -25,7 +26,6 @@ class GeolocMapAlert extends ConsumerStatefulWidget {
       {super.key,
       required this.geolocStateList,
       this.displayTempMap,
-      required this.displayMonthMap,
       required this.walkRecord,
       this.templeInfoList,
       required this.date});
@@ -33,7 +33,6 @@ class GeolocMapAlert extends ConsumerStatefulWidget {
   final DateTime date;
   final List<GeolocModel> geolocStateList;
   final bool? displayTempMap;
-  final bool displayMonthMap;
   final WalkRecordModel walkRecord;
   final List<TempleInfoModel>? templeInfoList;
 
@@ -95,7 +94,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
   void initState() {
     super.initState();
 
-    if (widget.displayMonthMap) {
+    if (appParamState.mapType == MapType.monthly) {
       geolocNotifier.getAllGeoloc();
     }
 
@@ -320,7 +319,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
                                 ],
                               ),
                             ),
-                            if (!widget.displayMonthMap) ...<Widget>[
+                            if (appParamState.mapType == MapType.daily) ...<Widget>[
                               const SizedBox(width: 20),
                               Container(
                                 decoration: BoxDecoration(
@@ -407,8 +406,8 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
                         ],
                       ),
                     ),
-                    if (widget.displayMonthMap) ...<Widget>[Container()],
-                    if (!widget.displayMonthMap) ...<Widget>[
+                    if (appParamState.mapType == MapType.monthly) ...<Widget>[Container()],
+                    if (appParamState.mapType == MapType.daily) ...<Widget>[
                       Container(
                         decoration: BoxDecoration(
                           color: Colors.redAccent.withOpacity(0.3),
@@ -461,7 +460,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
 
           //////
 
-          if (widget.displayMonthMap) ...<Widget>[
+          if (appParamState.mapType == MapType.monthly) ...<Widget>[
             Positioned(
               bottom: 0,
               child: SizedBox(
@@ -550,7 +549,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
 
           /////
 
-          if (!widget.displayMonthMap) ...<Widget>[
+          if (appParamState.mapType == MapType.daily) ...<Widget>[
             if (appParamState.selectedTimeGeoloc != null) ...<Widget>[
               Positioned(
                 top: 150,
@@ -737,7 +736,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
           width: 40,
           height: 40,
           // ignore: use_if_null_to_convert_nulls_to_bools
-          child: (widget.displayMonthMap)
+          child: (appParamState.mapType == MapType.monthly)
               ? const Icon(Icons.ac_unit, size: 20, color: Colors.redAccent)
               : Stack(
                   children: <Widget>[

@@ -5,6 +5,7 @@ import 'package:latlong2/latlong.dart';
 import '../../collections/geoloc.dart';
 
 import '../../controllers/controllers_mixin.dart';
+import '../../enums/map_type.dart';
 import '../../extensions/extensions.dart';
 import '../../models/geoloc_model.dart';
 import '../../models/temple_latlng_model.dart';
@@ -75,13 +76,14 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
                                 );
                               }
 
+                              appParamNotifier.setMapType(type: MapType.daily);
+
                               GeolocDialog(
                                 context: context,
                                 widget: GeolocMapAlert(
                                   date: widget.date,
                                   geolocStateList: list,
                                   displayTempMap: true,
-                                  displayMonthMap: false,
                                   walkRecord: widget.walkRecord,
                                   templeInfoList: widget.templeInfoMap,
                                 ),

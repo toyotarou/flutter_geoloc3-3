@@ -12,11 +12,13 @@ import '../collections/geoloc.dart';
 import '../controllers/app_params/app_params_notifier.dart';
 import '../controllers/calendars/calendars_notifier.dart';
 import '../controllers/calendars/calendars_response_state.dart';
+import '../controllers/controllers_mixin.dart';
 import '../controllers/geoloc/geoloc.dart';
 import '../controllers/holidays/holidays_notifier.dart';
 import '../controllers/holidays/holidays_response_state.dart';
 import '../controllers/temple/temple.dart';
 import '../controllers/walk_record/walk_record.dart';
+import '../enums/map_type.dart';
 import '../extensions/extensions.dart';
 import '../models/geoloc_model.dart';
 import '../models/temple_latlng_model.dart';
@@ -102,7 +104,7 @@ class HomeScreen extends ConsumerStatefulWidget {
   ConsumerState<HomeScreen> createState() => _HomeScreenState();
 }
 
-class _HomeScreenState extends ConsumerState<HomeScreen> {
+class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<HomeScreen> {
   String bgText = 'no start';
   String statusText = 'status';
   bool isEnabledEvenIfKilled = true;
@@ -301,12 +303,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
 
 //                  ref.read(appParamProvider.notifier).setSelectedHour(hour: '');
 
+                    appParamNotifier.setMapType(type: MapType.monthly);
+
                     GeolocDialog(
                       context: context,
                       widget: GeolocMapAlert(
                         date: (widget.baseYm == null) ? DateTime.now() : DateTime.parse('${widget.baseYm}-01 00:00:00'),
                         geolocStateList: monthGeolocModelList,
-                        displayMonthMap: true,
                         walkRecord: WalkRecordModel(
                           id: 0,
                           year: '',
@@ -651,12 +654,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
                                             : () {
                                                 ref.read(appParamProvider.notifier).setIsMarkerShow(flag: false);
 
+                                                appParamNotifier.setMapType(type: MapType.daily);
+
                                                 GeolocDialog(
                                                   context: context,
                                                   widget: GeolocMapAlert(
                                                     date: DateTime.parse('$generateYmd 00:00:00'),
                                                     geolocStateList: geolocStateMap[generateYmd] ?? <GeolocModel>[],
-                                                    displayMonthMap: false,
                                                     walkRecord: walkRecordMap[generateYmd] ??
                                                         WalkRecordModel(
                                                             id: 0, year: '', month: '', day: '', step: 0, distance: 0),

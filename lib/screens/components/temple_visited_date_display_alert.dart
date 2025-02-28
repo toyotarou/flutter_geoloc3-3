@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../controllers/controllers_mixin.dart';
+import '../../enums/map_type.dart';
 import '../../extensions/extensions.dart';
 import '../../models/geoloc_model.dart';
 import '../../models/temple_latlng_model.dart';
@@ -78,12 +79,13 @@ class _TempleVisitedDateDisplayAlertState extends ConsumerState<TempleVisitedDat
                             onTap: () {
                               appParamNotifier.setIsMarkerShow(flag: false);
 
+                              appParamNotifier.setMapType(type: MapType.daily);
+
                               GeolocDialog(
                                 context: context,
                                 widget: GeolocMapAlert(
                                   date: DateTime.parse('$date 00:00:00'),
                                   geolocStateList: geolocState.allGeolocMap[date] ?? <GeolocModel>[],
-                                  displayMonthMap: false,
                                   walkRecord: walkRecordState.walkRecordMap[date] ??
                                       WalkRecordModel(id: 0, year: '', month: '', day: '', step: 0, distance: 0),
                                   templeInfoList: templeState.templeInfoMap[date],
