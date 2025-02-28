@@ -9,15 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../collections/geoloc.dart';
-import '../controllers/app_params/app_params_notifier.dart';
-import '../controllers/calendars/calendars_notifier.dart';
-import '../controllers/calendars/calendars_response_state.dart';
 import '../controllers/controllers_mixin.dart';
-import '../controllers/geoloc/geoloc.dart';
-import '../controllers/holidays/holidays_notifier.dart';
-import '../controllers/holidays/holidays_response_state.dart';
-import '../controllers/temple/temple.dart';
-import '../controllers/walk_record/walk_record.dart';
 import '../enums/map_type.dart';
 import '../extensions/extensions.dart';
 import '../models/geoloc_model.dart';
@@ -167,15 +159,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
       setState(() => statusText = message);
     });
 
-    ref
-        .read(geolocControllerProvider.notifier)
-        .getYearMonthGeoloc(yearmonth: (widget.baseYm != null) ? widget.baseYm! : DateTime.now().yyyymm);
+    geolocNotifier.getYearMonthGeoloc(yearmonth: (widget.baseYm != null) ? widget.baseYm! : DateTime.now().yyyymm);
 
-    ref
-        .read(walkRecordControllerProvider.notifier)
-        .getYearWalkRecord(yearmonth: (widget.baseYm != null) ? widget.baseYm! : DateTime.now().yyyymm);
+    walkRecordNotifier.getYearWalkRecord(yearmonth: (widget.baseYm != null) ? widget.baseYm! : DateTime.now().yyyymm);
 
-    ref.read(templeControllerProvider.notifier).getAllTempleModel();
+    templeNotifier.getAllTempleModel();
   }
 
   ///
@@ -199,20 +187,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
 
     if (widget.baseYm != null && !baseYmSetFlag) {
       // ignore: always_specify_types
-      Future(() => ref.read(calendarProvider.notifier).setCalendarYearMonth(baseYm: widget.baseYm));
+      Future(() => calendarNotifier.setCalendarYearMonth(baseYm: widget.baseYm));
 
       baseYmSetFlag = true;
     }
 
-    final CalendarsResponseState calendarState = ref.watch(calendarProvider);
-
-    ref.watch(geolocControllerProvider.select((GeolocControllerState value) => value.geolocMap));
-
-    final List<GeolocModel> geolocStateList =
-        ref.watch(geolocControllerProvider.select((GeolocControllerState value) => value.geolocList));
-
     // ignore: always_specify_types
-    final List<GeolocModel> monthGeolocModelList = List.from(geolocStateList);
+    final List<GeolocModel> monthGeolocModelList = List.from(geolocState.geolocList);
+//    final List<GeolocModel> monthGeolocModelList = List.from(geolocStateList);
 
     if (geolocMap.isNotEmpty) {
       geolocMap.forEach((String key, List<Geoloc> value) {
@@ -297,11 +279,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
               child: ElevatedButton(
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
                   onPressed: () {
-                    ref.read(appParamProvider.notifier).setIsMarkerShow(flag: true);
+                    appParamNotifier.setIsMarkerShow(flag: true);
 
-                    ref.read(appParamProvider.notifier).setSelectedTimeGeoloc();
-
-//                  ref.read(appParamProvider.notifier).setSelectedHour(hour: '');
+                    appParamNotifier.setSelectedTimeGeoloc();
 
                     appParamNotifier.setMapType(type: MapType.monthly);
 
@@ -478,22 +458,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
 
   ///
   Widget _getCalendar() {
-    final Map<String, List<GeolocModel>> geolocStateMap =
-        ref.watch(geolocControllerProvider.select((GeolocControllerState value) => value.geolocMap));
-
-    final Map<String, WalkRecordModel> walkRecordMap =
-        ref.watch(walkRecordControllerProvider.select((WalkRecordControllerState value) => value.walkRecordMap));
-
-    final Map<String, List<TempleInfoModel>> templeInfoMap =
-        ref.watch(templeControllerProvider.select((TempleControllerState value) => value.templeInfoMap));
-
-    final HolidaysResponseState holidayState = ref.watch(holidayProvider);
-
-    if (holidayState.holidayMap.value != null) {
-      _holidayMap = holidayState.holidayMap.value!;
+    if (holidaysState.holidayMap.value != null) {
+      _holidayMap = holidaysState.holidayMap.value!;
     }
-
-    final CalendarsResponseState calendarState = ref.watch(calendarProvider);
 
     _calendarMonthFirst = DateTime.parse('${calendarState.baseYearMonth}-01 00:00:00');
 
@@ -522,8 +489,14 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
 
     final List<Widget> list = <Widget>[];
     for (int i = 0; i < weekNum; i++) {
-      list.add(_getCalendarRow(
-          week: i, geolocStateMap: geolocStateMap, walkRecordMap: walkRecordMap, templeInfoMap: templeInfoMap));
+      list.add(
+        _getCalendarRow(
+          week: i,
+          geolocStateMap: geolocState.geolocMap,
+          walkRecordMap: walkRecordState.walkRecordMap,
+          templeInfoMap: templeState.templeInfoMap,
+        ),
+      );
     }
 
     /// SingleChildScrollViewにできない
@@ -652,7 +625,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
                                         onPressed: (geolocStateMap[generateYmd] == null)
                                             ? null
                                             : () {
-                                                ref.read(appParamProvider.notifier).setIsMarkerShow(flag: false);
+                                                appParamNotifier.setIsMarkerShow(flag: false);
 
                                                 appParamNotifier.setMapType(type: MapType.daily);
 
@@ -696,26 +669,18 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
   }
 
   ///
-  void _goPrevMonth() {
-    final CalendarsResponseState calendarState = ref.watch(calendarProvider);
-
-    Navigator.pushReplacement(
-      context,
-      // ignore: inference_failure_on_instance_creation, always_specify_types
-      MaterialPageRoute(builder: (BuildContext context) => HomeScreen(baseYm: calendarState.prevYearMonth)),
-    );
-  }
+  void _goPrevMonth() => Navigator.pushReplacement(
+        context,
+        // ignore: inference_failure_on_instance_creation, always_specify_types
+        MaterialPageRoute(builder: (BuildContext context) => HomeScreen(baseYm: calendarState.prevYearMonth)),
+      );
 
   ///
-  void _goNextMonth() {
-    final CalendarsResponseState calendarState = ref.watch(calendarProvider);
-
-    Navigator.pushReplacement(
-      context,
-      // ignore: inference_failure_on_instance_creation, always_specify_types
-      MaterialPageRoute(builder: (BuildContext context) => HomeScreen(baseYm: calendarState.nextYearMonth)),
-    );
-  }
+  void _goNextMonth() => Navigator.pushReplacement(
+        context,
+        // ignore: inference_failure_on_instance_creation, always_specify_types
+        MaterialPageRoute(builder: (BuildContext context) => HomeScreen(baseYm: calendarState.nextYearMonth)),
+      );
 
   ///
   Future<void> _makeGeolocList() async {
