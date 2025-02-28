@@ -276,39 +276,80 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
             Positioned(
               bottom: 10,
               right: 10,
-              child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
-                  onPressed: () {
-                    appParamNotifier.setIsMarkerShow(flag: true);
+              child: Column(
+                children: <Widget>[
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
+                    onPressed: () {
+                      appParamNotifier.setIsMarkerShow(flag: true);
 
-                    appParamNotifier.setSelectedTimeGeoloc();
+                      appParamNotifier.setSelectedTimeGeoloc();
 
-                    appParamNotifier.setMapType(type: MapType.monthly);
+                      appParamNotifier.setMapType(type: MapType.monthDays);
 
-                    GeolocDialog(
-                      context: context,
-                      widget: GeolocMapAlert(
-                        displayMonthMap: true,
+                      GeolocDialog(
+                        context: context,
+                        widget: GeolocMapAlert(
+                          displayMonthMap: false,
 
-                        ///
+                          ///
 
-                        date: (widget.baseYm == null) ? DateTime.now() : DateTime.parse('${widget.baseYm}-01 00:00:00'),
-                        geolocStateList: monthGeolocModelList,
-                        walkRecord: WalkRecordModel(
-                          id: 0,
-                          year: '',
-                          month: '',
-                          day: '',
-                          step: 0,
-                          distance: 0,
+                          date:
+                              (widget.baseYm == null) ? DateTime.now() : DateTime.parse('${widget.baseYm}-01 00:00:00'),
+                          geolocStateList: monthGeolocModelList,
+                          walkRecord: WalkRecordModel(
+                            id: 0,
+                            year: '',
+                            month: '',
+                            day: '',
+                            step: 0,
+                            distance: 0,
+                          ),
                         ),
-                      ),
-                      executeFunctionWhenDialogClose: true,
-                      ref: ref,
-                      from: 'HomeScreen',
-                    );
-                  },
-                  child: const Text('month')),
+                        executeFunctionWhenDialogClose: true,
+                        ref: ref,
+                        from: 'HomeScreen',
+                      );
+                    },
+                    child: const Text('month days'),
+                  ),
+                  ElevatedButton(
+                    style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
+                    onPressed: () {
+                      appParamNotifier.setIsMarkerShow(flag: true);
+
+                      appParamNotifier.setSelectedTimeGeoloc();
+
+                      appParamNotifier.setMapType(type: MapType.monthly);
+
+                      GeolocDialog(
+                        context: context,
+                        widget: GeolocMapAlert(
+                          displayMonthMap: true,
+
+                          ///
+
+                          date:
+                              (widget.baseYm == null) ? DateTime.now() : DateTime.parse('${widget.baseYm}-01 00:00:00'),
+                          geolocStateList: monthGeolocModelList,
+                          walkRecord: WalkRecordModel(
+                            id: 0,
+                            year: '',
+                            month: '',
+                            day: '',
+                            step: 0,
+                            distance: 0,
+                          ),
+                        ),
+                        executeFunctionWhenDialogClose: true,
+                        ref: ref,
+                        from: 'HomeScreen',
+                      );
+                    },
+                    child: const Text('month'),
+                  ),
+                ],
+              ),
             ),
           ],
         ],
@@ -629,7 +670,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
                                         onPressed: (geolocStateMap[generateYmd] == null)
                                             ? null
                                             : () {
-                                                appParamNotifier.setIsMarkerShow(flag: false);
+                                                appParamNotifier.setIsMarkerShow(flag: true);
 
                                                 appParamNotifier.setMapType(type: MapType.daily);
 

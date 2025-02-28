@@ -281,6 +281,11 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
 
   ///
   Widget displayMapStackPartsUpper() {
+    var monthEnd = 0;
+    if (appParamState.mapType == MapType.monthDays) {
+      monthEnd = DateTime(widget.date.year, widget.date.month + 1, 0).day;
+    }
+
     return Positioned(
       top: 5,
       right: 5,
@@ -405,24 +410,40 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              if (widget.walkRecord.step != 0 && widget.walkRecord.distance != 0) ...<Widget>[
-                Text(
-                  'step: ${widget.walkRecord.step} / distance: ${widget.walkRecord.distance}',
-                  style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
-                ),
+              //:::::::::::::::::::::::::::::::::::::::::::::::::://
+
+              if (appParamState.mapType == MapType.daily) ...<Widget>[
+                if (widget.walkRecord.step != 0 && widget.walkRecord.distance != 0) ...<Widget>[
+                  Text(
+                    'step: ${widget.walkRecord.step} / distance: ${widget.walkRecord.distance}',
+                    style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+                  ),
+                ],
+                if (widget.walkRecord.step == 0 || widget.walkRecord.distance == 0) ...<Widget>[
+                  Container(),
+                ],
               ],
-              if (widget.walkRecord.step == 0 || widget.walkRecord.distance == 0) ...<Widget>[
+              if (appParamState.mapType == MapType.monthly || appParamState.mapType == MapType.monthDays) ...<Widget>[
                 Container(),
               ],
+
+              //:::::::::::::::::::::::::::::::::::::::::::::::::://
+
+              //:::::::::::::::::::::::::::::::::::::::::::::::::://
+
               Text(
                 gStateList.length.toString(),
                 style: const TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
               ),
+
+              //:::::::::::::::::::::::::::::::::::::::::::::::::://
             ],
           ),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
+              //:::::::::::::::::::::::::::::::::::::::::::::::::://
+
               Container(
                 decoration: BoxDecoration(
                   color: Colors.purpleAccent.withOpacity(0.3),
@@ -436,7 +457,20 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
                   ],
                 ),
               ),
+
+              //:::::::::::::::::::::::::::::::::::::::::::::::::://
+
+              //:::::::::::::::::::::::::::::::::::::::::::::::::://
+
               if (appParamState.mapType == MapType.monthly) ...<Widget>[Container()],
+
+              if (appParamState.mapType == MapType.monthDays) ...<Widget>[
+                Text(
+                  '01 - ${monthEnd}',
+                  style: TextStyle(color: Colors.purpleAccent),
+                )
+              ],
+
               if (appParamState.mapType == MapType.daily) ...<Widget>[
                 Container(
                   decoration: BoxDecoration(
@@ -463,6 +497,8 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
                   ),
                 ),
               ],
+
+              //:::::::::::::::::::::::::::::::::::::::::::::::::://
             ],
           ),
         ],
@@ -735,54 +771,57 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
   void makeMarker() {
     markerList = <Marker>[];
 
-    for (final GeolocModel element in gStateList) {
-      final bool isRed = emphasisMarkers.contains(LatLng(element.latitude.toDouble(), element.longitude.toDouble()));
+    if (appParamState.mapType == MapType.daily || appParamState.mapType == MapType.monthly) {
+      for (final GeolocModel element in gStateList) {
+        final bool isRed = emphasisMarkers.contains(LatLng(element.latitude.toDouble(), element.longitude.toDouble()));
 
-      final int? badgeIndex = emphasisMarkersIndices[LatLng(element.latitude.toDouble(), element.longitude.toDouble())];
+        final int? badgeIndex =
+            emphasisMarkersIndices[LatLng(element.latitude.toDouble(), element.longitude.toDouble())];
 
-      markerList.add(
-        Marker(
-          point: LatLng(element.latitude.toDouble(), element.longitude.toDouble()),
-          width: 40,
-          height: 40,
-          // ignore: use_if_null_to_convert_nulls_to_bools
-          child: (appParamState.mapType == MapType.monthly)
-              ? const Icon(Icons.ac_unit, size: 20, color: Colors.redAccent)
-              : Stack(
-                  children: <Widget>[
-                    CircleAvatar(
-                      // ignore: use_if_null_to_convert_nulls_to_bools
-                      backgroundColor: isRed
-                          ? Colors.redAccent.withOpacity(0.5)
-                          : (appParamState.selectedTimeGeoloc != null &&
-                                  appParamState.selectedTimeGeoloc!.time == element.time)
-                              ? Colors.redAccent.withOpacity(0.5)
+        markerList.add(
+          Marker(
+            point: LatLng(element.latitude.toDouble(), element.longitude.toDouble()),
+            width: 40,
+            height: 40,
+            // ignore: use_if_null_to_convert_nulls_to_bools
+            child: (appParamState.mapType == MapType.monthly)
+                ? const Icon(Icons.ac_unit, size: 20, color: Colors.redAccent)
+                : Stack(
+                    children: <Widget>[
+                      CircleAvatar(
+                        // ignore: use_if_null_to_convert_nulls_to_bools
+                        backgroundColor: isRed
+                            ? Colors.redAccent.withOpacity(0.5)
+                            : (appParamState.selectedTimeGeoloc != null &&
+                                    appParamState.selectedTimeGeoloc!.time == element.time)
+                                ? Colors.redAccent.withOpacity(0.5)
 
-                              // ignore: use_if_null_to_convert_nulls_to_bools
-                              : (widget.displayTempMap == true)
-                                  ? Colors.orangeAccent.withOpacity(0.5)
-                                  : Colors.green[900]?.withOpacity(0.5),
-                      child: Text(element.time, style: const TextStyle(color: Colors.white, fontSize: 10)),
-                    ),
-                    if (badgeIndex != null)
-                      Positioned(
-                        top: 0,
-                        left: 0,
-                        child: Container(
-                          width: 16,
-                          height: 16,
-                          alignment: Alignment.center,
-                          decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-                          child: Text(
-                            badgeIndex.toString(),
-                            style: const TextStyle(fontSize: 10, color: Colors.black),
+                                // ignore: use_if_null_to_convert_nulls_to_bools
+                                : (widget.displayTempMap == true)
+                                    ? Colors.orangeAccent.withOpacity(0.5)
+                                    : Colors.green[900]?.withOpacity(0.5),
+                        child: Text(element.time, style: const TextStyle(color: Colors.white, fontSize: 10)),
+                      ),
+                      if (badgeIndex != null)
+                        Positioned(
+                          top: 0,
+                          left: 0,
+                          child: Container(
+                            width: 16,
+                            height: 16,
+                            alignment: Alignment.center,
+                            decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
+                            child: Text(
+                              badgeIndex.toString(),
+                              style: const TextStyle(fontSize: 10, color: Colors.black),
+                            ),
                           ),
                         ),
-                      ),
-                  ],
-                ),
-        ),
-      );
+                    ],
+                  ),
+          ),
+        );
+      }
     }
   }
 
