@@ -8,6 +8,7 @@ import 'package:latlong2/latlong.dart';
 
 import '../../controllers/controllers_mixin.dart';
 import '../../controllers/lat_lng_address/lat_lng_address.dart';
+import '../../enums/map_type.dart';
 import '../../extensions/extensions.dart';
 import '../../mixin/geoloc_map_control_panel/geoloc_map_control_panel_widget.dart';
 import '../../models/geoloc_model.dart';
@@ -95,18 +96,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
   void initState() {
     super.initState();
 
-    // print('----- 001');
-    // print(appParamState.mapType);
-    // print('----- 001');
-    //
-    //
-    //
-
-
-
-
-
-
+    /// ここは widget.displayMonthMap を使う
     if (widget.displayMonthMap) {
       geolocNotifier.getAllGeoloc();
     }
@@ -158,10 +148,6 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
     if (templePhotoState.templePhotoDateMap.value != null) {
       templePhotoDateMap = templePhotoState.templePhotoDateMap.value!;
     }
-
-    print('----- 002');
-    print(appParamState.mapType);
-    print('----- 002');
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -336,7 +322,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
                                 ],
                               ),
                             ),
-                            if (!widget.displayMonthMap) ...<Widget>[
+                            if (appParamState.mapType == MapType.daily) ...<Widget>[
                               const SizedBox(width: 20),
                               Container(
                                 decoration: BoxDecoration(
@@ -423,8 +409,8 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
                         ],
                       ),
                     ),
-                    if (widget.displayMonthMap) ...<Widget>[Container()],
-                    if (!widget.displayMonthMap) ...<Widget>[
+                    if (appParamState.mapType == MapType.monthly) ...<Widget>[Container()],
+                    if (appParamState.mapType == MapType.daily) ...<Widget>[
                       Container(
                         decoration: BoxDecoration(
                           color: Colors.redAccent.withOpacity(0.3),
@@ -477,7 +463,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
 
           //////
 
-          if (widget.displayMonthMap) ...<Widget>[
+          if (appParamState.mapType == MapType.monthly) ...<Widget>[
             Positioned(
               bottom: 0,
               child: SizedBox(
@@ -566,7 +552,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
 
           /////
 
-          if (!widget.displayMonthMap) ...<Widget>[
+          if (appParamState.mapType == MapType.daily) ...<Widget>[
             if (appParamState.selectedTimeGeoloc != null) ...<Widget>[
               Positioned(
                 top: 150,
@@ -740,10 +726,6 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
 
   ///
   void makeMarker() {
-    print('----- 003');
-    print(appParamState.mapType);
-    print('----- 003');
-
     markerList = <Marker>[];
 
     for (final GeolocModel element in gStateList) {
@@ -757,7 +739,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
           width: 40,
           height: 40,
           // ignore: use_if_null_to_convert_nulls_to_bools
-          child: (widget.displayMonthMap)
+          child: (appParamState.mapType == MapType.monthly)
               ? const Icon(Icons.ac_unit, size: 20, color: Colors.redAccent)
               : Stack(
                   children: <Widget>[
