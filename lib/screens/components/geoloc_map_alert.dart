@@ -128,12 +128,12 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
     super.dispose();
   }
 
-  bool firstDisplay = false;
+  bool firstDisplayFinished = false;
 
   ///
   @override
   Widget build(BuildContext context) {
-    if (!firstDisplay) {
+    if (!firstDisplayFinished) {
       if (appParamState.mapType == MapType.daily || appParamState.mapType == MapType.monthly) {
         gStateList = <GeolocModel>[...widget.geolocStateList];
 
@@ -148,7 +148,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
             .toList();
       }
 
-      firstDisplay = true;
+      firstDisplayFinished = true;
     }
 
     makeMarker();
@@ -617,6 +617,8 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
                     }
 
                     appParamNotifier.setMonthGeolocAddMonthButtonLabelList(str: blockYm);
+
+                    setState(() => firstDisplayFinished = false);
                   },
                   child: Container(
                     key: globalKeyList[e],

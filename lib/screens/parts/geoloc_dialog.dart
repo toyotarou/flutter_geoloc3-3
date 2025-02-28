@@ -46,6 +46,8 @@ Future<void> GeolocDialog({
         if (from == 'PickupGeolocDisplayAlert' || from == 'TempleVisitedDateDisplayAlert' || from == 'HomeScreen') {
           if (ref != null) {
             ref.read(appParamsProvider.notifier).setSelectedTimeGeoloc();
+
+            ref.read(appParamsProvider.notifier).clearMonthGeolocAddMonthButtonLabelList();
           }
         }
       });

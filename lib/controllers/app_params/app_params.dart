@@ -81,12 +81,9 @@ class AppParams extends _$AppParams {
       state = state.copyWith(timeGeolocDisplayStart: start, timeGeolocDisplayEnd: end);
 
   ///
-  void setTempleGeolocTimeCircleAvatarParams({
-    required List<OverlayEntry>? bigEntries,
-    required void Function(VoidCallback fn)? setStateCallback,
-  }) {
-    state = state.copyWith(bigEntries: bigEntries, setStateCallback: setStateCallback);
-  }
+  void setTempleGeolocTimeCircleAvatarParams(
+          {required List<OverlayEntry>? bigEntries, required void Function(VoidCallback fn)? setStateCallback}) =>
+      state = state.copyWith(bigEntries: bigEntries, setStateCallback: setStateCallback);
 
   ///
   void setMonthGeolocAddMonthButtonLabelList({required String str}) {
@@ -100,6 +97,10 @@ class AppParams extends _$AppParams {
 
     state = state.copyWith(monthGeolocAddMonthButtonLabelList: list);
   }
+
+  ///
+  void clearMonthGeolocAddMonthButtonLabelList() =>
+      state = state.copyWith(monthGeolocAddMonthButtonLabelList: <String>[]);
 
   ///////////////////////////////
 
