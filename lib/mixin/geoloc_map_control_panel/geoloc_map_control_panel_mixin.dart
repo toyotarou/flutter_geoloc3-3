@@ -51,12 +51,18 @@ mixin GeolocMapControlPanelAlertMixin on ConsumerState<GeolocMapControlPanelWidg
     final AppParamNotifier appParamNotifier = ref.read(appParamProvider.notifier);
     final AppParamsResponseState appParamState = ref.watch(appParamProvider);
 
-    final List<String> timeList = <String>[];
-    for (final GeolocModel element in widget.geolocStateList) {
-      final List<String> exTime = element.time.split(':');
-      if (!timeList.contains(exTime[0])) {
-        timeList.add(exTime[0]);
-      }
+    // final List<String> timeList = <String>[];
+    // for (final GeolocModel element in widget.geolocStateList) {
+    //   final List<String> exTime = element.time.split(':');
+    //   if (!timeList.contains(exTime[0])) {
+    //     timeList.add(exTime[0]);
+    //   }
+    // }
+
+    int autoPlayTimeGeolocIndex = appParamState.selectedTimeGeolocIndex;
+
+    if (autoPlayTimeGeolocIndex == -1) {
+      autoPlayTimeGeolocIndex = 0;
     }
 
     // ignore: always_specify_types
@@ -130,7 +136,7 @@ mixin GeolocMapControlPanelAlertMixin on ConsumerState<GeolocMapControlPanelWidg
                       setState(() => _currentIndex = 0);
 
                       //--------------------------------------------------------------//
-                      for (int i = 0; i < widget.geolocStateList.length; i++) {
+                      for (int i = autoPlayTimeGeolocIndex; i < widget.geolocStateList.length; i++) {
                         if (currentTaskId != _taskId) {
                           return;
                         }
