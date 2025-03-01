@@ -544,7 +544,9 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
                   width: 60,
                   height: 60,
                   child: PageView.builder(
-                    itemCount: monthEnd - recordFirstMonthAddDays,
+                    itemCount: (widget.date.yyyymm == DateTime.now().yyyymm)
+                        ? DateTime.now().day
+                        : monthEnd - recordFirstMonthAddDays,
                     scrollDirection: Axis.vertical,
                     onPageChanged: (int index) =>
                         updateGStateListWhenMonthDays(day: index + 1 + recordFirstMonthAddDays),
