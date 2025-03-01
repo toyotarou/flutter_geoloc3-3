@@ -93,6 +93,8 @@ class _TempleVisitedDateDisplayAlertState extends ConsumerState<TempleVisitedDat
                                   walkRecord: walkRecordState.walkRecordMap[date] ??
                                       WalkRecordModel(id: 0, year: '', month: '', day: '', step: 0, distance: 0),
                                   templeInfoList: templeState.templeInfoMap[date],
+
+                                  polylineModeAsTempleVisitedDate: true,
                                 ),
                                 executeFunctionWhenDialogClose: true,
                                 ref: ref,

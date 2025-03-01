@@ -29,7 +29,8 @@ class GeolocMapAlert extends ConsumerStatefulWidget {
       required this.displayMonthMap,
       required this.walkRecord,
       this.templeInfoList,
-      required this.date});
+      required this.date,
+      this.polylineModeAsTempleVisitedDate});
 
   final DateTime date;
   final List<GeolocModel> geolocStateList;
@@ -37,6 +38,7 @@ class GeolocMapAlert extends ConsumerStatefulWidget {
   final bool displayMonthMap;
   final WalkRecordModel walkRecord;
   final List<TempleInfoModel>? templeInfoList;
+  final bool? polylineModeAsTempleVisitedDate;
 
   @override
   ConsumerState<GeolocMapAlert> createState() => _GeolocMapAlertState();
@@ -91,6 +93,8 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
 
   final List<OverlayEntry> _secondEntries = <OverlayEntry>[];
 
+  List<GeolocModel> sortedWidgetGeolocStateList = <GeolocModel>[];
+
   ///
   @override
   void initState() {
@@ -118,6 +122,11 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
         });
       });
     });
+
+    sortedWidgetGeolocStateList = widget.geolocStateList
+      ..sort(
+          (GeolocModel a, GeolocModel b) => '${a.year}-${a.month}-${a.day}'.compareTo('${b.year}-${b.month}-${b.day}'))
+      ..sort((GeolocModel a, GeolocModel b) => a.time.compareTo(b.time));
   }
 
   ///
@@ -137,17 +146,17 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
   Widget build(BuildContext context) {
     if (!firstDisplayFinished) {
       if (appParamState.mapType == MapType.daily || appParamState.mapType == MapType.monthly) {
-        gStateList = <GeolocModel>[...widget.geolocStateList];
+        gStateList = <GeolocModel>[...sortedWidgetGeolocStateList];
 
         makeSelectedHourMap();
 
         makeMinMaxLatLng();
       } else {
-        geolocStateListFirstRecord = widget.geolocStateList.first;
+        geolocStateListFirstRecord = sortedWidgetGeolocStateList.first;
 
         if (geolocStateListFirstRecord != null &&
             widget.date.yyyymm == '${geolocStateListFirstRecord!.year}-${geolocStateListFirstRecord!.month}') {
-          gStateList = widget.geolocStateList
+          gStateList = sortedWidgetGeolocStateList
               .where(
                 (GeolocModel element) =>
                     '${element.year}-${element.month}-${element.day}' ==
@@ -159,7 +168,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
               )
               .toList();
         } else {
-          gStateList = widget.geolocStateList
+          gStateList = sortedWidgetGeolocStateList
               .where(
                 (GeolocModel element) =>
                     '${element.year}-${element.month}-${element.day}' ==
@@ -178,6 +187,8 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
     makeMarker();
 
     polylineGeolocList = (!appParamState.isMarkerShow) ? gStateList : <GeolocModel>[];
+
+    polylineGeolocList.sort((GeolocModel a, GeolocModel b) => a.time.compareTo(b.time));
 
     if (appParamState.polylineGeolocModel != null) {
       makePolylineGeolocList(geoloc: appParamState.polylineGeolocModel!);
@@ -213,13 +224,14 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
               if (appParamState.isMarkerShow) ...<Widget>[MarkerLayer(markers: markerList)],
 
               if (!appParamState.isMarkerShow) ...<Widget>[
-                if (appParamState.mapType == MapType.daily || appParamState.mapType == MapType.monthly) ...<Widget>[
+                if ((appParamState.mapType == MapType.daily || appParamState.mapType == MapType.monthly) &&
+                    widget.polylineModeAsTempleVisitedDate == false) ...<Widget>[
                   // ignore: always_specify_types
                   PolylineLayer(
                     polylines: <Polyline<Object>>[
                       // ignore: always_specify_types
                       Polyline(
-                        points: widget.geolocStateList
+                        points: sortedWidgetGeolocStateList
                             .map((GeolocModel e) => LatLng(e.latitude.toDouble(), e.longitude.toDouble()))
                             .toList(),
                         color: Colors.redAccent,
@@ -577,7 +589,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
   ///
   void updateGStateListWhenMonthDays({required int day}) {
     setState(() {
-      gStateList = widget.geolocStateList
+      gStateList = sortedWidgetGeolocStateList
           .where((GeolocModel element) =>
               '${element.year}-${element.month}-${element.day}' ==
               DateTime(widget.date.year, widget.date.month, day).yyyymmdd)
