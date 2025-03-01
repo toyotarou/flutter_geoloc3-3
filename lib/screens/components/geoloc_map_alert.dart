@@ -318,7 +318,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
     );
   }
 
-  PageController pageController = PageController(initialPage: 0);
+  int recordFirstMonthAddDays = 0;
 
   ///
   Widget displayMapStackPartsUpper() {
@@ -328,7 +328,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
     }
 
     if (widget.date.yyyymm == '${geolocStateListFirstRecord.year}-${geolocStateListFirstRecord.month}') {
-      pageController = PageController(initialPage: geolocStateListFirstRecord.day.toInt() - 1);
+      recordFirstMonthAddDays = geolocStateListFirstRecord.day.toInt() - 1;
     }
 
     return Positioned(
@@ -541,19 +541,18 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
                   width: 60,
                   height: 60,
                   child: PageView.builder(
-                    controller: pageController,
-                    itemCount: monthEnd,
+                    itemCount: monthEnd - recordFirstMonthAddDays,
                     scrollDirection: Axis.vertical,
-                    onPageChanged: (int index) {
-                      updateGStateListWhenMonthDays(day: index + 1);
-                    },
+                    onPageChanged: (int index) =>
+                        updateGStateListWhenMonthDays(day: index + 1 + recordFirstMonthAddDays),
                     itemBuilder: (BuildContext context, int index) {
-                      final String youbi = DateTime(widget.date.year, widget.date.month, index + 1).youbiStr;
+                      final String youbi =
+                          DateTime(widget.date.year, widget.date.month, index + 1 + recordFirstMonthAddDays).youbiStr;
 
                       return CircleAvatar(
                         backgroundColor: Colors.blueAccent.withOpacity(0.3),
                         child: Text(
-                          '${index + 1} ${youbi.substring(0, 3)}',
+                          '${index + 1 + recordFirstMonthAddDays} ${youbi.substring(0, 3)}',
                           style: const TextStyle(fontSize: 12, color: Colors.black),
                         ),
                       );
