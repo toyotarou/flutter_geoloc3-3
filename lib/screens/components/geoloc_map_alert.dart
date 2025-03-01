@@ -130,7 +130,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
 
   bool firstDisplayFinished = false;
 
-  late GeolocModel geolocStateListFirstRecord;
+  GeolocModel? geolocStateListFirstRecord;
 
   ///
   @override
@@ -145,15 +145,16 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
       } else {
         geolocStateListFirstRecord = widget.geolocStateList.first;
 
-        if (widget.date.yyyymm == '${geolocStateListFirstRecord.year}-${geolocStateListFirstRecord.month}') {
+        if (geolocStateListFirstRecord != null &&
+            widget.date.yyyymm == '${geolocStateListFirstRecord!.year}-${geolocStateListFirstRecord!.month}') {
           gStateList = widget.geolocStateList
               .where(
                 (GeolocModel element) =>
                     '${element.year}-${element.month}-${element.day}' ==
                     DateTime(
-                      geolocStateListFirstRecord.year.toInt(),
-                      geolocStateListFirstRecord.month.toInt(),
-                      geolocStateListFirstRecord.day.toInt(),
+                      geolocStateListFirstRecord!.year.toInt(),
+                      geolocStateListFirstRecord!.month.toInt(),
+                      geolocStateListFirstRecord!.day.toInt(),
                     ).yyyymmdd,
               )
               .toList();
@@ -327,8 +328,10 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
       monthEnd = DateTime(widget.date.year, widget.date.month + 1, 0).day;
     }
 
-    if (widget.date.yyyymm == '${geolocStateListFirstRecord.year}-${geolocStateListFirstRecord.month}') {
-      recordFirstMonthAddDays = geolocStateListFirstRecord.day.toInt() - 1;
+    if (geolocStateListFirstRecord != null) {
+      if (widget.date.yyyymm == '${geolocStateListFirstRecord!.year}-${geolocStateListFirstRecord!.month}') {
+        recordFirstMonthAddDays = geolocStateListFirstRecord!.day.toInt() - 1;
+      }
     }
 
     return Positioned(
