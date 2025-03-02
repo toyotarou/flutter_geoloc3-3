@@ -95,6 +95,8 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
 
   List<GeolocModel> sortedWidgetGeolocStateList = <GeolocModel>[];
 
+  DateTime recordStartDate = DateTime(2023, 4);
+
   ///
   @override
   void initState() {
@@ -152,10 +154,9 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
 
         makeMinMaxLatLng();
       } else {
-        geolocStateListFirstRecord = sortedWidgetGeolocStateList.first;
+        if (widget.date.yyyymm == recordStartDate.yyyymm) {
+          geolocStateListFirstRecord = sortedWidgetGeolocStateList.first;
 
-        if (geolocStateListFirstRecord != null &&
-            widget.date.yyyymm == '${geolocStateListFirstRecord!.year}-${geolocStateListFirstRecord!.month}') {
           gStateList = sortedWidgetGeolocStateList
               .where(
                 (GeolocModel element) =>
@@ -172,10 +173,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
               .where(
                 (GeolocModel element) =>
                     '${element.year}-${element.month}-${element.day}' ==
-                    DateTime(
-                      widget.date.year,
-                      widget.date.month,
-                    ).yyyymmdd,
+                    DateTime(widget.date.year, widget.date.month).yyyymmdd,
               )
               .toList();
         }
@@ -331,7 +329,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
     );
   }
 
-  int recordFirstMonthAddDays = 0;
+  int recordAdjustDayNum = 0;
 
   ///
   Widget displayMapStackPartsUpper() {
@@ -342,8 +340,12 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
 
     if (geolocStateListFirstRecord != null) {
       if (widget.date.yyyymm == '${geolocStateListFirstRecord!.year}-${geolocStateListFirstRecord!.month}') {
-        recordFirstMonthAddDays = geolocStateListFirstRecord!.day.toInt() - 1;
+        recordAdjustDayNum = geolocStateListFirstRecord!.day.toInt() - 1;
       }
+    }
+
+    if (widget.date.yyyymm == DateTime.now().yyyymm) {
+      recordAdjustDayNum = 0;
     }
 
     return Positioned(
@@ -558,18 +560,17 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
                   child: PageView.builder(
                     itemCount: (widget.date.yyyymm == DateTime.now().yyyymm)
                         ? DateTime.now().day
-                        : monthEnd - recordFirstMonthAddDays,
+                        : monthEnd - recordAdjustDayNum,
                     scrollDirection: Axis.vertical,
-                    onPageChanged: (int index) =>
-                        updateGStateListWhenMonthDays(day: index + 1 + recordFirstMonthAddDays),
+                    onPageChanged: (int index) => updateGStateListWhenMonthDays(day: index + 1 + recordAdjustDayNum),
                     itemBuilder: (BuildContext context, int index) {
                       final String youbi =
-                          DateTime(widget.date.year, widget.date.month, index + 1 + recordFirstMonthAddDays).youbiStr;
+                          DateTime(widget.date.year, widget.date.month, index + 1 + recordAdjustDayNum).youbiStr;
 
                       return CircleAvatar(
                         backgroundColor: Colors.blueAccent.withOpacity(0.3),
                         child: Text(
-                          '${index + 1 + recordFirstMonthAddDays} ${youbi.substring(0, 3)}',
+                          '${index + 1 + recordAdjustDayNum} ${youbi.substring(0, 3)}',
                           style: const TextStyle(fontSize: 12, color: Colors.black),
                         ),
                       );
