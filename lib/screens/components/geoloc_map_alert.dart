@@ -420,7 +420,8 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
                           ],
                         ),
                       ),
-                      if (appParamState.mapType == MapType.daily) ...<Widget>[
+                      if (appParamState.mapType == MapType.daily ||
+                          appParamState.mapType == MapType.monthDays) ...<Widget>[
                         const SizedBox(width: 20),
                         Container(
                           decoration: BoxDecoration(

@@ -80,7 +80,11 @@ mixin GeolocMapControlPanelAlertMixin on ConsumerState<GeolocMapControlPanelWidg
                 children: <Widget>[
                   ///
                   GestureDetector(
-                    onTap: () => appParamNotifier.setIsMarkerShow(flag: !appParamState.isMarkerShow),
+                    onTap: () {
+                      appParamNotifier.setSelectedTimeGeoloc();
+
+                      appParamNotifier.setIsMarkerShow(flag: !appParamState.isMarkerShow);
+                    },
                     child: const Icon(Icons.stacked_line_chart),
                   ),
                   const SizedBox(width: 20),
