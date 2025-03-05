@@ -97,6 +97,12 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
 
   DateTime recordStartDate = DateTime(2023, 4);
 
+  List<TempleInfoModel>? monthDaysTempleInfoList = <TempleInfoModel>[];
+
+  List<TemplePhotoModel>? monthDaysTemplePhotoDateList = <TemplePhotoModel>[];
+
+  String? monthDaysDateStr;
+
   ///
   @override
   void initState() {
@@ -432,6 +438,30 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
 
                               appParamNotifier.setSecondOverlayParams(secondEntries: _secondEntries);
 
+                              List<TempleInfoModel>? templeInfoList = widget.templeInfoList;
+                              if (appParamState.mapType == MapType.monthDays) {
+                                /// MapType.monthDaysで開いた直後はnull（X月1日）
+                                templeInfoList =
+                                    (monthDaysDateStr == null) ? widget.templeInfoList : monthDaysTempleInfoList;
+                              }
+
+                              List<TemplePhotoModel> templePhotoDateList =
+                                  templePhotoDateMap[widget.date.yyyymmdd] ?? <TemplePhotoModel>[];
+                              if (appParamState.mapType == MapType.monthDays) {
+                                /// MapType.monthDaysで開いた直後はnull（X月1日）
+                                if (monthDaysDateStr == null) {
+                                  templePhotoDateList =
+                                      templePhotoDateMap['${widget.date.year}-${widget.date.month}-01'] ??
+                                          <TemplePhotoModel>[];
+                                } else {
+                                  templePhotoDateList = monthDaysTemplePhotoDateList ?? <TemplePhotoModel>[];
+                                }
+                              }
+
+                              if (appParamState.mapType == MapType.daily) {
+                                appParamNotifier.setMapControlDisplayDate(date: widget.date.yyyymmdd);
+                              }
+
                               addSecondOverlay(
                                 context: context,
                                 secondEntries: _secondEntries,
@@ -443,7 +473,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
                                 widget: GeolocMapControlPanelWidget(
                                   date: widget.date,
                                   geolocStateList: gStateList,
-                                  templeInfoList: widget.templeInfoList,
+                                  templeInfoList: templeInfoList,
                                   mapController: mapController,
                                   currentZoomEightTeen: currentZoomEightTeen,
                                   selectedHourMap: selectedHourMap,
@@ -454,7 +484,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
                                     'minLng': minLng,
                                   },
                                   displayTempMap: widget.displayTempMap,
-                                  templePhotoDateList: templePhotoDateMap[widget.date.yyyymmdd] ?? <TemplePhotoModel>[],
+                                  templePhotoDateList: templePhotoDateList,
                                 ),
                                 onPositionChanged: (Offset newPos) => appParamNotifier.updateOverlayPosition(newPos),
                                 fixedFlag: true,
@@ -591,11 +621,17 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
   ///
   void updateGStateListWhenMonthDays({required int day}) {
     setState(() {
+      monthDaysDateStr = DateTime(widget.date.year, widget.date.month, day).yyyymmdd;
+
+      appParamNotifier.setMapControlDisplayDate(date: monthDaysDateStr!);
+
       gStateList = sortedWidgetGeolocStateList
-          .where((GeolocModel element) =>
-              '${element.year}-${element.month}-${element.day}' ==
-              DateTime(widget.date.year, widget.date.month, day).yyyymmdd)
+          .where((GeolocModel element) => '${element.year}-${element.month}-${element.day}' == monthDaysDateStr)
           .toList();
+
+      monthDaysTempleInfoList = templeState.templeInfoMap[monthDaysDateStr];
+
+      monthDaysTemplePhotoDateList = templePhotoDateMap[monthDaysDateStr];
     });
 
     setDefaultBoundsMap();

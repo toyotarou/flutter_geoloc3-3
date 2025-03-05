@@ -17,26 +17,41 @@ class AppParamsState with _$AppParamsState {
     DateTime? calendarSelectedDate,
     GeolocModel? selectedTimeGeoloc,
     @Default(true) bool isMarkerShow,
-    @Default('') String selectedHour,
+
+    ///
+
     @Default(0) double currentZoom,
     @Default(5) int currentPaddingIndex,
     LatLng? currentCenter,
     @Default(false) bool isTempleCircleShow,
     GeolocModel? polylineGeolocModel,
     TempleInfoModel? selectedTemple,
+
+    ///
+
     @Default(-1) int timeGeolocDisplayStart,
     @Default(-1) int timeGeolocDisplayEnd,
+
+    ///
+
     List<OverlayEntry>? bigEntries,
     void Function(VoidCallback fn)? setStateCallback,
     @Default(<String>[]) List<String> monthGeolocAddMonthButtonLabelList,
-
-    ///////////////////////////////////
     Offset? overlayPosition,
     List<OverlayEntry>? firstEntries,
     List<OverlayEntry>? secondEntries,
+
+    ///
     @Default(false) bool visitedTempleMapDisplayFinish,
     @Default(-1) int selectedTimeGeolocIndex,
+
+    ///
+
     MapType? mapType,
+
+    ///
+
+    @Default('') String mapControlDisplayDate,
   }) = _AppParamsState;
 }
 
@@ -54,9 +69,6 @@ class AppParams extends _$AppParams {
 
   ///
   void setIsMarkerShow({required bool flag}) => state = state.copyWith(isMarkerShow: flag);
-
-  // ///
-  // void setSelectedHour({required String hour}) => state = state.copyWith(selectedHour: hour);
 
   ///
   void setCurrentZoom({required double zoom}) => state = state.copyWith(currentZoom: zoom);
@@ -102,8 +114,6 @@ class AppParams extends _$AppParams {
   void clearMonthGeolocAddMonthButtonLabelList() =>
       state = state.copyWith(monthGeolocAddMonthButtonLabelList: <String>[]);
 
-  ///////////////////////////////
-
   ///
   void updateOverlayPosition(Offset newPos) => state = state.copyWith(overlayPosition: newPos);
 
@@ -120,4 +130,7 @@ class AppParams extends _$AppParams {
 
   ///
   void setMapType({required MapType type}) => state = state.copyWith(mapType: type);
+
+  ///
+  void setMapControlDisplayDate({required String date}) => state = state.copyWith(mapControlDisplayDate: date);
 }
