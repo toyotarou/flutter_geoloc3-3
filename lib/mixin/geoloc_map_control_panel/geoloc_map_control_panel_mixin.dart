@@ -468,7 +468,10 @@ mixin GeolocMapControlPanelAlertMixin on ConsumerState<GeolocMapControlPanelWidg
             right: 5,
             child: Transform(
               transform: Matrix4.diagonal3Values(1.0, 3.0, 1.0),
-              child: Text(appParamState.mapControlDisplayDate, style: const TextStyle(fontSize: 30)),
+              child: Text(
+                appParamState.mapControlDisplayDate,
+                style: TextStyle(fontSize: 30, color: Colors.white.withOpacity(0.3)),
+              ),
             ),
           ),
         ],
