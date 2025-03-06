@@ -306,7 +306,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
                             distance: 0,
                           ),
 
-                          templeInfoList: templeState.templeInfoMap['${widget.baseYm}-01'],
+                          templeInfoList: (widget.baseYm == null)
+                              ? templeState.templeInfoMap['${DateTime.now().yyyymm}-01']
+                              : templeState.templeInfoMap['${widget.baseYm}-01'],
                         ),
                         executeFunctionWhenDialogClose: true,
                         ref: ref,

@@ -71,6 +71,17 @@ mixin GeolocMapControlPanelAlertMixin on ConsumerState<GeolocMapControlPanelWidg
       color: _bgColor,
       child: Stack(
         children: <Widget>[
+          Positioned(
+            top: 100,
+            right: 5,
+            child: Transform(
+              transform: Matrix4.diagonal3Values(1.0, 3.0, 1.0),
+              child: Text(
+                appParamState.mapControlDisplayDate,
+                style: TextStyle(fontSize: 30, color: Colors.white.withOpacity(0.3)),
+              ),
+            ),
+          ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
@@ -462,17 +473,6 @@ mixin GeolocMapControlPanelAlertMixin on ConsumerState<GeolocMapControlPanelWidg
                 ),
               ],
             ],
-          ),
-          Positioned(
-            top: 100,
-            right: 5,
-            child: Transform(
-              transform: Matrix4.diagonal3Values(1.0, 3.0, 1.0),
-              child: Text(
-                appParamState.mapControlDisplayDate,
-                style: TextStyle(fontSize: 30, color: Colors.white.withOpacity(0.3)),
-              ),
-            ),
           ),
         ],
       ),
