@@ -48,9 +48,6 @@ class AppParamsState with _$AppParamsState {
     ///
 
     MapType? mapType,
-
-    ///
-
     @Default('') String mapControlDisplayDate,
   }) = _AppParamsState;
 }

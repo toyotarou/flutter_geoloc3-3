@@ -460,6 +460,13 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
 
                               if (appParamState.mapType == MapType.daily) {
                                 appParamNotifier.setMapControlDisplayDate(date: widget.date.yyyymmdd);
+                              } else if (appParamState.mapType == MapType.monthDays) {
+                                if (monthDaysDateStr == null) {
+                                  appParamNotifier.setMapControlDisplayDate(
+                                      date: '${widget.date.year}-${widget.date.month.toString().padLeft(2, '0')}-01');
+                                } else {
+                                  appParamNotifier.setMapControlDisplayDate(date: monthDaysDateStr!);
+                                }
                               }
 
                               addSecondOverlay(
@@ -622,8 +629,6 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
   void updateGStateListWhenMonthDays({required int day}) {
     setState(() {
       monthDaysDateStr = DateTime(widget.date.year, widget.date.month, day).yyyymmdd;
-
-      appParamNotifier.setMapControlDisplayDate(date: monthDaysDateStr!);
 
       gStateList = sortedWidgetGeolocStateList
           .where((GeolocModel element) => '${element.year}-${element.month}-${element.day}' == monthDaysDateStr)

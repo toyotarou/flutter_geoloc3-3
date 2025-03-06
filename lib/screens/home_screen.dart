@@ -287,8 +287,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
 
                       appParamNotifier.setMapType(type: MapType.monthDays);
 
-                      appParamNotifier.setMapControlDisplayDate(date: '${widget.baseYm}-01');
-
                       GeolocDialog(
                         context: context,
                         widget: GeolocMapAlert(

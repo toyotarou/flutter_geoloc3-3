@@ -464,7 +464,7 @@ mixin GeolocMapControlPanelAlertMixin on ConsumerState<GeolocMapControlPanelWidg
             ],
           ),
           Positioned(
-            bottom: 5,
+            top: 100,
             right: 5,
             child: Transform(
               transform: Matrix4.diagonal3Values(1.0, 3.0, 1.0),

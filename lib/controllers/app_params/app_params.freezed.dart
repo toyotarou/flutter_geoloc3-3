@@ -48,8 +48,6 @@ mixin _$AppParamsState {
 
   ///
   MapType? get mapType => throw _privateConstructorUsedError;
-
-  ///
   String get mapControlDisplayDate => throw _privateConstructorUsedError;
 
   @JsonKey(ignore: true)
@@ -489,8 +487,6 @@ class _$AppParamsStateImpl implements _AppParamsState {
   ///
   @override
   final MapType? mapType;
-
-  ///
   @override
   @JsonKey()
   final String mapControlDisplayDate;
@@ -662,8 +658,6 @@ abstract class _AppParamsState implements AppParamsState {
   ///
   MapType? get mapType;
   @override
-
-  ///
   String get mapControlDisplayDate;
   @override
   @JsonKey(ignore: true)
