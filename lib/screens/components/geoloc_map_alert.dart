@@ -225,7 +225,9 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
           FlutterMap(
             mapController: mapController,
             options: MapOptions(
-              initialCenter: LatLng(gStateList[0].latitude.toDouble(), gStateList[0].longitude.toDouble()),
+              initialCenter: (gStateList.isNotEmpty)
+                  ? LatLng(gStateList[0].latitude.toDouble(), gStateList[0].longitude.toDouble())
+                  : const LatLng(35.718532, 139.586639),
               initialZoom: currentZoomEightTeen,
               onPositionChanged: (MapCamera position, bool isMoving) {
                 if (isMoving) {
@@ -341,6 +343,12 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
             if (appParamState.selectedTimeGeoloc != null) ...<Widget>[
               Positioned(top: 150, child: displayMapStackPartsLatLngAddress()),
             ],
+          ],
+
+          /////
+
+          if (gStateList.isEmpty) ...<Widget>[
+            Center(child: Icon(Icons.do_not_disturb_alt, color: Colors.redAccent.withOpacity(0.3), size: 200)),
           ],
 
           /////

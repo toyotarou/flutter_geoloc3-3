@@ -287,6 +287,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
 
                       appParamNotifier.setMapType(type: MapType.monthDays);
 
+                      // ------------------------------------------- //
+                      bool monthDaysFirstDateTempleExists = false;
+
+                      if (widget.baseYm != null) {
+                        /// 他月
+                        if (templeState.templeInfoMap['${widget.baseYm}-01'] != null) {
+                          monthDaysFirstDateTempleExists = true;
+                        }
+                      } else {
+                        /// 今月
+                        if (templeState.templeInfoMap['${DateTime.now().yyyymm}-01'] != null) {
+                          monthDaysFirstDateTempleExists = true;
+                        }
+                      }
+                      // ------------------------------------------- //
+
                       GeolocDialog(
                         context: context,
                         widget: GeolocMapAlert(
@@ -310,12 +326,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
                               ? templeState.templeInfoMap['${DateTime.now().yyyymm}-01']
                               : templeState.templeInfoMap['${widget.baseYm}-01'],
 
-                          monthDaysFirstDateTempleExists:
-                              // ignore: avoid_bool_literals_in_conditional_expressions
-                              (templeState.templeInfoMap['${DateTime.now().yyyymm}-01'] != null ||
-                                      templeState.templeInfoMap['${widget.baseYm}-01'] != null)
-                                  ? true
-                                  : false,
+                          monthDaysFirstDateTempleExists: monthDaysFirstDateTempleExists,
                         ),
                         executeFunctionWhenDialogClose: true,
                         ref: ref,
