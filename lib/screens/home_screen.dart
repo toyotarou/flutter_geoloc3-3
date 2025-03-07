@@ -309,6 +309,13 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
                           templeInfoList: (widget.baseYm == null)
                               ? templeState.templeInfoMap['${DateTime.now().yyyymm}-01']
                               : templeState.templeInfoMap['${widget.baseYm}-01'],
+
+                          monthDaysFirstDateTempleExists:
+                              // ignore: avoid_bool_literals_in_conditional_expressions
+                              (templeState.templeInfoMap['${DateTime.now().yyyymm}-01'] != null ||
+                                      templeState.templeInfoMap['${widget.baseYm}-01'] != null)
+                                  ? true
+                                  : false,
                         ),
                         executeFunctionWhenDialogClose: true,
                         ref: ref,

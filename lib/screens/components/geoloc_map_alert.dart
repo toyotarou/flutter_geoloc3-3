@@ -20,17 +20,20 @@ import '../../utilities/tile_provider.dart';
 import '../parts/button_error_overlay.dart';
 import '../parts/error_dialog.dart';
 import '../parts/geoloc_overlay.dart';
+import '../parts/icon_fadeout_overlay.dart';
 
 class GeolocMapAlert extends ConsumerStatefulWidget {
-  const GeolocMapAlert(
-      {super.key,
-      required this.geolocStateList,
-      this.displayTempMap,
-      required this.displayMonthMap,
-      required this.walkRecord,
-      this.templeInfoList,
-      required this.date,
-      this.polylineModeAsTempleVisitedDate});
+  const GeolocMapAlert({
+    super.key,
+    required this.geolocStateList,
+    this.displayTempMap,
+    required this.displayMonthMap,
+    required this.walkRecord,
+    this.templeInfoList,
+    required this.date,
+    this.polylineModeAsTempleVisitedDate,
+    this.monthDaysFirstDateTempleExists,
+  });
 
   final DateTime date;
   final List<GeolocModel> geolocStateList;
@@ -39,6 +42,7 @@ class GeolocMapAlert extends ConsumerStatefulWidget {
   final WalkRecordModel walkRecord;
   final List<TempleInfoModel>? templeInfoList;
   final bool? polylineModeAsTempleVisitedDate;
+  final bool? monthDaysFirstDateTempleExists;
 
   @override
   ConsumerState<GeolocMapAlert> createState() => _GeolocMapAlertState();
@@ -103,6 +107,8 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
 
   String? monthDaysDateStr;
 
+  final GlobalKey monthDaysPageViewKey = GlobalKey();
+
   ///
   @override
   void initState() {
@@ -120,6 +126,16 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       setState(() => isLoading = true);
+
+      // ignore: use_if_null_to_convert_nulls_to_bools
+      if (widget.monthDaysFirstDateTempleExists == true) {
+        iconFadeoutOverlay(
+          context: context,
+          targetKey: monthDaysPageViewKey,
+          icon: const Icon(FontAwesomeIcons.toriiGate),
+          overlayWidth: 40,
+        );
+      }
 
       // ignore: always_specify_types
       Future.delayed(const Duration(seconds: 2), () {
@@ -593,6 +609,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
 
               if (appParamState.mapType == MapType.monthDays) ...<Widget>[
                 SizedBox(
+                  key: monthDaysPageViewKey,
                   width: 60,
                   height: 60,
                   child: PageView.builder(
@@ -638,6 +655,15 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
 
       monthDaysTemplePhotoDateList = templePhotoDateMap[monthDaysDateStr];
     });
+
+    if (monthDaysTempleInfoList != null) {
+      iconFadeoutOverlay(
+        context: context,
+        targetKey: monthDaysPageViewKey,
+        icon: const Icon(FontAwesomeIcons.toriiGate),
+        overlayWidth: 40,
+      );
+    }
 
     setDefaultBoundsMap();
   }
