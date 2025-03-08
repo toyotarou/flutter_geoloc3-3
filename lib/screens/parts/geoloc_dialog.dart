@@ -48,6 +48,8 @@ Future<void> GeolocDialog({
             ref.read(appParamsProvider.notifier).setSelectedTimeGeoloc();
 
             ref.read(appParamsProvider.notifier).clearMonthGeolocAddMonthButtonLabelList();
+
+            ref.read(appParamsProvider.notifier).setIsTempleCircleShow(flag: false);
           }
         }
       });
