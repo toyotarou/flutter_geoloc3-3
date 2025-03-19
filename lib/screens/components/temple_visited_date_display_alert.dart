@@ -170,7 +170,12 @@ class _TempleVisitedDateDisplayAlertState extends ConsumerState<TempleVisitedDat
                                 height: 60,
                                 margin: const EdgeInsets.all(3),
                                 padding: const EdgeInsets.all(3),
-                                decoration: BoxDecoration(border: Border.all(color: Colors.white.withOpacity(0.2))),
+                                decoration: BoxDecoration(
+                                    border: Border.all(
+                                  color: (templePhoto.templephotos.isEmpty)
+                                      ? Colors.pinkAccent
+                                      : Colors.white.withOpacity(0.2),
+                                )),
                                 child: Text(e.temple, maxLines: 3, overflow: TextOverflow.ellipsis),
                               ),
                             ],
