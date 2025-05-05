@@ -1,0 +1,28 @@
+{
+  "buildFiles": [
+    "/Users/toyodahideyuki/flutter/packages/flutter_tools/gradle/src/main/groovy/CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/Users/toyodahideyuki/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+      "-C",
+      "/Users/toyodahideyuki/Desktop/HIDEYUKI/flutter/flutter_geoloc3/android/app/.cxx/Debug/1l5uc6j6/armeabi-v7a",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/Users/toyodahideyuki/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+    "-C",
+    "/Users/toyodahideyuki/Desktop/HIDEYUKI/flutter/flutter_geoloc3/android/app/.cxx/Debug/1l5uc6j6/armeabi-v7a",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {},
+  "toolchains": {
+    "toolchain": {
+      "cCompilerExecutable": "/Users/toyodahideyuki/Library/Android/sdk/ndk/27.0.12077973/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang.lld",
+      "cppCompilerExecutable": "/Users/toyodahideyuki/Library/Android/sdk/ndk/27.0.12077973/toolchains/llvm/prebuilt/darwin-x86_64/bin/clang++.lld"
+    }
+  },
+  "cFileExtensions": [],
+  "cppFileExtensions": []
+}

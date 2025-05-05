@@ -1,0 +1,20 @@
+{
+  "buildFiles": [
+    "/Users/toyodahideyuki/flutter/packages/flutter_tools/gradle/src/main/groovy/CMakeLists.txt"
+  ],
+  "cleanCommandsComponents": [
+    [
+      "/Users/toyodahideyuki/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+      "-C",
+      "/Users/toyodahideyuki/Desktop/HIDEYUKI/flutter/flutter_geoloc3/android/app/.cxx/RelWithDebInfo/5m605sj2/x86",
+      "clean"
+    ]
+  ],
+  "buildTargetsCommandComponents": [
+    "/Users/toyodahideyuki/Library/Android/sdk/cmake/3.22.1/bin/ninja",
+    "-C",
+    "/Users/toyodahideyuki/Desktop/HIDEYUKI/flutter/flutter_geoloc3/android/app/.cxx/RelWithDebInfo/5m605sj2/x86",
+    "{LIST_OF_TARGETS_TO_BUILD}"
+  ],
+  "libraries": {}
+}
