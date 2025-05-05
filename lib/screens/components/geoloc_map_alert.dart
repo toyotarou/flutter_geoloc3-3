@@ -391,142 +391,143 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
               color: Colors.black.withOpacity(0.3),
               borderRadius: BorderRadius.circular(10),
             ),
-            child: Row(
+            child: Column(
               children: <Widget>[
-                Container(
-                  width: 100,
-                  alignment: Alignment.topLeft,
-                  child: Row(
-                    children: <Widget>[
-                      Column(
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Text((appParamState.mapType == MapType.daily) ? widget.date.yyyymmdd : widget.date.yyyymm,
+                        style: const TextStyle(fontSize: 20)),
+                    if (appParamState.selectedTimeGeoloc != null) ...<Widget>[
+                      Text(appParamState.selectedTimeGeoloc!.time, style: const TextStyle(fontSize: 20)),
+                    ],
+                    if (appParamState.selectedTimeGeoloc == null) ...<Widget>[
+                      const SizedBox.shrink(),
+                    ],
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  children: <Widget>[
+                    const SizedBox.shrink(),
+                    Expanded(
+                      child: Row(
                         children: <Widget>[
-                          Text((appParamState.mapType == MapType.daily) ? widget.date.yyyymmdd : widget.date.yyyymm),
-                          if (appParamState.selectedTimeGeoloc != null) ...<Widget>[
-                            Text(
-                              appParamState.selectedTimeGeoloc!.time,
-                              style: const TextStyle(fontSize: 20),
+                          Expanded(
+                            child: Column(
+                              children: <Widget>[
+                                Row(
+                                  children: <Widget>[
+                                    const SizedBox(width: 70, child: Text('size: ')),
+                                    Expanded(
+                                      child: Container(
+                                        alignment: Alignment.topRight,
+                                        child: Text(
+                                          appParamState.currentZoom.toStringAsFixed(2),
+                                          style: const TextStyle(fontSize: 20),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  children: <Widget>[
+                                    const SizedBox(width: 70, child: Text('padding: ')),
+                                    Expanded(
+                                      child: Container(
+                                        alignment: Alignment.topRight,
+                                        child: Text(
+                                          '${appParamState.currentPaddingIndex * 10} px',
+                                          style: const TextStyle(fontSize: 20),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                          if (appParamState.mapType == MapType.daily ||
+                              appParamState.mapType == MapType.monthDays) ...<Widget>[
+                            const SizedBox(width: 20),
+                            Container(
+                              decoration: BoxDecoration(
+                                  color: Colors.black.withOpacity(0.3), borderRadius: BorderRadius.circular(10)),
+                              child: IconButton(
+                                onPressed: () {
+                                  appParamNotifier.setTimeGeolocDisplay(start: -1, end: 23);
+
+                                  appParamNotifier.setSecondOverlayParams(secondEntries: _secondEntries);
+
+                                  List<TempleInfoModel>? templeInfoList = widget.templeInfoList;
+                                  if (appParamState.mapType == MapType.monthDays) {
+                                    /// MapType.monthDaysで開いた直後はnull（X月1日）
+                                    templeInfoList =
+                                        (monthDaysDateStr == null) ? widget.templeInfoList : monthDaysTempleInfoList;
+                                  }
+
+                                  List<TemplePhotoModel> templePhotoDateList =
+                                      templePhotoDateMap[widget.date.yyyymmdd] ?? <TemplePhotoModel>[];
+                                  if (appParamState.mapType == MapType.monthDays) {
+                                    /// MapType.monthDaysで開いた直後はnull（X月1日）
+                                    if (monthDaysDateStr == null) {
+                                      templePhotoDateList =
+                                          templePhotoDateMap['${widget.date.year}-${widget.date.month}-01'] ??
+                                              <TemplePhotoModel>[];
+                                    } else {
+                                      templePhotoDateList = monthDaysTemplePhotoDateList ?? <TemplePhotoModel>[];
+                                    }
+                                  }
+
+                                  if (appParamState.mapType == MapType.daily) {
+                                    appParamNotifier.setMapControlDisplayDate(date: widget.date.yyyymmdd);
+                                  } else if (appParamState.mapType == MapType.monthDays) {
+                                    if (monthDaysDateStr == null) {
+                                      appParamNotifier.setMapControlDisplayDate(
+                                          date:
+                                              '${widget.date.year}-${widget.date.month.toString().padLeft(2, '0')}-01');
+                                    } else {
+                                      appParamNotifier.setMapControlDisplayDate(date: monthDaysDateStr!);
+                                    }
+                                  }
+
+                                  addSecondOverlay(
+                                    context: context,
+                                    secondEntries: _secondEntries,
+                                    setStateCallback: setState,
+                                    width: context.screenSize.width,
+                                    height: context.screenSize.height * 0.3,
+                                    color: Colors.blueGrey.withOpacity(0.3),
+                                    initialPosition: Offset(0, context.screenSize.height * 0.7),
+                                    widget: GeolocMapControlPanelWidget(
+                                      date: widget.date,
+                                      geolocStateList: gStateList,
+                                      templeInfoList: templeInfoList,
+                                      mapController: mapController,
+                                      currentZoomEightTeen: currentZoomEightTeen,
+                                      selectedHourMap: selectedHourMap,
+                                      minMaxLatLngMap: <String, double>{
+                                        'minLat': minLat,
+                                        'maxLng': maxLng,
+                                        'maxLat': maxLat,
+                                        'minLng': minLng,
+                                      },
+                                      displayTempMap: widget.displayTempMap,
+                                      templePhotoDateList: templePhotoDateList,
+                                    ),
+                                    onPositionChanged: (Offset newPos) =>
+                                        appParamNotifier.updateOverlayPosition(newPos),
+                                    fixedFlag: true,
+                                  );
+                                },
+                                icon: const Icon(Icons.info),
+                              ),
                             ),
                           ],
                         ],
                       ),
-                      const SizedBox(width: 20),
-                    ],
-                  ),
-                ),
-                Expanded(
-                  child: Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: Column(
-                          children: <Widget>[
-                            Row(
-                              children: <Widget>[
-                                const SizedBox(width: 70, child: Text('size: ')),
-                                Expanded(
-                                  child: Container(
-                                    alignment: Alignment.topRight,
-                                    child: Text(
-                                      appParamState.currentZoom.toStringAsFixed(2),
-                                      style: const TextStyle(fontSize: 20),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                            Row(
-                              children: <Widget>[
-                                const SizedBox(width: 70, child: Text('padding: ')),
-                                Expanded(
-                                  child: Container(
-                                    alignment: Alignment.topRight,
-                                    child: Text(
-                                      '${appParamState.currentPaddingIndex * 10} px',
-                                      style: const TextStyle(fontSize: 20),
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                      if (appParamState.mapType == MapType.daily ||
-                          appParamState.mapType == MapType.monthDays) ...<Widget>[
-                        const SizedBox(width: 20),
-                        Container(
-                          decoration: BoxDecoration(
-                              color: Colors.black.withOpacity(0.3), borderRadius: BorderRadius.circular(10)),
-                          child: IconButton(
-                            onPressed: () {
-                              appParamNotifier.setTimeGeolocDisplay(start: -1, end: 23);
-
-                              appParamNotifier.setSecondOverlayParams(secondEntries: _secondEntries);
-
-                              List<TempleInfoModel>? templeInfoList = widget.templeInfoList;
-                              if (appParamState.mapType == MapType.monthDays) {
-                                /// MapType.monthDaysで開いた直後はnull（X月1日）
-                                templeInfoList =
-                                    (monthDaysDateStr == null) ? widget.templeInfoList : monthDaysTempleInfoList;
-                              }
-
-                              List<TemplePhotoModel> templePhotoDateList =
-                                  templePhotoDateMap[widget.date.yyyymmdd] ?? <TemplePhotoModel>[];
-                              if (appParamState.mapType == MapType.monthDays) {
-                                /// MapType.monthDaysで開いた直後はnull（X月1日）
-                                if (monthDaysDateStr == null) {
-                                  templePhotoDateList =
-                                      templePhotoDateMap['${widget.date.year}-${widget.date.month}-01'] ??
-                                          <TemplePhotoModel>[];
-                                } else {
-                                  templePhotoDateList = monthDaysTemplePhotoDateList ?? <TemplePhotoModel>[];
-                                }
-                              }
-
-                              if (appParamState.mapType == MapType.daily) {
-                                appParamNotifier.setMapControlDisplayDate(date: widget.date.yyyymmdd);
-                              } else if (appParamState.mapType == MapType.monthDays) {
-                                if (monthDaysDateStr == null) {
-                                  appParamNotifier.setMapControlDisplayDate(
-                                      date: '${widget.date.year}-${widget.date.month.toString().padLeft(2, '0')}-01');
-                                } else {
-                                  appParamNotifier.setMapControlDisplayDate(date: monthDaysDateStr!);
-                                }
-                              }
-
-                              addSecondOverlay(
-                                context: context,
-                                secondEntries: _secondEntries,
-                                setStateCallback: setState,
-                                width: context.screenSize.width,
-                                height: context.screenSize.height * 0.3,
-                                color: Colors.blueGrey.withOpacity(0.3),
-                                initialPosition: Offset(0, context.screenSize.height * 0.7),
-                                widget: GeolocMapControlPanelWidget(
-                                  date: widget.date,
-                                  geolocStateList: gStateList,
-                                  templeInfoList: templeInfoList,
-                                  mapController: mapController,
-                                  currentZoomEightTeen: currentZoomEightTeen,
-                                  selectedHourMap: selectedHourMap,
-                                  minMaxLatLngMap: <String, double>{
-                                    'minLat': minLat,
-                                    'maxLng': maxLng,
-                                    'maxLat': maxLat,
-                                    'minLng': minLng,
-                                  },
-                                  displayTempMap: widget.displayTempMap,
-                                  templePhotoDateList: templePhotoDateList,
-                                ),
-                                onPositionChanged: (Offset newPos) => appParamNotifier.updateOverlayPosition(newPos),
-                                fixedFlag: true,
-                              );
-                            },
-                            icon: const Icon(Icons.info),
-                          ),
-                        ),
-                      ],
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ],
             ),
@@ -700,7 +701,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
     return Positioned(
       bottom: 0,
       child: Stack(
-        children: [
+        children: <Widget>[
           SizedBox(
             width: context.screenSize.width,
             child: Row(

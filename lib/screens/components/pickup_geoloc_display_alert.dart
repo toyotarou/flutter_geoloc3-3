@@ -176,13 +176,23 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
 
       list.add(DefaultTextStyle(
         style: const TextStyle(fontSize: 12),
-        child: Row(
+        child: Column(
           children: <Widget>[
-            SizedBox(width: 60, child: Text(element.time)),
-            const SizedBox(width: 30),
-            Expanded(child: Text(element.latitude)),
-            Expanded(child: Text(element.longitude)),
-            Container(width: 60, alignment: Alignment.topRight, child: Text('$distance m')),
+            Row(
+              children: <Widget>[
+                SizedBox(width: 60, child: Text(element.time)),
+                const SizedBox(width: 30),
+                Expanded(child: Text(element.latitude)),
+                Expanded(child: Text(element.longitude)),
+              ],
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: <Widget>[
+                const SizedBox.shrink(),
+                Container(width: 60, alignment: Alignment.topRight, child: Text('$distance m')),
+              ],
+            ),
           ],
         ),
       ));

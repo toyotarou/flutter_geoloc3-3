@@ -207,7 +207,7 @@ mixin GeolocMapControlPanelAlertMixin on ConsumerState<GeolocMapControlPanelWidg
                     children: <Widget>[
                       ///
                       SizedBox(
-                        width: 60,
+                        width: 40,
                         child: Column(
                           children: <Widget>[
                             Text('${appParamState.selectedTimeGeolocIndex + 1}'),
@@ -244,13 +244,9 @@ mixin GeolocMapControlPanelAlertMixin on ConsumerState<GeolocMapControlPanelWidg
                             setDefaultBoundsMap();
                           }
                         },
-                        child: Column(
-                          children: <Widget>[
-                            Text(
-                              (appParamState.selectedTimeGeoloc != null) ? '狭域' : '広域',
-                              style: const TextStyle(color: Colors.white, fontSize: 10),
-                            ),
-                          ],
+                        child: Text(
+                          (appParamState.selectedTimeGeoloc != null) ? '狭域' : '広域',
+                          style: const TextStyle(color: Colors.white, fontSize: 10),
                         ),
                       ),
 
@@ -286,13 +282,9 @@ mixin GeolocMapControlPanelAlertMixin on ConsumerState<GeolocMapControlPanelWidg
                             setDefaultBoundsMap();
                           }
                         },
-                        child: Column(
-                          children: <Widget>[
-                            Text(
-                              (appParamState.selectedTimeGeoloc != null) ? '広域' : '狭域',
-                              style: const TextStyle(color: Colors.white, fontSize: 10),
-                            ),
-                          ],
+                        child: Text(
+                          (appParamState.selectedTimeGeoloc != null) ? '広域' : '狭域',
+                          style: const TextStyle(color: Colors.white, fontSize: 10),
                         ),
                       ),
                     ],

@@ -36,7 +36,6 @@ class Utility {
 
       default:
         color = Colors.black.withOpacity(0.2);
-        break;
     }
 
     if (holidayMap[date] != null) {
@@ -45,18 +44,6 @@ class Utility {
 
     return color;
   }
-
-  // ///
-  // String calcDistance(
-  //     {required double originLat, required double originLng, required double destLat, required double destLng}) {
-  //   final double distanceKm = 6371 *
-  //       acos(
-  //         cos(originLat / 180 * pi) * cos((destLng - originLng) / 180 * pi) * cos(destLat / 180 * pi) +
-  //             sin(originLat / 180 * pi) * sin(destLat / 180 * pi),
-  //       );
-  //
-  //   return distanceKm.toString();
-  // }
 
   ///
   double calculateDistance(LatLng p1, LatLng p2) {
