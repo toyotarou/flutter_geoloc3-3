@@ -699,11 +699,11 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
   Widget displayMapStackPartsMonthBottom() {
     return Positioned(
       bottom: 0,
-      child: SizedBox(
-        width: context.screenSize.width,
-        child: Row(
-          children: <Widget>[
-            Row(
+      child: Stack(
+        children: [
+          SizedBox(
+            width: context.screenSize.width,
+            child: Row(
               // ignore: always_specify_types
               children: List.generate(2, (int index) => index).map((int e) {
                 final String blockYm = DateTime(
@@ -766,16 +766,19 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
                 );
               }).toList(),
             ),
-            const SizedBox(width: 150),
-            Container(
+          ),
+          Positioned(
+            top: 10,
+            right: context.screenSize.width * 0.2,
+            child: Container(
               decoration: BoxDecoration(color: Colors.blue.withOpacity(0.3), borderRadius: BorderRadius.circular(10)),
               child: IconButton(
                 onPressed: () => setDefaultBoundsMap(),
                 icon: const Icon(FontAwesomeIcons.expand),
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
