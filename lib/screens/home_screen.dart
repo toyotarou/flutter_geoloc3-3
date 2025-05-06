@@ -274,7 +274,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
           Column(children: <Widget>[Expanded(child: _getCalendar())]),
           if (monthGeolocModelList.isNotEmpty) ...<Widget>[
             Positioned(
-              bottom: 10,
+              bottom: 45,
               right: 10,
               child: Row(
                 children: <Widget>[
@@ -569,7 +569,16 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
 
     /// SingleChildScrollViewにできない
     return SingleChildScrollView(
-        child: DefaultTextStyle(style: const TextStyle(fontSize: 10), child: Column(children: list)));
+      child: DefaultTextStyle(
+        style: const TextStyle(fontSize: 10),
+        child: Column(
+          children: <Widget>[
+            Column(children: list),
+            const SizedBox(height: 45),
+          ],
+        ),
+      ),
+    );
   }
 
   ///
