@@ -434,7 +434,7 @@ mixin GeolocMapControlPanelAlertMixin on ConsumerState<GeolocMapControlPanelWidg
                             context: context,
                             setStateCallback: setState,
                             width: MediaQuery.of(context).size.width * 0.3,
-                            height: 390,
+                            height: 230,
                             color: Colors.blueGrey.withOpacity(0.3),
                             initialPosition: Offset(MediaQuery.of(context).size.width * 0.7, 160),
                             widget: Consumer(
@@ -557,7 +557,7 @@ mixin GeolocMapControlPanelAlertMixin on ConsumerState<GeolocMapControlPanelWidg
     }
 
     return SizedBox(
-      height: 350,
+      height: 180,
       child: Column(
         children: <Widget>[
           Expanded(
@@ -567,19 +567,20 @@ mixin GeolocMapControlPanelAlertMixin on ConsumerState<GeolocMapControlPanelWidg
             ),
           ),
           if (templephotos.isNotEmpty) ...<Widget>[
+            const SizedBox(height: 10),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Container(),
-                IconButton(
-                  onPressed: () {
+                GestureDetector(
+                  onTap: () {
                     GeolocDialog(
                       context: context,
                       widget: TemplePhotoDisplayAlert(templephotos: templephotos),
                       clearBarrierColor: true,
                     );
                   },
-                  icon: const Icon(Icons.photo),
+                  child: const Icon(Icons.photo),
                 ),
               ],
             ),

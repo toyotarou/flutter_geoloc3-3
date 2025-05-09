@@ -416,33 +416,43 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
                           Expanded(
                             child: Column(
                               children: <Widget>[
-                                Row(
-                                  children: <Widget>[
-                                    const SizedBox(width: 70, child: Text('size: ')),
-                                    Expanded(
-                                      child: Container(
-                                        alignment: Alignment.topRight,
-                                        child: Text(
-                                          appParamState.currentZoom.toStringAsFixed(2),
-                                          style: const TextStyle(fontSize: 20),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
+                                  ),
+                                  child: Row(
+                                    children: <Widget>[
+                                      const SizedBox(width: 70, child: Text('size: ')),
+                                      Expanded(
+                                        child: Container(
+                                          alignment: Alignment.topRight,
+                                          child: Text(
+                                            appParamState.currentZoom.toStringAsFixed(2),
+                                            style: const TextStyle(fontSize: 20),
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
-                                Row(
-                                  children: <Widget>[
-                                    const SizedBox(width: 70, child: Text('padding: ')),
-                                    Expanded(
-                                      child: Container(
-                                        alignment: Alignment.topRight,
-                                        child: Text(
-                                          '${appParamState.currentPaddingIndex * 10} px',
-                                          style: const TextStyle(fontSize: 20),
+                                Container(
+                                  decoration: BoxDecoration(
+                                    border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
+                                  ),
+                                  child: Row(
+                                    children: <Widget>[
+                                      const SizedBox(width: 70, child: Text('padding: ')),
+                                      Expanded(
+                                        child: Container(
+                                          alignment: Alignment.topRight,
+                                          child: Text(
+                                            '${appParamState.currentPaddingIndex * 10} px',
+                                            style: const TextStyle(fontSize: 20),
+                                          ),
                                         ),
                                       ),
-                                    ),
-                                  ],
+                                    ],
+                                  ),
                                 ),
                               ],
                             ),
@@ -496,9 +506,9 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
                                     secondEntries: _secondEntries,
                                     setStateCallback: setState,
                                     width: context.screenSize.width,
-                                    height: context.screenSize.height * 0.3,
+                                    height: context.screenSize.height * 0.4,
                                     color: Colors.blueGrey.withOpacity(0.3),
-                                    initialPosition: Offset(0, context.screenSize.height * 0.7),
+                                    initialPosition: Offset(0, context.screenSize.height * 0.6),
                                     widget: GeolocMapControlPanelWidget(
                                       date: widget.date,
                                       geolocStateList: gStateList,
