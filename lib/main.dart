@@ -1,5 +1,6 @@
 import 'package:background_task/background_task.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
@@ -14,7 +15,9 @@ void main() async {
 
   await initializeDateFormatting('ja_JP');
 
-  runApp(const ProviderScope(child: MyApp()));
+  await SystemChrome.setPreferredOrientations(
+          <DeviceOrientation>[DeviceOrientation.portraitUp, DeviceOrientation.portraitDown])
+      .then((_) => runApp(const ProviderScope(child: MyApp())));
 }
 
 class MyApp extends StatelessWidget {
