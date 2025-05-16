@@ -124,28 +124,31 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
     // ignore: always_specify_types
     globalKeyList = List.generate(1000, (int index) => GlobalKey());
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      setState(() => isLoading = true);
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) {
+        setState(() => isLoading = true);
 
-      // ignore: use_if_null_to_convert_nulls_to_bools
-      if (widget.monthDaysFirstDateTempleExists == true) {
-        iconFadeoutOverlay(
-          context: context,
-          targetKey: monthDaysPageViewKey,
-          icon: const Icon(FontAwesomeIcons.toriiGate),
-          overlayWidth: 40,
+        // ignore: use_if_null_to_convert_nulls_to_bools
+        if (widget.monthDaysFirstDateTempleExists == true) {
+          iconFadeoutOverlay(
+            context: context,
+            targetKey: monthDaysPageViewKey,
+            icon: const Icon(FontAwesomeIcons.toriiGate),
+            overlayWidth: 40,
+          );
+        }
+
+        // ignore: always_specify_types
+        Future.delayed(
+          const Duration(seconds: 2),
+          () {
+            setDefaultBoundsMap();
+
+            setState(() => isLoading = false);
+          },
         );
-      }
-
-      // ignore: always_specify_types
-      Future.delayed(const Duration(seconds: 2), () {
-        setDefaultBoundsMap();
-
-        setState(() {
-          isLoading = false;
-        });
-      });
-    });
+      },
+    );
 
     sortedWidgetGeolocStateList = widget.geolocStateList
       ..sort(
@@ -314,11 +317,10 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
                   polygons: <Polygon<Object>>[
                     // ignore: always_specify_types
                     Polygon(
-                      points: tappedPoints,
-                      color: Colors.purple.withOpacity(0.1),
-                      borderColor: Colors.purple,
-                      borderStrokeWidth: 2,
-                    ),
+                        points: tappedPoints,
+                        color: Colors.purple.withOpacity(0.1),
+                        borderColor: Colors.purple,
+                        borderStrokeWidth: 2),
                   ],
                 ),
               ],
@@ -341,14 +343,14 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
 
           if (appParamState.mapType == MapType.daily) ...<Widget>[
             if (appParamState.selectedTimeGeoloc != null) ...<Widget>[
-              Positioned(top: 150, child: displayMapStackPartsLatLngAddress()),
+              Positioned(top: 150, child: displayMapStackPartsLatLngAddress())
             ],
           ],
 
           /////
 
           if (gStateList.isEmpty) ...<Widget>[
-            Center(child: Icon(Icons.do_not_disturb_alt, color: Colors.redAccent.withOpacity(0.3), size: 200)),
+            Center(child: Icon(Icons.do_not_disturb_alt, color: Colors.redAccent.withOpacity(0.3), size: 200))
           ],
 
           /////
@@ -387,10 +389,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
           Container(
             width: context.screenSize.width,
             padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.3),
-              borderRadius: BorderRadius.circular(10),
-            ),
+            decoration: BoxDecoration(color: Colors.black.withOpacity(0.3), borderRadius: BorderRadius.circular(10)),
             child: Column(
               children: <Widget>[
                 Row(
@@ -426,10 +425,8 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
                                       Expanded(
                                         child: Container(
                                           alignment: Alignment.topRight,
-                                          child: Text(
-                                            appParamState.currentZoom.toStringAsFixed(2),
-                                            style: const TextStyle(fontSize: 20),
-                                          ),
+                                          child: Text(appParamState.currentZoom.toStringAsFixed(2),
+                                              style: const TextStyle(fontSize: 20)),
                                         ),
                                       ),
                                     ],
@@ -437,8 +434,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
                                 ),
                                 Container(
                                   decoration: BoxDecoration(
-                                    border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
-                                  ),
+                                      border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3)))),
                                   child: Row(
                                     children: <Widget>[
                                       const SizedBox(width: 70, child: Text('padding: ')),
@@ -555,11 +551,11 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
                   ),
                 ],
                 if (widget.walkRecord.step == 0 || widget.walkRecord.distance == 0) ...<Widget>[
-                  Container(),
+                  const SizedBox.shrink()
                 ],
               ],
               if (appParamState.mapType == MapType.monthly || appParamState.mapType == MapType.monthDays) ...<Widget>[
-                Container(),
+                const SizedBox.shrink()
               ],
 
               //:::::::::::::::::::::::::::::::::::::::::::::::::://
@@ -580,10 +576,8 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
               //:::::::::::::::::::::::::::::::::::::::::::::::::://
 
               Container(
-                decoration: BoxDecoration(
-                  color: Colors.purpleAccent.withOpacity(0.3),
-                  borderRadius: BorderRadius.circular(20),
-                ),
+                decoration:
+                    BoxDecoration(color: Colors.purpleAccent.withOpacity(0.3), borderRadius: BorderRadius.circular(20)),
                 child: Row(
                   children: <Widget>[
                     IconButton(
@@ -599,10 +593,8 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
 
               if (appParamState.mapType == MapType.daily) ...<Widget>[
                 Container(
-                  decoration: BoxDecoration(
-                    color: Colors.redAccent.withOpacity(0.3),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
+                  decoration:
+                      BoxDecoration(color: Colors.redAccent.withOpacity(0.3), borderRadius: BorderRadius.circular(20)),
                   child: Row(
                     children: <Widget>[
                       IconButton(
@@ -612,11 +604,13 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
                           onPressed: () => displayEmphasisMarkersList(),
                           icon: const Icon(Icons.list, color: Colors.red)),
                       IconButton(
-                        onPressed: () => setState(() {
-                          emphasisMarkers.clear();
+                        onPressed: () => setState(
+                          () {
+                            emphasisMarkers.clear();
 
-                          emphasisMarkersIndices.clear();
-                        }),
+                            emphasisMarkersIndices.clear();
+                          },
+                        ),
                         icon: const Icon(Icons.clear, color: Colors.red),
                       ),
                     ],
@@ -624,7 +618,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
                 ),
               ],
 
-              if (appParamState.mapType == MapType.monthly) ...<Widget>[Container()],
+              if (appParamState.mapType == MapType.monthly) ...<Widget>[const SizedBox.shrink()],
 
               if (appParamState.mapType == MapType.monthDays) ...<Widget>[
                 SizedBox(
@@ -663,17 +657,19 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
 
   ///
   void updateGStateListWhenMonthDays({required int day}) {
-    setState(() {
-      monthDaysDateStr = DateTime(widget.date.year, widget.date.month, day).yyyymmdd;
+    setState(
+      () {
+        monthDaysDateStr = DateTime(widget.date.year, widget.date.month, day).yyyymmdd;
 
-      gStateList = sortedWidgetGeolocStateList
-          .where((GeolocModel element) => '${element.year}-${element.month}-${element.day}' == monthDaysDateStr)
-          .toList();
+        gStateList = sortedWidgetGeolocStateList
+            .where((GeolocModel element) => '${element.year}-${element.month}-${element.day}' == monthDaysDateStr)
+            .toList();
 
-      monthDaysTempleInfoList = templeState.templeInfoMap[monthDaysDateStr];
+        monthDaysTempleInfoList = templeState.templeInfoMap[monthDaysDateStr];
 
-      monthDaysTemplePhotoDateList = templePhotoDateMap[monthDaysDateStr];
-    });
+        monthDaysTemplePhotoDateList = templePhotoDateMap[monthDaysDateStr];
+      },
+    );
 
     if (monthDaysTempleInfoList != null) {
       iconFadeoutOverlay(
@@ -716,66 +712,68 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
             width: context.screenSize.width,
             child: Row(
               // ignore: always_specify_types
-              children: List.generate(2, (int index) => index).map((int e) {
-                final String blockYm = DateTime(
-                  widget.date.yyyymmdd.split('-')[0].toInt(),
-                  widget.date.yyyymmdd.split('-')[1].toInt() - (e + 1),
-                ).yyyymm;
+              children: List.generate(2, (int index) => index).map(
+                (int e) {
+                  final String blockYm = DateTime(
+                    widget.date.yyyymmdd.split('-')[0].toInt(),
+                    widget.date.yyyymmdd.split('-')[1].toInt() - (e + 1),
+                  ).yyyymm;
 
-                return GestureDetector(
-                  onTap: () {
-                    if (e == 0) {
-                      if (appParamState.monthGeolocAddMonthButtonLabelList.length == 2) {
-                        showButtonErrorOverlay(
-                          context: context,
-                          buttonKey: globalKeyList[e],
-                          message: '途中月の消去はできません。',
-                          displayDuration: const Duration(seconds: 2),
-                        );
+                  return GestureDetector(
+                    onTap: () {
+                      if (e == 0) {
+                        if (appParamState.monthGeolocAddMonthButtonLabelList.length == 2) {
+                          showButtonErrorOverlay(
+                            context: context,
+                            buttonKey: globalKeyList[e],
+                            message: '途中月の消去はできません。',
+                            displayDuration: const Duration(seconds: 2),
+                          );
 
-                        return;
+                          return;
+                        }
                       }
-                    }
 
-                    if (e == 1) {
-                      if (appParamState.monthGeolocAddMonthButtonLabelList.isEmpty) {
-                        showButtonErrorOverlay(
-                          context: context,
-                          buttonKey: globalKeyList[e],
-                          message: '飛び月の追加はできません。',
-                          displayDuration: const Duration(seconds: 2),
-                        );
+                      if (e == 1) {
+                        if (appParamState.monthGeolocAddMonthButtonLabelList.isEmpty) {
+                          showButtonErrorOverlay(
+                            context: context,
+                            buttonKey: globalKeyList[e],
+                            message: '飛び月の追加はできません。',
+                            displayDuration: const Duration(seconds: 2),
+                          );
 
-                        return;
+                          return;
+                        }
                       }
-                    }
 
-                    appParamNotifier.setMonthGeolocAddMonthButtonLabelList(str: blockYm);
+                      appParamNotifier.setMonthGeolocAddMonthButtonLabelList(str: blockYm);
 
-                    setState(() => firstDisplayFinished = false);
-                  },
-                  child: Container(
-                    key: globalKeyList[e],
-                    width: 60,
-                    height: 60,
-                    margin: const EdgeInsets.all(5),
-                    decoration: BoxDecoration(
-                      color: (appParamState.monthGeolocAddMonthButtonLabelList.contains(blockYm))
-                          ? Colors.redAccent.withOpacity(0.3)
-                          : Colors.black.withOpacity(0.3),
-                      borderRadius: BorderRadius.circular(10),
+                      setState(() => firstDisplayFinished = false);
+                    },
+                    child: Container(
+                      key: globalKeyList[e],
+                      width: 60,
+                      height: 60,
+                      margin: const EdgeInsets.all(5),
+                      decoration: BoxDecoration(
+                        color: (appParamState.monthGeolocAddMonthButtonLabelList.contains(blockYm))
+                            ? Colors.redAccent.withOpacity(0.3)
+                            : Colors.black.withOpacity(0.3),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Column(
+                        children: <Widget>[
+                          const SizedBox(height: 10),
+                          Text('-${e + 1}month', style: const TextStyle(fontSize: 10)),
+                          const SizedBox(height: 5),
+                          Text(blockYm),
+                        ],
+                      ),
                     ),
-                    child: Column(
-                      children: <Widget>[
-                        const SizedBox(height: 10),
-                        Text('-${e + 1}month', style: const TextStyle(fontSize: 10)),
-                        const SizedBox(height: 5),
-                        Text(blockYm),
-                      ],
-                    ),
-                  ),
-                );
-              }).toList(),
+                  );
+                },
+              ).toList(),
             ),
           ),
           Positioned(
@@ -784,7 +782,11 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
             child: Container(
               decoration: BoxDecoration(color: Colors.blue.withOpacity(0.3), borderRadius: BorderRadius.circular(10)),
               child: IconButton(
-                onPressed: () => setDefaultBoundsMap(),
+                onPressed: () {
+                  mapController.rotate(0);
+
+                  setDefaultBoundsMap();
+                },
                 icon: const Icon(FontAwesomeIcons.expand),
               ),
             ),
@@ -811,10 +813,11 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
       Future.delayed(
         Duration.zero,
         () => error_dialog(
-            // ignore: use_build_context_synchronously
-            context: context,
-            title: '処理続行不可',
-            content: 'ピックアップされたマーカーが多すぎます。'),
+          // ignore: use_build_context_synchronously
+          context: context,
+          title: '処理続行不可',
+          content: 'ピックアップされたマーカーが多すぎます。',
+        ),
       );
 
       return;
@@ -842,19 +845,23 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
 
     list2
       ..sort((String a, String b) => a.compareTo(b))
-      ..forEach((String element) {
-        if (map[element] != null) {
-          map2[map[element]!] = i + 1;
+      ..forEach(
+        (String element) {
+          if (map[element] != null) {
+            map2[map[element]!] = i + 1;
 
-          i++;
-        }
-      });
+            i++;
+          }
+        },
+      );
 
-    setState(() {
-      emphasisMarkers = set;
+    setState(
+      () {
+        emphasisMarkers = set;
 
-      emphasisMarkersIndices = map2;
-    });
+        emphasisMarkersIndices = map2;
+      },
+    );
   }
 
   ///
@@ -887,11 +894,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
     selectedHourMap = <String, List<String>>{};
 
     for (final GeolocModel element in gStateList) {
-      selectedHourMap[element.time.split(':')[0]] = <String>[];
-    }
-
-    for (final GeolocModel element in gStateList) {
-      selectedHourMap[element.time.split(':')[0]]?.add(element.time);
+      (selectedHourMap[element.time.split(':')[0]] ??= <String>[]).add(element.time);
     }
   }
 
@@ -1010,10 +1013,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
                           height: 16,
                           alignment: Alignment.center,
                           decoration: const BoxDecoration(color: Colors.white, shape: BoxShape.circle),
-                          child: Text(
-                            badgeIndex.toString(),
-                            style: const TextStyle(fontSize: 10, color: Colors.black),
-                          ),
+                          child: Text(badgeIndex.toString(), style: const TextStyle(fontSize: 10, color: Colors.black)),
                         ),
                       ),
                   ],
@@ -1063,10 +1063,12 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
 
   ///
   void _clearPolygon() {
-    setState(() {
-      tappedPoints.clear();
-      enclosedMarkers.clear();
-    });
+    setState(
+      () {
+        tappedPoints.clear();
+        enclosedMarkers.clear();
+      },
+    );
   }
 
   ///
@@ -1159,13 +1161,15 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
 
     list2.toSet().toList()
       ..sort((String a, String b) => a.compareTo(b))
-      ..forEach((String element) {
-        if (map[element] != null) {
-          list.add(Text('${(i + 1).toString().padLeft(3, '0')}. $element'));
+      ..forEach(
+        (String element) {
+          if (map[element] != null) {
+            list.add(Text('${(i + 1).toString().padLeft(3, '0')}. $element'));
 
-          i++;
-        }
-      });
+            i++;
+          }
+        },
+      );
 
     return SingleChildScrollView(
       child: DefaultTextStyle(
@@ -1189,7 +1193,7 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
         (LatLngAddressDetailModel element) => addressList.add('${element.prefecture}${element.city}${element.town}'));
 
     if (latLngAddressControllerState.value == null || latLngAddressList == null || addressList.isEmpty) {
-      return Container();
+      return const SizedBox.shrink();
     }
 
     return SizedBox(

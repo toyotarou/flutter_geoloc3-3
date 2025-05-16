@@ -56,88 +56,90 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
       body: Stack(
         children: <Widget>[
           SafeArea(
-              child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              children: <Widget>[
-                Container(width: context.screenSize.width),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(widget.date.yyyymmdd),
-                    Row(
-                      children: <Widget>[
-                        GestureDetector(
-                          onTap: () async {
-                            bool errFlg = false;
-                            String contentStr = '';
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                children: <Widget>[
+                  Container(width: context.screenSize.width),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(widget.date.yyyymmdd),
+                      Row(
+                        children: <Widget>[
+                          GestureDetector(
+                            onTap: () async {
+                              bool errFlg = false;
+                              String contentStr = '';
 
-                            if (widget.geolocStateList.isEmpty) {
-                              errFlg = true;
-                              contentStr = 'mysqlデータがありません。';
-                            }
+                              if (widget.geolocStateList.isEmpty) {
+                                errFlg = true;
+                                contentStr = 'mysqlデータがありません。';
+                              }
 
-                            if (geolocMap.isEmpty) {
-                              errFlg = true;
-                              contentStr = 'geolocMapが作成されていません。';
-                            }
+                              if (geolocMap.isEmpty) {
+                                errFlg = true;
+                                contentStr = 'geolocMapが作成されていません。';
+                              }
 
-                            if (errFlg) {
-                              // ignore: always_specify_types
-                              Future.delayed(
-                                Duration.zero,
-                                () => error_dialog(
+                              if (errFlg) {
+                                // ignore: always_specify_types
+                                Future.delayed(
+                                  Duration.zero,
+                                  () => error_dialog(
                                     // ignore: use_build_context_synchronously
                                     context: context,
                                     title: 'isarデータを削除できません。',
-                                    content: contentStr),
-                              );
+                                    content: contentStr,
+                                  ),
+                                );
 
-                              return;
-                            }
+                                return;
+                              }
 
-                            _showDeleteDialog(geolocList: geolocMap[widget.date.yyyymmdd]);
-                          },
-                          child: Column(
-                            children: <Widget>[
-                              const Text('delete'),
-                              Icon(Icons.delete,
-                                  color: (widget.geolocStateList.isEmpty) ? Colors.grey : Colors.lightBlueAccent),
-                              const Text('isar'),
-                            ],
+                              _showDeleteDialog(geolocList: geolocMap[widget.date.yyyymmdd]);
+                            },
+                            child: Column(
+                              children: <Widget>[
+                                const Text('delete'),
+                                Icon(Icons.delete,
+                                    color: (widget.geolocStateList.isEmpty) ? Colors.grey : Colors.lightBlueAccent),
+                                const Text('isar'),
+                              ],
+                            ),
                           ),
-                        ),
-                        const SizedBox(width: 30),
-                        GestureDetector(
-                          onTap: () {
-                            GeolocDialog(
-                              // ignore: use_build_context_synchronously
-                              context: context,
-                              widget: PickupGeolocDisplayAlert(
-                                date: widget.date,
-                                pickupGeolocList: pickupGeolocList,
-                                walkRecord: widget.walkRecord,
-                                templeInfoMap: widget.templeInfoMap,
-                              ),
-                            );
-                          },
-                          child: const Column(children: <Widget>[Text('select'), Icon(Icons.list), Text('list')]),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                Divider(color: Colors.white.withOpacity(0.5), thickness: 5),
-                Expanded(child: displayGeolocList()),
-                Divider(color: Colors.white.withOpacity(0.5), thickness: 5),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[Container(), Text(diffSeconds)],
-                ),
-              ],
+                          const SizedBox(width: 30),
+                          GestureDetector(
+                            onTap: () {
+                              GeolocDialog(
+                                // ignore: use_build_context_synchronously
+                                context: context,
+                                widget: PickupGeolocDisplayAlert(
+                                  date: widget.date,
+                                  pickupGeolocList: pickupGeolocList,
+                                  walkRecord: widget.walkRecord,
+                                  templeInfoMap: widget.templeInfoMap,
+                                ),
+                              );
+                            },
+                            child: const Column(children: <Widget>[Text('select'), Icon(Icons.list), Text('list')]),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  Divider(color: Colors.white.withOpacity(0.5), thickness: 5),
+                  Expanded(child: displayGeolocList()),
+                  Divider(color: Colors.white.withOpacity(0.5), thickness: 5),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[const SizedBox.shrink(), Text(diffSeconds)],
+                  ),
+                ],
+              ),
             ),
-          )),
+          ),
           if (isLoading) ...<Widget>[const Center(child: CircularProgressIndicator())],
         ],
       ),
@@ -148,51 +150,53 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
   Future<void> _makeGeolocList() async {
     geolocMap = <String, List<Geoloc>>{};
 
-    GeolocRepository().getAllIsarGeoloc().then((List<Geoloc>? value) {
-      if (mounted) {
-        setState(() {
-          geolocList = value;
+    GeolocRepository().getAllIsarGeoloc().then(
+      (List<Geoloc>? value) {
+        if (mounted) {
+          setState(
+            () {
+              geolocList = value;
 
-          if (value!.isNotEmpty) {
-            for (final Geoloc element in value) {
-              geolocMap[element.date] = <Geoloc>[];
-            }
-
-            for (final Geoloc element in value) {
-              geolocMap[element.date]?.add(element);
-            }
-          }
-        });
-      }
-    });
+              if (value!.isNotEmpty) {
+                for (final Geoloc element in value) {
+                  (geolocMap[element.date] ??= <Geoloc>[]).add(element);
+                }
+              }
+            },
+          );
+        }
+      },
+    );
   }
 
   ///
   Widget displayGeolocList() {
     final List<Widget> list = <Widget>[];
 
-    geolocList?.forEach((Geoloc element) {
-      if (widget.date.yyyymmdd == element.date) {
-        list.add(DefaultTextStyle(
-          style: const TextStyle(fontSize: 12),
-          child: Row(
-            children: <Widget>[
-              Expanded(child: Text(element.time)),
-              Expanded(child: Text(element.latitude)),
-              Expanded(child: Text(element.longitude)),
-            ],
-          ),
-        ));
-      }
-    });
+    geolocList?.forEach(
+      (Geoloc element) {
+        if (widget.date.yyyymmdd == element.date) {
+          list.add(
+            DefaultTextStyle(
+              style: const TextStyle(fontSize: 12),
+              child: Row(
+                children: <Widget>[
+                  Expanded(child: Text(element.time)),
+                  Expanded(child: Text(element.latitude)),
+                  Expanded(child: Text(element.longitude)),
+                ],
+              ),
+            ),
+          );
+        }
+      },
+    );
 
     return CustomScrollView(
       slivers: <Widget>[
         SliverList(
-          delegate: SliverChildBuilderDelegate(
-            (BuildContext context, int index) => list[index],
-            childCount: list.length,
-          ),
+          delegate:
+              SliverChildBuilderDelegate((BuildContext context, int index) => list[index], childCount: list.length),
         ),
       ],
     );
@@ -207,38 +211,42 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
 
     geolocMap[widget.date.yyyymmdd]
       ?..sort((Geoloc a, Geoloc b) => a.time.compareTo(b.time))
-      ..forEach((Geoloc element) {
-        if (<String>{keepLat, keepLng, element.latitude, element.longitude}.toList().length >= 3) {
-          pickupGeolocList.add(element);
-        }
+      ..forEach(
+        (Geoloc element) {
+          if (<String>{keepLat, keepLng, element.latitude, element.longitude}.toList().length >= 3) {
+            pickupGeolocList.add(element);
+          }
 
-        keepLat = element.latitude;
-        keepLng = element.longitude;
-      });
+          keepLat = element.latitude;
+          keepLng = element.longitude;
+        },
+      );
   }
 
   ///
   void makeDiffSeconds() {
-    GeolocRepository().getRecentOneGeoloc().then((Geoloc? value) {
-      int secondDiff = 0;
+    GeolocRepository().getRecentOneGeoloc().then(
+      (Geoloc? value) {
+        int secondDiff = 0;
 
-      if (value != null) {
-        secondDiff = DateTime.now()
-            .difference(
-              DateTime(
-                value.date.split('-')[0].toInt(),
-                value.date.split('-')[1].toInt(),
-                value.date.split('-')[2].toInt(),
-                value.time.split(':')[0].toInt(),
-                value.time.split(':')[1].toInt(),
-                value.time.split(':')[2].toInt(),
-              ),
-            )
-            .inSeconds;
-      }
+        if (value != null) {
+          secondDiff = DateTime.now()
+              .difference(
+                DateTime(
+                  value.date.split('-')[0].toInt(),
+                  value.date.split('-')[1].toInt(),
+                  value.date.split('-')[2].toInt(),
+                  value.time.split(':')[0].toInt(),
+                  value.time.split(':')[1].toInt(),
+                  value.time.split(':')[2].toInt(),
+                ),
+              )
+              .inSeconds;
+        }
 
-      diffSeconds = secondDiff.toString().padLeft(2, '0');
-    });
+        diffSeconds = secondDiff.toString().padLeft(2, '0');
+      },
+    );
   }
 
   ///
@@ -272,22 +280,23 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
 
     if (mounted) {
       // ignore: always_specify_types
-      Future.delayed(const Duration(seconds: 2), () {
-        setState(() => isLoading = false);
+      Future.delayed(
+        const Duration(seconds: 2),
+        () {
+          setState(() => isLoading = false);
 
-        // 削除完了後にすぐ画面遷移
-        // ignore: use_build_context_synchronously
-        Navigator.pop(context);
-
-        Navigator.pushReplacement(
+          // 削除完了後にすぐ画面遷移
           // ignore: use_build_context_synchronously
-          context,
-          // ignore: inference_failure_on_instance_creation, always_specify_types
-          MaterialPageRoute(
-            builder: (BuildContext context) => HomeScreen(baseYm: widget.date.yyyymm),
-          ),
-        );
-      });
+          Navigator.pop(context);
+
+          Navigator.pushReplacement(
+            // ignore: use_build_context_synchronously
+            context,
+            // ignore: inference_failure_on_instance_creation, always_specify_types
+            MaterialPageRoute(builder: (BuildContext context) => HomeScreen(baseYm: widget.date.yyyymm)),
+          );
+        },
+      );
     }
   }
 }

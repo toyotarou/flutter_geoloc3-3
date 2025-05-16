@@ -171,11 +171,12 @@ class _TempleVisitedDateDisplayAlertState extends ConsumerState<TempleVisitedDat
                                 margin: const EdgeInsets.all(3),
                                 padding: const EdgeInsets.all(3),
                                 decoration: BoxDecoration(
-                                    border: Border.all(
-                                  color: (templePhoto.templephotos.isEmpty)
-                                      ? Colors.pinkAccent
-                                      : Colors.white.withOpacity(0.2),
-                                )),
+                                  border: Border.all(
+                                    color: (templePhoto.templephotos.isEmpty)
+                                        ? Colors.pinkAccent
+                                        : Colors.white.withOpacity(0.2),
+                                  ),
+                                ),
                                 child: Text(e.temple, maxLines: 3, overflow: TextOverflow.ellipsis),
                               ),
                             ],
@@ -200,7 +201,7 @@ class _TempleVisitedDateDisplayAlertState extends ConsumerState<TempleVisitedDat
                   decoration: BoxDecoration(color: Colors.orangeAccent.withOpacity(0.2)),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: <Widget>[Text(year), Container()],
+                    children: <Widget>[Text(year), const SizedBox.shrink()],
                   ),
                 ),
                 Column(crossAxisAlignment: CrossAxisAlignment.start, children: list2),

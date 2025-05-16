@@ -42,99 +42,100 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
       body: Stack(
         children: <Widget>[
           SafeArea(
-              child: Padding(
-            padding: const EdgeInsets.all(20),
-            child: Column(
-              children: <Widget>[
-                Container(width: context.screenSize.width),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Text(widget.date.yyyymmdd),
-                    Row(
-                      children: <Widget>[
-                        if (widget.pickupGeolocList.length > 1) ...<Widget>[
-                          GestureDetector(
-                            onTap: () {
-                              appParamNotifier.setIsMarkerShow(flag: true);
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                children: <Widget>[
+                  Container(width: context.screenSize.width),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Text(widget.date.yyyymmdd),
+                      Row(
+                        children: <Widget>[
+                          if (widget.pickupGeolocList.length > 1) ...<Widget>[
+                            GestureDetector(
+                              onTap: () {
+                                appParamNotifier.setIsMarkerShow(flag: true);
 
-                              appParamNotifier.setSelectedTimeGeoloc();
+                                appParamNotifier.setSelectedTimeGeoloc();
 
-                              final List<GeolocModel> list = <GeolocModel>[];
-                              for (final Geoloc element in widget.pickupGeolocList) {
-                                list.add(
-                                  GeolocModel(
-                                    id: 0,
-                                    year: element.date.split('-')[0],
-                                    month: element.date.split('-')[1],
-                                    day: element.date.split('-')[2],
-                                    time: element.time,
-                                    latitude: element.latitude,
-                                    longitude: element.longitude,
+                                final List<GeolocModel> list = <GeolocModel>[];
+                                for (final Geoloc element in widget.pickupGeolocList) {
+                                  list.add(
+                                    GeolocModel(
+                                      id: 0,
+                                      year: element.date.split('-')[0],
+                                      month: element.date.split('-')[1],
+                                      day: element.date.split('-')[2],
+                                      time: element.time,
+                                      latitude: element.latitude,
+                                      longitude: element.longitude,
+                                    ),
+                                  );
+                                }
+
+                                appParamNotifier.setMapType(type: MapType.daily);
+
+                                GeolocDialog(
+                                  context: context,
+                                  widget: GeolocMapAlert(
+                                    displayMonthMap: false,
+
+                                    ///
+
+                                    date: widget.date,
+                                    geolocStateList: list,
+                                    displayTempMap: true,
+                                    walkRecord: widget.walkRecord,
+                                    templeInfoList: widget.templeInfoMap,
                                   ),
+                                  executeFunctionWhenDialogClose: true,
+                                  ref: ref,
+                                  from: 'PickupGeolocDisplayAlert',
                                 );
-                              }
-
-                              appParamNotifier.setMapType(type: MapType.daily);
-
-                              GeolocDialog(
-                                context: context,
-                                widget: GeolocMapAlert(
-                                  displayMonthMap: false,
-
-                                  ///
-
-                                  date: widget.date,
-                                  geolocStateList: list,
-                                  displayTempMap: true,
-                                  walkRecord: widget.walkRecord,
-                                  templeInfoList: widget.templeInfoMap,
-                                ),
-                                executeFunctionWhenDialogClose: true,
-                                ref: ref,
-                                from: 'PickupGeolocDisplayAlert',
-                              );
-                            },
+                              },
+                              child: const Column(
+                                children: <Widget>[
+                                  Text('isar'),
+                                  Icon(Icons.map, color: Colors.orangeAccent),
+                                  Text('map')
+                                ],
+                              ),
+                            ),
+                            const SizedBox(width: 30),
+                          ],
+                          GestureDetector(
+                            onTap: () => _showDeleteDialog(),
                             child: const Column(
                               children: <Widget>[
-                                Text('isar'),
-                                Icon(Icons.map, color: Colors.orangeAccent),
-                                Text('map')
+                                Text('delete'),
+                                Icon(Icons.delete, color: Colors.greenAccent),
+                                Text('mysql'),
                               ],
                             ),
                           ),
                           const SizedBox(width: 30),
-                        ],
-                        GestureDetector(
-                          onTap: () => _showDeleteDialog(),
-                          child: const Column(
-                            children: <Widget>[
-                              Text('delete'),
-                              Icon(Icons.delete, color: Colors.greenAccent),
-                              Text('mysql'),
-                            ],
+                          GestureDetector(
+                            onTap: () => inputPickupGeoloc(),
+                            child: const Column(children: <Widget>[Text('input'), Icon(Icons.input), Text('mysql')]),
                           ),
-                        ),
-                        const SizedBox(width: 30),
-                        GestureDetector(
-                          onTap: () => inputPickupGeoloc(),
-                          child: const Column(children: <Widget>[Text('input'), Icon(Icons.input), Text('mysql')]),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-                Divider(color: Colors.white.withOpacity(0.5), thickness: 5),
-                Expanded(child: displayPickupGeolocList()),
-                Divider(color: Colors.white.withOpacity(0.5), thickness: 5),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[Container(), Text(widget.pickupGeolocList.length.toString())],
-                ),
-              ],
+                        ],
+                      ),
+                    ],
+                  ),
+                  Divider(color: Colors.white.withOpacity(0.5), thickness: 5),
+                  Expanded(child: displayPickupGeolocList()),
+                  Divider(color: Colors.white.withOpacity(0.5), thickness: 5),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[const SizedBox.shrink(), Text(widget.pickupGeolocList.length.toString())],
+                  ),
+                ],
+              ),
             ),
-          )),
+          ),
           if (isLoading) ...<Widget>[const Center(child: CircularProgressIndicator())],
         ],
       ),
@@ -174,28 +175,30 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
             .toString();
       }
 
-      list.add(DefaultTextStyle(
-        style: const TextStyle(fontSize: 12),
-        child: Column(
-          children: <Widget>[
-            Row(
-              children: <Widget>[
-                SizedBox(width: 60, child: Text(element.time)),
-                const SizedBox(width: 30),
-                Expanded(child: Text(element.latitude)),
-                Expanded(child: Text(element.longitude)),
-              ],
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: <Widget>[
-                const SizedBox.shrink(),
-                Container(width: 60, alignment: Alignment.topRight, child: Text('$distance m')),
-              ],
-            ),
-          ],
+      list.add(
+        DefaultTextStyle(
+          style: const TextStyle(fontSize: 12),
+          child: Column(
+            children: <Widget>[
+              Row(
+                children: <Widget>[
+                  SizedBox(width: 60, child: Text(element.time)),
+                  const SizedBox(width: 30),
+                  Expanded(child: Text(element.latitude)),
+                  Expanded(child: Text(element.longitude)),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: <Widget>[
+                  const SizedBox.shrink(),
+                  Container(width: 60, alignment: Alignment.topRight, child: Text('$distance m')),
+                ],
+              ),
+            ],
+          ),
         ),
-      ));
+      );
 
       keepLat = element.latitude;
       keepLng = element.longitude;
@@ -217,12 +220,13 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
     final Widget cancelButton = TextButton(onPressed: () => Navigator.pop(context), child: const Text('いいえ'));
 
     final Widget continueButton = TextButton(
-        onPressed: () {
-          deletePickupGeoloc();
+      onPressed: () {
+        deletePickupGeoloc();
 
-          Navigator.pop(context);
-        },
-        child: const Text('はい'));
+        Navigator.pop(context);
+      },
+      child: const Text('はい'),
+    );
 
     final AlertDialog alert = AlertDialog(
       backgroundColor: Colors.blueGrey.withOpacity(0.3),
@@ -241,26 +245,31 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
     geolocNotifier
         .deleteGeoloc(date: widget.date.yyyymmdd)
         // ignore: always_specify_types
-        .then((value) {
-      if (mounted) {
-        // ignore: always_specify_types
-        Future.delayed(const Duration(seconds: 2), () {
-          setState(() => isLoading = false);
+        .then(
+      (value) {
+        if (mounted) {
+          // ignore: always_specify_types
+          Future.delayed(
+            const Duration(seconds: 2),
+            () {
+              setState(() => isLoading = false);
 
-          // ignore: use_build_context_synchronously
-          Navigator.pop(context);
-          // ignore: use_build_context_synchronously
-          Navigator.pop(context);
+              // ignore: use_build_context_synchronously
+              Navigator.pop(context);
+              // ignore: use_build_context_synchronously
+              Navigator.pop(context);
 
-          Navigator.pushReplacement(
-            // ignore: use_build_context_synchronously
-            context,
-            // ignore: inference_failure_on_instance_creation, always_specify_types
-            MaterialPageRoute(builder: (BuildContext context) => HomeScreen(baseYm: widget.date.yyyymm)),
+              Navigator.pushReplacement(
+                // ignore: use_build_context_synchronously
+                context,
+                // ignore: inference_failure_on_instance_creation, always_specify_types
+                MaterialPageRoute(builder: (BuildContext context) => HomeScreen(baseYm: widget.date.yyyymm)),
+              );
+            },
           );
-        });
-      }
-    });
+        }
+      },
+    );
   }
 
   ///
@@ -288,22 +297,25 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
     // 全ての非同期処理が完了した後に画面遷移を行う
     if (mounted) {
       // ignore: always_specify_types
-      Future.delayed(const Duration(seconds: 2), () {
-        setState(() => isLoading = false);
+      Future.delayed(
+        const Duration(seconds: 2),
+        () {
+          setState(() => isLoading = false);
 
-        // ignore: use_build_context_synchronously
-        Navigator.pop(context);
-        // ignore: use_build_context_synchronously
-        Navigator.pop(context);
-        Navigator.pushReplacement(
           // ignore: use_build_context_synchronously
-          context,
-          // ignore: inference_failure_on_instance_creation, always_specify_types
-          MaterialPageRoute(
-            builder: (BuildContext context) => HomeScreen(baseYm: widget.date.yyyymm),
-          ),
-        );
-      });
+          Navigator.pop(context);
+          // ignore: use_build_context_synchronously
+          Navigator.pop(context);
+          Navigator.pushReplacement(
+            // ignore: use_build_context_synchronously
+            context,
+            // ignore: inference_failure_on_instance_creation, always_specify_types
+            MaterialPageRoute(
+              builder: (BuildContext context) => HomeScreen(baseYm: widget.date.yyyymm),
+            ),
+          );
+        },
+      );
     }
   }
 }
