@@ -246,6 +246,7 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
         .deleteGeoloc(date: widget.date.yyyymmdd)
         // ignore: always_specify_types
         .then(
+      // ignore: always_specify_types
       (value) {
         if (mounted) {
           // ignore: always_specify_types
