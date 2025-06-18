@@ -49,6 +49,14 @@ android {
             shrinkResources false
         }
     }
+
+    buildFeatures {
+        compose = true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.10"
+    }
 }
 
 flutter {
@@ -56,6 +64,14 @@ flutter {
 }
 
 dependencies {
+
+    // ✅ Jetpack Compose 関連ライブラリ
+    implementation("androidx.activity:activity-compose:1.8.2")
+    implementation("androidx.compose.material3:material3:1.2.0")
+
+    // ✅ これを追加（@Preview 用）
+    debugImplementation("androidx.compose.ui:ui-tooling:1.5.4")
+
 }
 
 afterEvaluate {

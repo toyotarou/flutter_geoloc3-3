@@ -21,6 +21,10 @@
         android:label="flutter_geoloc3"
         android:name="${applicationName}"
         android:icon="@mipmap/launcher_icon">
+
+        <!-- ✅ この行を追加 -->
+        <activity android:name=".WifiLocationActivity" />
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
