@@ -30,6 +30,20 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 
+import android.content.Intent
+import android.os.Build
+import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+
 class WifiLocationActivity : ComponentActivity() {
 
     private val locationPermissionRequestCode = 1001
@@ -37,18 +51,24 @@ class WifiLocationActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // パーミッションチェック
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
-            != PackageManager.PERMISSION_GRANTED ||
-            ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_WIFI_STATE)
-            != PackageManager.PERMISSION_GRANTED
-        ) {
+        // Android 10以降で必要なすべての権限をチェック
+        val requiredPermissions = mutableListOf(
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_WIFI_STATE
+        )
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) { // SDK 34+
+            requiredPermissions.add(Manifest.permission.FOREGROUND_SERVICE_LOCATION)
+        }
+
+        val notGranted = requiredPermissions.filter {
+            ContextCompat.checkSelfPermission(this, it) != PackageManager.PERMISSION_GRANTED
+        }
+
+        if (notGranted.isNotEmpty()) {
             ActivityCompat.requestPermissions(
                 this,
-                arrayOf(
-                    Manifest.permission.ACCESS_FINE_LOCATION,
-                    Manifest.permission.ACCESS_WIFI_STATE
-                ),
+                notGranted.toTypedArray(),
                 locationPermissionRequestCode
             )
         }
@@ -64,7 +84,6 @@ fun WifiLocationScreen() {
     val context = LocalContext.current
     var ssid by remember { mutableStateOf("未取得") }
     var locationText by remember { mutableStateOf("未取得") }
-
     var savedData by remember { mutableStateOf<List<WifiLocationEntity>>(emptyList()) }
 
     val db = remember {
@@ -78,11 +97,20 @@ fun WifiLocationScreen() {
     val scrollState = rememberScrollState()
     val scope = rememberCoroutineScope()
 
-    // 🔽 初回リスト読み込み
     LaunchedEffect(Unit) {
         savedData = withContext(Dispatchers.IO) {
             db.wifiLocationDao().getAll()
         }
+    }
+
+    // ... 既存の状態変数
+    var isServiceRunning by remember { mutableStateOf(false) }
+
+    // サービスの稼働状態を確認する関数
+    fun checkServiceRunning(): Boolean {
+        val manager = context.getSystemService(android.app.ActivityManager::class.java)
+        val runningServices = manager?.getRunningServices(Int.MAX_VALUE)
+        return runningServices?.any { it.service.className == WifiForegroundService::class.java.name } == true
     }
 
     Column(
@@ -92,19 +120,16 @@ fun WifiLocationScreen() {
             .verticalScroll(scrollState),
         verticalArrangement = Arrangement.Top
     ) {
-
         Spacer(modifier = Modifier.height(100.dp))
 
-        // 位置情報とSSID取得ボタン
         Button(onClick = {
             val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
-
             try {
                 fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-                    if (location != null) {
-                        locationText = "緯度: ${location.latitude}, 経度: ${location.longitude}"
+                    locationText = if (location != null) {
+                        "緯度: ${location.latitude}, 経度: ${location.longitude}"
                     } else {
-                        locationText = "位置情報が取得できませんでした"
+                        "位置情報が取得できませんでした"
                     }
                 }
             } catch (e: SecurityException) {
@@ -129,17 +154,14 @@ fun WifiLocationScreen() {
                     ssid = "スキャン失敗"
                 }
             }
-
         }) {
             Text("位置情報とSSIDを取得")
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Roomに保存ボタン（suspend関数対応）
         Button(onClick = {
             val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
-
             try {
                 fusedLocationClient.lastLocation.addOnSuccessListener { location ->
                     if (location != null) {
@@ -165,9 +187,8 @@ fun WifiLocationScreen() {
 
                         scope.launch {
                             db.wifiLocationDao().insert(entity)
-                            savedData = db.wifiLocationDao().getAll() // 保存後に再取得
+                            savedData = db.wifiLocationDao().getAll()
                         }
-
                     }
                 }
             } catch (e: SecurityException) {
@@ -191,6 +212,30 @@ fun WifiLocationScreen() {
         }) {
             Text("保存済みデータを読み込む")
         }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Button(onClick = {
+            val intent = Intent(context, WifiForegroundService::class.java)
+            context.startForegroundService(intent)
+        }) {
+            Text("取得サービスを開始")
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Button(onClick = {
+            isServiceRunning = checkServiceRunning()
+        }) {
+            Text("サービス稼働状態を確認")
+        }
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Text(
+            text = if (isServiceRunning) "サービスは稼働中です ✅" else "サービスは停止中です ❌",
+            fontSize = 18.sp
+        )
 
         Spacer(modifier = Modifier.height(24.dp))
 
@@ -224,6 +269,5 @@ fun WifiLocationScreen() {
             }
             Spacer(modifier = Modifier.height(8.dp))
         }
-
     }
 }
