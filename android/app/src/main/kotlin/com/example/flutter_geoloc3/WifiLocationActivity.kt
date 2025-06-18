@@ -9,7 +9,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.compose.ui.tooling.preview.Preview
 
 import android.Manifest
 import android.content.pm.PackageManager
@@ -22,10 +21,14 @@ import com.google.android.gms.location.LocationServices
 import androidx.room.Room
 import com.example.flutter_geoloc3.room.AppDatabase
 import com.example.flutter_geoloc3.room.WifiLocationEntity
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 
 class WifiLocationActivity : ComponentActivity() {
 
@@ -62,6 +65,8 @@ fun WifiLocationScreen() {
     var ssid by remember { mutableStateOf("未取得") }
     var locationText by remember { mutableStateOf("未取得") }
 
+    var savedData by remember { mutableStateOf<List<WifiLocationEntity>>(emptyList()) }
+
     val db = remember {
         Room.databaseBuilder(
             context.applicationContext,
@@ -70,14 +75,26 @@ fun WifiLocationScreen() {
         ).build()
     }
 
-    val coroutineScope = rememberCoroutineScope()
+    val scrollState = rememberScrollState()
+    val scope = rememberCoroutineScope()
+
+    // 🔽 初回リスト読み込み
+    LaunchedEffect(Unit) {
+        savedData = withContext(Dispatchers.IO) {
+            db.wifiLocationDao().getAll()
+        }
+    }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.Center
+            .padding(24.dp)
+            .verticalScroll(scrollState),
+        verticalArrangement = Arrangement.Top
     ) {
+
+        Spacer(modifier = Modifier.height(100.dp))
+
         // 位置情報とSSID取得ボタン
         Button(onClick = {
             val fusedLocationClient = LocationServices.getFusedLocationProviderClient(context)
@@ -131,11 +148,11 @@ fun WifiLocationScreen() {
                             longitude = location.longitude.toString()
                         )
 
-                        coroutineScope.launch {
-                            withContext(Dispatchers.IO) {
-                                db.wifiLocationDao().insert(entity)
-                            }
+                        scope.launch {
+                            db.wifiLocationDao().insert(entity)
+                            savedData = db.wifiLocationDao().getAll() // 保存後に再取得
                         }
+
                     }
                 }
             } catch (e: SecurityException) {
@@ -145,9 +162,53 @@ fun WifiLocationScreen() {
             Text("保存")
         }
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(24.dp))
         Text("SSID: $ssid", fontSize = 20.sp)
         Spacer(modifier = Modifier.height(12.dp))
         Text("現在地: $locationText", fontSize = 20.sp)
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Button(onClick = {
+            scope.launch {
+                savedData = db.wifiLocationDao().getAll()
+            }
+        }) {
+            Text("保存済みデータを読み込む")
+        }
+
+        Spacer(modifier = Modifier.height(24.dp))
+
+        Text("保存されたデータ一覧:", fontSize = 20.sp)
+        Spacer(modifier = Modifier.height(8.dp))
+
+        savedData.forEach { item ->
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Text(
+                    text = "📍 ${item.date} ${item.time} | ${item.ssid} | 緯度:${item.latitude}, 経度:${item.longitude}",
+                    fontSize = 14.sp,
+                    modifier = Modifier.weight(1f)
+                )
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Button(
+                    onClick = {
+                        scope.launch {
+                            db.wifiLocationDao().delete(item)     // ✅ 個別削除
+                            savedData = db.wifiLocationDao().getAll() // 再読み込み
+                        }
+                    },
+                    contentPadding = PaddingValues(4.dp)
+                ) {
+                    Text("削除", fontSize = 12.sp)
+                }
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+
     }
 }

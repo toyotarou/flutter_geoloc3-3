@@ -1,6 +1,7 @@
 package com.example.flutter_geoloc3.room
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.Query
 
@@ -12,4 +13,11 @@ interface WifiLocationDao {
 
     @Query("SELECT * FROM wifi_location")
     suspend fun getAll(): List<WifiLocationEntity>
+
+    @Query("DELETE FROM wifi_location")
+    suspend fun deleteAll()
+
+    @Delete
+    suspend fun delete(location: WifiLocationEntity)
+
 }
