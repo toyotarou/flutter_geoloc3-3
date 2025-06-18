@@ -251,9 +251,10 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
               children: <Widget>[
                 IconButton(
                     onPressed: () {
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => DummyScreen()));
+                      // ignore: inference_failure_on_instance_creation, always_specify_types
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => const DummyScreen()));
                     },
-                    icon: Icon(Icons.ac_unit_outlined)),
+                    icon: const Icon(Icons.ac_unit_outlined)),
                 IconButton(
                   onPressed: () {
                     GeolocDialog(
