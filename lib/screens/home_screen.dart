@@ -22,6 +22,7 @@ import 'components/daily_geoloc_display_alert.dart';
 import 'components/geoloc_map_alert.dart';
 import 'components/history_geoloc_list_alert.dart';
 import 'components/temple_visited_date_display_alert.dart';
+import 'dummy_screen.dart';
 import 'parts/geoloc_dialog.dart';
 import 'parts/menu_head_icon.dart';
 
@@ -248,6 +249,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
             const SizedBox(width: 20),
             Row(
               children: <Widget>[
+                IconButton(
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => DummyScreen()));
+                    },
+                    icon: Icon(Icons.ac_unit_outlined)),
                 IconButton(
                   onPressed: () {
                     GeolocDialog(
