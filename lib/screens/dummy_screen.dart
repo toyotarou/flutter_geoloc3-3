@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../pigeon/wifi_location.dart';
 
@@ -15,16 +16,35 @@ class _DummyScreenState extends State<DummyScreen> {
   List<WifiLocation> _locations = [];
 
   ///
+  Future<void> _requestPermissions() async {
+    final locationStatus = await Permission.location.request();
+    final fgServiceStatus = await Permission.ignoreBatteryOptimizations.request();
+
+    if (!locationStatus.isGranted) {
+      throw Exception('位置情報の権限が拒否されました');
+    }
+    if (!fgServiceStatus.isGranted) {
+      debugPrint('バッテリー最適化除外の許可が拒否されました（続行可能）');
+    }
+  }
+
+  ///
   Future<void> _startService() async {
     setState(() {
       _isLoading = true;
     });
 
-    final api = WifiLocationApi();
-    await api.startLocationCollection();
+    try {
+      await _requestPermissions();
 
-    await Future.delayed(const Duration(seconds: 1));
-    await _checkStatus();
+      final api = WifiLocationApi();
+      await api.startLocationCollection();
+
+      await Future.delayed(const Duration(seconds: 1));
+      await _checkStatus();
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('❌ エラー: ${e.toString()}')));
+    }
 
     setState(() {
       _isLoading = false;
@@ -74,6 +94,16 @@ class _DummyScreenState extends State<DummyScreen> {
             ElevatedButton(onPressed: _checkStatus, child: const Text('現在の稼働状態を確認')),
             const SizedBox(height: 12),
             Text(_isRunning ? '✅ サービス稼働中' : '❌ サービス停止中', style: const TextStyle(fontSize: 16)),
+            const SizedBox(height: 24),
+            ElevatedButton(
+              onPressed: () async {
+                final api = WifiLocationApi();
+                await api.deleteAllWifiLocations();
+
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('全件削除しました')));
+              },
+              child: const Text('全削除'),
+            ),
             const SizedBox(height: 24),
             ElevatedButton(onPressed: _fetchData, child: const Text('Roomから取得（Flutter表示）')),
             const SizedBox(height: 12),

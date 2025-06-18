@@ -9,20 +9,30 @@ android {
     namespace = "com.example.flutter_geoloc3"
 
     compileSdk 35
-
     ndkVersion "27.0.12077973"
 
     defaultConfig {
         applicationId = "com.example.flutter_geoloc3"
         minSdk       flutter.minSdkVersion
         targetSdk    35
-
         versionCode 1
         versionName "1.0.0"
     }
 
+    signingConfigs {
+        release {
+            storeFile file("/Users/toyodahideyuki/my-release-key.jks")
+            storePassword "hidechy4819"
+            keyAlias "my-key-alias"
+            keyPassword "hidechy4819"
+        }
+    }
+
     buildTypes {
         release {
+            // 🔽 この1行を追加してください
+            signingConfig signingConfigs.release
+
             minifyEnabled false
             shrinkResources false
             proguardFiles getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro"
@@ -53,12 +63,8 @@ flutter {
 def roomVersion = "2.6.1"
 
 dependencies {
-
-    // ✅ これを追加（@Preview 用）
     debugImplementation("androidx.compose.ui:ui-tooling:1.5.4")
-
     implementation("androidx.compose.material3:material3:1.2.1")
-    // 他にも compose に必要な依存関係
     implementation("androidx.activity:activity-compose:1.7.2")
     implementation("androidx.compose.ui:ui:1.5.0")
     implementation("androidx.compose.ui:ui-tooling-preview:1.5.0")
