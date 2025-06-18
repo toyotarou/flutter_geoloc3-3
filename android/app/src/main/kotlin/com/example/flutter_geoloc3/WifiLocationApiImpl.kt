@@ -8,46 +8,61 @@ import com.example.flutter_geoloc3.room.WifiLocationEntity
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
 
-class WifiLocationApiImpl(private val context: Context) : WifiLocationApi {
+class WifiLocationApiImpl(
+    private val context: Context
+) : WifiLocationApi {
 
+    ///
     override fun getWifiLocations(): List<WifiLocation> {
-        val db = AppDatabase.getDatabase(context)
-        val dao = db.wifiLocationDao()
+        val dao = AppDatabase
+            .getDatabase(context)
+            .wifiLocationDao()
 
+        // Flow → List に変換
         val entityList: List<WifiLocationEntity> = runBlocking {
-            dao.getAll().first() // Flow → List に変換
+            dao.getAll().first()
         }
 
-        return entityList.map {
+        return entityList.map { entity ->
             WifiLocation(
-                date = it.date,
-                time = it.time,
-                ssid = it.ssid,
-                latitude = it.latitude,
-                longitude = it.longitude
+                date = entity.date,
+                time = entity.time,
+                ssid = entity.ssid,
+                latitude = entity.latitude,
+                longitude = entity.longitude
             )
         }
     }
 
+    ///
     override fun deleteAllWifiLocations() {
-        val db = AppDatabase.getDatabase(context)
-        val dao = db.wifiLocationDao()
+        val dao = AppDatabase
+            .getDatabase(context)
+            .wifiLocationDao()
 
         runBlocking {
             dao.deleteAll()
         }
     }
 
+    ///
     override fun startLocationCollection() {
-        val intent = Intent(context, WifiForegroundService::class.java)
+        val intent = Intent(
+            context,
+            WifiForegroundService::class.java
+        )
+
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             context.startForegroundService(intent)
         } else {
             context.startService(intent)
         }
-        WifiForegroundService.isRunning = true // 明示的に true
+
+        // サービス稼働状態フラグを明示的に true に
+        WifiForegroundService.isRunning = true
     }
 
+    ///
     override fun isCollecting(): Boolean {
         return WifiForegroundService.isRunning
     }
