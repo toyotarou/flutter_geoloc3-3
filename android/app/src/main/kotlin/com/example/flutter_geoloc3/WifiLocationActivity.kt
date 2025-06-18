@@ -115,6 +115,21 @@ fun WifiLocationScreen() {
             val wifiManager = context.applicationContext.getSystemService(WifiManager::class.java)
             val wifiInfo = wifiManager?.connectionInfo
             ssid = wifiInfo?.ssid ?: "取得失敗"
+
+            if (ssid == null || ssid == "<unknown ssid>" || ssid == "0x") {
+                val success = wifiManager?.startScan()
+                if (success == true) {
+                    val scanResults = wifiManager.scanResults
+                    if (scanResults.isNotEmpty()) {
+                        ssid = scanResults[0].SSID
+                    } else {
+                        ssid = "取得失敗"
+                    }
+                } else {
+                    ssid = "スキャン失敗"
+                }
+            }
+
         }) {
             Text("位置情報とSSIDを取得")
         }
@@ -198,8 +213,8 @@ fun WifiLocationScreen() {
                 Button(
                     onClick = {
                         scope.launch {
-                            db.wifiLocationDao().delete(item)     // ✅ 個別削除
-                            savedData = db.wifiLocationDao().getAll() // 再読み込み
+                            db.wifiLocationDao().delete(item)
+                            savedData = db.wifiLocationDao().getAll()
                         }
                     },
                     contentPadding = PaddingValues(4.dp)
