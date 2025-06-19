@@ -13,7 +13,7 @@ class DummyScreen extends StatefulWidget {
 class _DummyScreenState extends State<DummyScreen> {
   bool _isRunning = false;
   bool _isLoading = false;
-  List<WifiLocation> _locations = <WifiLocation>[];
+  List<WifiLocation> kotlinRoomData = <WifiLocation>[];
 
   ///
   Future<void> _requestPermissions() async {
@@ -63,13 +63,14 @@ class _DummyScreenState extends State<DummyScreen> {
   }
 
   ///
-  Future<void> _fetchData() async {
+  Future<void> _fetchKotlinRoomData() async {
     final WifiLocationApi api = WifiLocationApi();
     final List<WifiLocation?> result = await api.getWifiLocations();
     setState(() {
-      _locations = result.whereType<WifiLocation>().toList();
+      kotlinRoomData = result.whereType<WifiLocation>().toList();
 
-      _locations.sort((WifiLocation a, WifiLocation b) => '${a.date} ${a.time}'.compareTo('${b.date} ${b.time}') * -1);
+      kotlinRoomData
+          .sort((WifiLocation a, WifiLocation b) => '${a.date} ${a.time}'.compareTo('${b.date} ${b.time}') * -1);
     });
   }
 
@@ -79,6 +80,8 @@ class _DummyScreenState extends State<DummyScreen> {
     super.initState();
 
     _checkStatus();
+
+    _fetchKotlinRoomData();
   }
 
   ///
@@ -108,15 +111,15 @@ class _DummyScreenState extends State<DummyScreen> {
               child: const Text('全削除'),
             ),
             const SizedBox(height: 24),
-            ElevatedButton(onPressed: _fetchData, child: const Text('Roomから取得（Flutter表示）')),
+            ElevatedButton(onPressed: _fetchKotlinRoomData, child: const Text('Roomから取得（Flutter表示）')),
             const SizedBox(height: 12),
             Expanded(
-              child: _locations.isEmpty
+              child: kotlinRoomData.isEmpty
                   ? const Text('📭 データがまだありません')
                   : ListView.builder(
-                      itemCount: _locations.length,
+                      itemCount: kotlinRoomData.length,
                       itemBuilder: (BuildContext context, int index) {
-                        final WifiLocation loc = _locations[index];
+                        final WifiLocation loc = kotlinRoomData[index];
                         return Card(
                           margin: const EdgeInsets.symmetric(vertical: 6),
                           child: ListTile(

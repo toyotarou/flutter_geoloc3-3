@@ -19,6 +19,7 @@ import '../ripository/geolocs_repository.dart';
 import '../ripository/isar_repository.dart';
 import '../utilities/utilities.dart';
 import 'components/daily_geoloc_display_alert.dart';
+import 'components/geoloc_data_list_alert.dart';
 import 'components/geoloc_map_alert.dart';
 import 'components/history_geoloc_list_alert.dart';
 import 'components/temple_visited_date_display_alert.dart';
@@ -524,6 +525,24 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
                   ],
                 ),
               ),
+              Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
+              GestureDetector(
+                onTap: () => GeolocDialog(context: context, widget: GeolocDataListAlert(geolocList: geolocList)),
+                child: Row(
+                  children: <Widget>[
+                    const MenuHeadIcon(),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 3),
+                        margin: const EdgeInsets.all(5),
+                        child: const Text('Geoloc data list'),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
@@ -574,15 +593,11 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
       );
     }
 
-    /// SingleChildScrollViewにできない
     return SingleChildScrollView(
       child: DefaultTextStyle(
         style: const TextStyle(fontSize: 10),
         child: Column(
-          children: <Widget>[
-            Column(children: list),
-            const SizedBox(height: 45),
-          ],
+          children: <Widget>[Column(children: list), const SizedBox(height: 45)],
         ),
       ),
     );
@@ -772,6 +787,8 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
 
   ///
   Future<void> _makeGeolocList() async {
+    geolocMap.clear();
+
     GeolocRepository().getAllIsarGeoloc().then((List<Geoloc>? value) {
       if (mounted) {
         setState(() {
@@ -779,11 +796,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
 
           if (value!.isNotEmpty) {
             for (final Geoloc element in value) {
-              geolocMap[element.date] = <Geoloc>[];
-            }
-
-            for (final Geoloc element in value) {
-              geolocMap[element.date]?.add(element);
+              (geolocMap[element.date] ??= <Geoloc>[]).add(element);
             }
           }
         });

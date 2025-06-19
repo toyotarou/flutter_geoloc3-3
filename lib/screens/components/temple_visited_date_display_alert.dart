@@ -212,9 +212,13 @@ class _TempleVisitedDateDisplayAlertState extends ConsumerState<TempleVisitedDat
       },
     );
 
-    /// SingleChildScrollViewにできない
-    return SingleChildScrollView(
-      child: DefaultTextStyle(style: const TextStyle(fontSize: 12), child: Column(children: list)),
+    return CustomScrollView(
+      slivers: <Widget>[
+        SliverList(
+          delegate:
+              SliverChildBuilderDelegate((BuildContext context, int index) => list[index], childCount: list.length),
+        ),
+      ],
     );
   }
 }

@@ -78,10 +78,10 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
                                 contentStr = 'mysqlデータがありません。';
                               }
 
-                              if (geolocMap.isEmpty) {
-                                errFlg = true;
-                                contentStr = 'geolocMapが作成されていません。';
-                              }
+                              // if (geolocMap.isEmpty) {
+                              //   errFlg = true;
+                              //   contentStr = 'geolocMapが作成されていません。';
+                              // }
 
                               if (errFlg) {
                                 // ignore: always_specify_types
@@ -181,11 +181,13 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
               style: const TextStyle(fontSize: 12),
               child: Row(
                 children: <Widget>[
-                  Text(
-                    element.id.toString(),
-                    style: const TextStyle(color: Colors.grey, fontSize: 10),
+                  SizedBox(
+                    width: 50,
+                    child: Text(
+                      element.id.toString(),
+                      style: const TextStyle(color: Colors.grey, fontSize: 10),
+                    ),
                   ),
-                  const SizedBox(width: 20),
                   SizedBox(width: 50, child: Text(element.time)),
                   const SizedBox(width: 20),
                   Expanded(child: Text(element.latitude)),

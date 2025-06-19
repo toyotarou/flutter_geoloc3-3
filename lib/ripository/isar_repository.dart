@@ -5,6 +5,7 @@ import 'package:path_provider/path_provider.dart';
 
 import '../collections/config.dart';
 import '../collections/geoloc.dart';
+import '../collections/kotlin_room_data.dart';
 
 class IsarRepository {
   IsarRepository._();
@@ -21,9 +22,6 @@ class IsarRepository {
     final Directory dir = await getApplicationDocumentsDirectory();
 
     // ignore: strict_raw_type, always_specify_types
-    _isar = await Isar.open(<CollectionSchema>[
-      GeolocSchema,
-      ConfigSchema,
-    ], directory: dir.path);
+    _isar = await Isar.open(<CollectionSchema>[GeolocSchema, ConfigSchema, KotlinRoomDataSchema], directory: dir.path);
   }
 }
