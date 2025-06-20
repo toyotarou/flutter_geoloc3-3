@@ -1,26 +1,24 @@
 package com.example.flutter_geoloc3
 
 import io.flutter.embedding.android.FlutterActivity
-import android.content.Intent
-import android.os.Bundle
-
-import com.example.flutter_geoloc3.WifiLocationApi
-import com.example.flutter_geoloc3.WifiLocationApiImpl
 import io.flutter.embedding.engine.FlutterEngine
 
+/**
+ * Flutter 側のエントリーポイントとなる MainActivity。
+ * Flutter ↔ Kotlin 間で通信する Pigeon API をここでセットアップする。
+ */
 class MainActivity : FlutterActivity() {
-//    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-//        // Flutter を起動せず Kotlin 画面に遷移
-//        val intent = Intent(this, WifiLocationActivity::class.java)
-//        startActivity(intent)
-//        finish()
-//    }
 
-    override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
+    /**
+     * Flutter エンジンの初期化時に呼ばれる。
+     * Kotlin 側の WifiLocationApiImpl を Flutter 側に登録する。
+     */
+    override fun configureFlutterEngine(
+        flutterEngine: FlutterEngine
+    ) {
         super.configureFlutterEngine(flutterEngine)
 
-        // Kotlin 側の API 実装を登録
+        // Kotlin 実装（WifiLocationApiImpl）を Flutter 側にバインド
         WifiLocationApi.setUp(
             flutterEngine.dartExecutor.binaryMessenger,
             WifiLocationApiImpl(this)
