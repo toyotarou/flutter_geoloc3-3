@@ -3,77 +3,71 @@
     package="com.example.flutter_geoloc3"
     tools:remove="package">
 
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <!-- ✅ 位置情報取得用 -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" /> <!-- 高精度な位置情報 -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" /> <!-- おおまかな位置情報 -->
+    <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" /> <!-- バックグラウンドでの位置取得 -->
 
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
+    <!-- ✅ Foreground Service 用 -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" /> <!-- フォアグラウンドサービス全般 -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" /> <!-- 位置情報を扱うフォアグラウンドサービス用 -->
 
-    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <!-- ✅ Wi-Fi 情報取得用 -->
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" /> <!-- Wi-Fi状態の取得 -->
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" /> <!-- Wi-FiのON/OFF切り替え（今回は使用しないかも） -->
 
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
-
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
+    <!-- ✅ 通信や通知用 -->
+    <uses-permission android:name="android.permission.INTERNET" /> <!-- インターネット接続 -->
+    <uses-permission android:name="android.permission.WAKE_LOCK" /> <!-- 画面消灯中の動作継続を許可 -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" /> <!-- Android 13以降の通知表示許可 -->
 
     <application
-
-        android:enableOnBackInvokedCallback="true"
-
-        android:label="flutter_geoloc3"
         android:name="${applicationName}"
-        android:icon="@mipmap/launcher_icon">
+        android:enableOnBackInvokedCallback="true"
+        android:icon="@mipmap/launcher_icon"
+        android:label="flutter_geoloc3">
 
-        <!-- ✅ この行を追加 -->
+        <!-- ✅ Kotlin側のActivity（Roomのデータ一覧やカウントダウン表示） -->
         <activity android:name=".WifiLocationActivity" />
 
+        <!-- ✅ FlutterのMainActivity -->
         <activity
             android:name=".MainActivity"
+            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
             android:exported="true"
+            android:hardwareAccelerated="true"
             android:launchMode="singleTop"
             android:taskAffinity=""
             android:theme="@style/LaunchTheme"
-            android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
-            android:hardwareAccelerated="true"
             android:windowSoftInputMode="adjustResize">
-            <!-- Specifies an Android theme to apply to this Activity as soon as
-                 the Android process has started. This theme is visible to the user
-                 while the Flutter UI initializes. After that, this theme continues
-                 to determine the Window background behind the Flutter UI. -->
+
             <meta-data
-              android:name="io.flutter.embedding.android.NormalTheme"
-              android:resource="@style/NormalTheme"
-              />
+                android:name="io.flutter.embedding.android.NormalTheme"
+                android:resource="@style/NormalTheme" />
+
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <!-- Don't delete the meta-data below.
-             This is used by the Flutter tool to generate GeneratedPluginRegistrant.java -->
+
+        <!-- ✅ Flutterのネイティブプラグイン登録用 -->
         <meta-data
             android:name="flutterEmbedding"
             android:value="2" />
 
+        <!-- ✅ Foreground Serviceの定義 -->
         <service
             android:name=".WifiForegroundService"
             android:exported="false"
             android:foregroundServiceType="location" />
-
     </application>
-    <!-- Required to query activities that can process text, see:
-         https://developer.android.com/training/package-visibility and
-         https://developer.android.com/reference/android/content/Intent#ACTION_PROCESS_TEXT.
 
-         In particular, this is used by the Flutter engine in io.flutter.plugin.text.ProcessTextPlugin. -->
+    <!-- ✅ Android 11以降でインテントの可視性を確保 -->
     <queries>
         <intent>
-            <action android:name="android.intent.action.PROCESS_TEXT"/>
-            <data android:mimeType="text/plain"/>
+            <action android:name="android.intent.action.PROCESS_TEXT" />
+            <data android:mimeType="text/plain" />
         </intent>
     </queries>
 </manifest>

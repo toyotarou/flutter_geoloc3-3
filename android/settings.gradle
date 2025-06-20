@@ -1,26 +1,39 @@
+// ✅ pluginManagement セクション：Flutter の SDK パスとリポジトリ設定
 pluginManagement {
+    // 🔽 local.properties から flutter SDK のパスを取得
     def props = new Properties()
     file("local.properties").withInputStream { props.load(it) }
     def flutterSdkPath = props.getProperty("flutter.sdk")
-    assert flutterSdkPath != null : "flutter.sdk not set in local.properties"
 
+    // 🔽 パスが未設定の場合にエラーを出す
+    assert flutterSdkPath != null: "flutter.sdk not set in local.properties"
+
+    // 🔽 Flutter のビルドツールを Gradle に組み込む
     includeBuild("${flutterSdkPath}/packages/flutter_tools/gradle")
 
+    // 🔽 プラグイン管理用リポジトリを指定
     repositories {
-        google()
-        mavenCentral()
-        gradlePluginPortal()
-        maven { url "https://storage.googleapis.com/download.flutter.io" }
+        google()                                    // Googleの標準リポジトリ
+        mavenCentral()                              // Maven Central
+        gradlePluginPortal()                        // Gradleプラグイン用
+        maven { url "https://storage.googleapis.com/download.flutter.io" }  // Flutter専用のライブラリ
     }
 }
 
+// ✅ plugins セクション：プロジェクト全体で使用する Gradle プラグインの定義
 plugins {
-
+    // 🔽 アプリケーション開発用 Android プラグイン
     id "com.android.application" version "8.2.2" apply false
-    id "com.android.library"    version "8.2.2" apply false
 
+    // 🔽 ライブラリ用 Android プラグイン（使用しない場合も定義されていることがある）
+    id "com.android.library" version "8.2.2" apply false
+
+    // 🔽 Kotlin プラグイン（ComposeやAndroid連携用）
     id "org.jetbrains.kotlin.android" version "1.9.22" apply false
+
+    // 🔽 Flutter 固有の Gradle プラグイン（必須）
     id "dev.flutter.flutter-plugin-loader" version "1.0.0"
 }
 
+// ✅ モジュール定義：このプロジェクトには "app" モジュールが含まれている
 include ":app"
