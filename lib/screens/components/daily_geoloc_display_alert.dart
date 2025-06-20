@@ -78,10 +78,10 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
                                 contentStr = 'mysqlデータがありません。';
                               }
 
-                              // if (geolocMap.isEmpty) {
-                              //   errFlg = true;
-                              //   contentStr = 'geolocMapが作成されていません。';
-                              // }
+                              if (geolocMap.isEmpty) {
+                                errFlg = true;
+                                contentStr = 'geolocMapが作成されていません。';
+                              }
 
                               if (errFlg) {
                                 // ignore: always_specify_types
@@ -284,27 +284,28 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
     setState(() => isLoading = true);
 
     // 削除完了を待つ
-    await GeolocRepository().deleteGeolocList(geolocList: geolocList);
+    // ignore: always_specify_types
+    await GeolocRepository().deleteGeolocList(geolocList: geolocList).then((value) {
+      if (mounted) {
+        // ignore: always_specify_types
+        Future.delayed(
+          const Duration(seconds: 2),
+          () {
+            setState(() => isLoading = false);
 
-    if (mounted) {
-      // ignore: always_specify_types
-      Future.delayed(
-        const Duration(seconds: 2),
-        () {
-          setState(() => isLoading = false);
-
-          // 削除完了後にすぐ画面遷移
-          // ignore: use_build_context_synchronously
-          Navigator.pop(context);
-
-          Navigator.pushReplacement(
+            // 削除完了後にすぐ画面遷移
             // ignore: use_build_context_synchronously
-            context,
-            // ignore: inference_failure_on_instance_creation, always_specify_types
-            MaterialPageRoute(builder: (BuildContext context) => HomeScreen(baseYm: widget.date.yyyymm)),
-          );
-        },
-      );
-    }
+            Navigator.pop(context);
+
+            Navigator.pushReplacement(
+              // ignore: use_build_context_synchronously
+              context,
+              // ignore: inference_failure_on_instance_creation, always_specify_types
+              MaterialPageRoute(builder: (BuildContext context) => HomeScreen(baseYm: widget.date.yyyymm)),
+            );
+          },
+        );
+      }
+    });
   }
 }

@@ -22,8 +22,9 @@ import 'components/daily_geoloc_display_alert.dart';
 import 'components/geoloc_data_list_alert.dart';
 import 'components/geoloc_map_alert.dart';
 import 'components/history_geoloc_list_alert.dart';
+import 'components/kotlin_room_data_display_alert.dart';
 import 'components/temple_visited_date_display_alert.dart';
-import 'dummy_screen.dart';
+
 import 'parts/geoloc_dialog.dart';
 import 'parts/menu_head_icon.dart';
 
@@ -252,8 +253,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
               children: <Widget>[
                 IconButton(
                     onPressed: () {
-                      // ignore: inference_failure_on_instance_creation, always_specify_types
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => const DummyScreen()));
+                      GeolocDialog(context: context, widget: const KotlinRoomDataDisplayAlert());
                     },
                     icon: const Icon(Icons.ac_unit_outlined)),
                 IconButton(

@@ -48,32 +48,32 @@ class _GeolocDataListAlertState extends ConsumerState<GeolocDataListAlert> {
 
   ///
   Widget displayGeolocDataList() {
-    List<Widget> list = [];
+    final List<Widget> list = <Widget>[];
 
     widget.geolocList
-      ?..sort((a, b) => a.id.compareTo(b.id))
+      ?..sort((Geoloc a, Geoloc b) => a.id.compareTo(b.id))
       ..forEach(
-        (element) {
+        (Geoloc element) {
           list.add(
             Container(
               decoration: BoxDecoration(
                 border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
               ),
-              padding: EdgeInsets.all(10),
+              padding: const EdgeInsets.all(10),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(width: 60, child: Text(element.id.toString())),
+                children: <Widget>[
+                  SizedBox(width: 60, child: Text(element.id.toString())),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                    children: <Widget>[
                       Text(element.date),
                       Text(element.time),
                     ],
                   ),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
+                    children: <Widget>[
                       Text(element.latitude),
                       Text(element.longitude),
                     ],
