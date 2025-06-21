@@ -45,11 +45,17 @@ class _KotlinRoomDataListAlertState extends ConsumerState<KotlinRoomDataListAler
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      const Text('Geoloc Data List'),
-                      ElevatedButton(
-                        onPressed: () => _showDeleteDialog(),
-                        style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
-                        child: const Text('delete'),
+                      const Text('Kotlin Room Data List'),
+                      Row(
+                        children: <Widget>[
+                          IconButton(onPressed: () => _showDP(), icon: const Icon(Icons.calendar_month)),
+                          const SizedBox(width: 10),
+                          ElevatedButton(
+                            onPressed: () => _showDeleteDialog(),
+                            style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
+                            child: const Text('delete'),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -177,6 +183,41 @@ class _KotlinRoomDataListAlertState extends ConsumerState<KotlinRoomDataListAler
           },
         );
       }
+    }
+  }
+
+  ///
+  Future<void> _showDP() async {
+    final DateTime? selectedDate = await showDatePicker(
+        barrierColor: Colors.transparent,
+        locale: const Locale('ja'),
+        context: context,
+        firstDate: DateTime(DateTime.now().year - 2),
+        lastDate: DateTime(DateTime.now().year + 3),
+        initialDate: DateTime.now(),
+        builder: (BuildContext context, Widget? child) {
+          return Theme(
+            data: ThemeData.dark().copyWith(
+              scaffoldBackgroundColor: Colors.black.withOpacity(0.1),
+              canvasColor: Colors.black.withOpacity(0.1),
+              cardColor: Colors.black.withOpacity(0.1),
+              dividerColor: Colors.indigo,
+              primaryColor: Colors.black.withOpacity(0.1),
+              secondaryHeaderColor: Colors.black.withOpacity(0.1),
+              dialogBackgroundColor: Colors.black.withOpacity(0.1),
+              primaryColorDark: Colors.black.withOpacity(0.1),
+              highlightColor: Colors.black.withOpacity(0.1),
+            ),
+            child: child!,
+          );
+        });
+
+    if (selectedDate != null) {
+      kotlinRoomDataList?.forEach((KotlinRoomData element) {
+        if (selectedDate.yyyymmdd == element.date) {
+          appParamNotifier.setSelectedKotlinRoomDataListForDelete(kotlinRoomData: element);
+        }
+      });
     }
   }
 }
