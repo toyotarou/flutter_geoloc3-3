@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../collections/geoloc.dart';
+import '../../collections/kotlin_room_data.dart';
 import '../../extensions/extensions.dart';
 import '../../models/geoloc_model.dart';
 import '../../models/temple_latlng_model.dart';
@@ -14,12 +15,18 @@ import 'pickup_geoloc_display_alert.dart';
 
 class DailyGeolocDisplayAlert extends StatefulWidget {
   const DailyGeolocDisplayAlert(
-      {super.key, required this.date, required this.geolocStateList, required this.walkRecord, this.templeInfoMap});
+      {super.key,
+      required this.date,
+      required this.geolocStateList,
+      required this.walkRecord,
+      this.templeInfoMap,
+      this.kotlinRoomDataList});
 
   final DateTime date;
   final List<GeolocModel> geolocStateList;
   final WalkRecordModel walkRecord;
   final List<TempleInfoModel>? templeInfoMap;
+  final List<KotlinRoomData>? kotlinRoomDataList;
 
   @override
   State<DailyGeolocDisplayAlert> createState() => _DailyGeolocDisplayAlertState();
@@ -65,7 +72,15 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      Text(widget.date.yyyymmdd),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Text(widget.date.yyyymmdd),
+                          const SizedBox(height: 10),
+                          Text(
+                              (widget.kotlinRoomDataList != null) ? widget.kotlinRoomDataList!.length.toString() : '0'),
+                        ],
+                      ),
                       Row(
                         children: <Widget>[
                           GestureDetector(

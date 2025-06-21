@@ -9,6 +9,7 @@ import 'package:intl/intl.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 import '../collections/geoloc.dart';
+import '../collections/kotlin_room_data.dart';
 import '../controllers/controllers_mixin.dart';
 import '../enums/map_type.dart';
 import '../extensions/extensions.dart';
@@ -17,6 +18,7 @@ import '../models/temple_latlng_model.dart';
 import '../models/walk_record_model.dart';
 import '../ripository/geolocs_repository.dart';
 import '../ripository/isar_repository.dart';
+import '../ripository/kotlin_room_data_repository.dart';
 import '../utilities/utilities.dart';
 import 'components/daily_geoloc_display_alert.dart';
 import 'components/geoloc_data_list_alert.dart';
@@ -699,8 +701,22 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
                                         ),
                                         onPressed: (geolocMap[generateYmd] == null)
                                             ? null
-                                            : () {
+                                            : () async {
+                                                // ignore: prefer_final_locals
+                                                List<KotlinRoomData>? list = <KotlinRoomData>[];
+
+                                                await KotlinRoomDataRepository().getKotlinRoomDataList().then(
+                                                      (List<KotlinRoomData>? value) => value?.forEach(
+                                                        (KotlinRoomData element) {
+                                                          if (generateYmd == element.date) {
+                                                            list.add(element);
+                                                          }
+                                                        },
+                                                      ),
+                                                    );
+
                                                 GeolocDialog(
+                                                  // ignore: use_build_context_synchronously
                                                   context: context,
                                                   widget: DailyGeolocDisplayAlert(
                                                     date: DateTime.parse('$generateYmd 00:00:00'),
@@ -715,6 +731,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
                                                           distance: 0,
                                                         ),
                                                     templeInfoMap: templeInfoMap[generateYmd],
+                                                    kotlinRoomDataList: list,
                                                   ),
                                                 );
                                               },
