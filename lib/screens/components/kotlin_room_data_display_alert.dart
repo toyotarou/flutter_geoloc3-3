@@ -5,6 +5,7 @@ import '../../collections/kotlin_room_data.dart';
 import '../../extensions/extensions.dart';
 import '../../pigeon/wifi_location.dart';
 import '../../ripository/kotlin_room_data_repository.dart';
+import '../home_screen.dart';
 import '../parts/error_dialog.dart';
 
 class KotlinRoomDataDisplayAlert extends StatefulWidget {
@@ -20,6 +21,8 @@ class _KotlinRoomDataDisplayAlertState extends State<KotlinRoomDataDisplayAlert>
   List<WifiLocation> kotlinRoomData = <WifiLocation>[];
 
   List<KotlinRoomData> inputKotlinRoomDataList = <KotlinRoomData>[];
+
+  bool isLoading = false;
 
   List<KotlinRoomData>? kotlinRoomDataList = <KotlinRoomData>[];
 
@@ -99,140 +102,122 @@ class _KotlinRoomDataDisplayAlertState extends State<KotlinRoomDataDisplayAlert>
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              if (kotlinRoomDataList != null) ...<Widget>[
-                Text(kotlinRoomDataList!.length.toString()),
-              ],
-              const Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[Text('Kotlin Room Data'), SizedBox.shrink()],
-              ),
-              Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      body: Stack(
+        children: <Widget>[
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  ElevatedButton(
-                      onPressed: _isLoading ? null : _startService,
-                      style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
-                      child: const Text('取得開始')),
+                  const Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[Text('Kotlin Room Data'), SizedBox.shrink()],
+                  ),
+                  Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
                   Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       ElevatedButton(
-                          onPressed: _checkStatus,
+                          onPressed: _isLoading ? null : _startService,
                           style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
-                          child: const Text('稼働状態')),
-                      const SizedBox(width: 10),
-                      Icon(
-                        Icons.star,
-                        color: _isRunning ? Colors.yellow : Colors.white.withValues(alpha: 0.2),
+                          child: const Text('取得開始')),
+                      Row(
+                        children: <Widget>[
+                          ElevatedButton(
+                              onPressed: _checkStatus,
+                              style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
+                              child: const Text('稼働状態')),
+                          const SizedBox(width: 10),
+                          Icon(
+                            Icons.star,
+                            color: _isRunning ? Colors.yellow : Colors.white.withValues(alpha: 0.2),
+                          ),
+                        ],
                       ),
                     ],
                   ),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  ElevatedButton(
-                      onPressed: _fetchKotlinRoomData,
-                      style: ElevatedButton.styleFrom(backgroundColor: Colors.lightGreen.withOpacity(0.2)),
-                      child: const Text('Roomから取得')),
-                  ElevatedButton(
-                      onPressed: () {
-                        inputKotlinRoomData();
-                      },
-                      style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
-                      child: const Text('isar登録')),
-                ],
-              ),
-              const SizedBox(height: 10),
-              Divider(color: Colors.white.withOpacity(0.4), thickness: 2),
-              Container(
-                decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.1)),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
-                    ElevatedButton(
-                      onPressed: () async {
-                        // final WifiLocationApi api = WifiLocationApi();
-                        // await api.deleteAllWifiLocations();
-                        //
-                        // // ignore: use_build_context_synchronously
-                        // ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('全件削除しました')));
-                        //
-                        //
-                        //
-                        //
-                      },
-                      style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent.withOpacity(0.2)),
-                      child: const Text('Room全削除'),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: <Widget>[
+                      ElevatedButton(
+                          onPressed: _fetchKotlinRoomData,
+                          style: ElevatedButton.styleFrom(backgroundColor: Colors.lightGreen.withOpacity(0.2)),
+                          child: const Text('Roomから取得')),
+                      ElevatedButton(
+                          onPressed: () {
+                            inputKotlinRoomData();
+                          },
+                          style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
+                          child: const Text('isar登録')),
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Divider(color: Colors.white.withOpacity(0.4), thickness: 2),
+                  Container(
+                    decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.1)),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: <Widget>[
+                        ElevatedButton(
+                          onPressed: () => _showDeleteDialog(flag: 'room'),
+                          style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent.withOpacity(0.2)),
+                          child: const Text('Room全削除'),
+                        ),
+                        ElevatedButton(
+                            onPressed: () => _showDeleteDialog(flag: 'isar'),
+                            style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent.withOpacity(0.2)),
+                            child: const Text('isar全削除')),
+                      ],
                     ),
-                    ElevatedButton(
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent.withOpacity(0.2)),
-                        child: const Text('isar全削除')),
-                  ],
-                ),
+                  ),
+                  Divider(color: Colors.white.withOpacity(0.4), thickness: 2),
+                  const SizedBox(height: 10),
+                  Expanded(
+                    child: kotlinRoomData.isEmpty
+                        ? const Text('📭 データがまだありません')
+                        : ListView.builder(
+                            itemCount: kotlinRoomData.length,
+                            itemBuilder: (BuildContext context, int index) {
+                              final WifiLocation loc = kotlinRoomData[index];
+
+                              final String ssid = loc.ssid.replaceAll('"', '');
+
+                              inputKotlinRoomDataList.add(KotlinRoomData()
+                                ..date = loc.date
+                                ..time = loc.time
+                                ..ssid = ssid
+                                ..latitude = loc.latitude
+                                ..longitude = loc.longitude);
+
+                              return Card(
+                                margin: const EdgeInsets.symmetric(vertical: 6),
+                                color: Colors.transparent,
+                                child: ListTile(
+                                  title: Text(ssid),
+                                  subtitle: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: <Widget>[
+                                      Text('${loc.date} ${loc.time}'),
+                                      Container(
+                                          alignment: Alignment.topRight,
+                                          child: Text('${loc.latitude} / ${loc.longitude}')),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
+                          ),
+                  ),
+                ],
               ),
-              Divider(color: Colors.white.withOpacity(0.4), thickness: 2),
-              const SizedBox(height: 10),
-              Expanded(
-                child: kotlinRoomData.isEmpty
-                    ? const Text('📭 データがまだありません')
-                    : ListView.builder(
-                        itemCount: kotlinRoomData.length,
-                        itemBuilder: (BuildContext context, int index) {
-                          final WifiLocation loc = kotlinRoomData[index];
-
-                          final String ssid = loc.ssid.replaceAll('"', '');
-
-                          inputKotlinRoomDataList.add(KotlinRoomData()
-                            ..date = loc.date
-                            ..time = loc.time
-                            ..ssid = ssid
-                            ..latitude = loc.latitude
-                            ..longitude = loc.longitude);
-
-                          return Card(
-                            margin: const EdgeInsets.symmetric(vertical: 6),
-                            color: Colors.transparent,
-                            child: ListTile(
-                              title: Text(ssid),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  Text('${loc.date} ${loc.time}'),
-                                  Container(
-                                      alignment: Alignment.topRight, child: Text('${loc.latitude} / ${loc.longitude}')),
-                                ],
-                              ),
-                            ),
-                          );
-                        },
-                      ),
-              ),
-            ],
+            ),
           ),
-        ),
+          if (isLoading) ...<Widget>[const Center(child: CircularProgressIndicator())],
+        ],
       ),
     );
-  }
-
-  ///
-  Future<void> _makeKotlinRoomDataList() async {
-    KotlinRoomDataRepository().getKotlinRoomDataList().then((List<KotlinRoomData>? value) {
-      if (mounted) {
-        setState(() {
-          kotlinRoomDataList = value;
-        });
-      }
-    });
   }
 
   ///
@@ -251,40 +236,124 @@ class _KotlinRoomDataDisplayAlertState extends State<KotlinRoomDataDisplayAlert>
       return;
     }
 
-    List<KotlinRoomData> inputData = <KotlinRoomData>[];
+    ////////////////////////////////////////
+    final List<int> idList = <int>[];
+    kotlinRoomDataList?.forEach((KotlinRoomData element) => idList.add(element.id));
+    ////////////////////////////////////////
 
-    if (kotlinRoomDataList != null) {
-      final List<KotlinRoomData>? list = kotlinRoomDataList;
+    final List<KotlinRoomData> inputData = <KotlinRoomData>[];
 
-      list!.sort((KotlinRoomData a, KotlinRoomData b) => '${a.date} ${a.time}'.compareTo('${b.date} ${b.time}') * -1);
-
-      final DateTime maxDateTime = DateTime(
-        list[0].date.split('-')[0].toInt(),
-        list[0].date.split('-')[1].toInt(),
-        list[0].date.split('-')[2].toInt(),
-        list[0].time.split(':')[0].toInt(),
-        list[0].time.split(':')[1].toInt(),
-      );
-
-      for (final KotlinRoomData element in inputKotlinRoomDataList) {
-        if (DateTime(
-          element.date.split('-')[0].toInt(),
-          element.date.split('-')[1].toInt(),
-          element.date.split('-')[2].toInt(),
-          element.time.split(':')[0].toInt(),
-          element.time.split(':')[1].toInt(),
-        ).isAfter(maxDateTime)) {
+    for (final KotlinRoomData element in inputKotlinRoomDataList) {
+      if (DateTime(
+        element.date.split('-')[0].toInt(),
+        element.date.split('-')[1].toInt(),
+        element.date.split('-')[2].toInt(),
+        element.time.split(':')[0].toInt(),
+        element.time.split(':')[1].toInt(),
+      ).isAfter(DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day))) {
+        if (!idList.contains(element.id)) {
           inputData.add(element);
         }
       }
-    } else {
-      inputData = inputKotlinRoomDataList;
     }
 
-    // ignore: always_specify_types
-    await KotlinRoomDataRepository().inputKotlinRoomDataList(kotlinRoomDataList: inputData).then((value) {
+    if (inputData.isNotEmpty) {
+      // ignore: always_specify_types
+      await KotlinRoomDataRepository().inputKotlinRoomDataList(kotlinRoomDataList: inputData).then((value) {
+        if (mounted) {
+          Navigator.pop(context);
+        }
+      });
+    } else {
       if (mounted) {
         Navigator.pop(context);
+      }
+    }
+  }
+
+  ///
+  void _showDeleteDialog({required String flag}) {
+    final Widget cancelButton = TextButton(onPressed: () => Navigator.pop(context), child: const Text('いいえ'));
+
+    final Widget continueButton = TextButton(
+        onPressed: () {
+          switch (flag) {
+            case 'isar':
+              _deleteKotlinRoomDataList();
+
+            case 'room':
+              deleteKotlinRoomList();
+          }
+
+          Navigator.pop(context);
+        },
+        child: const Text('はい'));
+
+    final AlertDialog alert = AlertDialog(
+      backgroundColor: Colors.blueGrey.withOpacity(0.3),
+      content: Text((flag == 'isar') ? '${DateTime.now().yyyymmdd}以前のisarデータを消去しますか？' : 'kotlinデータを削除しますか'),
+      actions: <Widget>[cancelButton, continueButton],
+    );
+
+    // ignore: inference_failure_on_function_invocation
+    showDialog(context: context, builder: (BuildContext context) => alert);
+  }
+
+  ///
+  Future<void> _deleteKotlinRoomDataList() async {
+    setState(() => isLoading = true);
+
+    KotlinRoomDataRepository().getKotlinRoomDataList().then((List<KotlinRoomData>? value) {
+      final List<int> idList = <int>[];
+      value?.forEach((KotlinRoomData element) => idList.add(element.id));
+
+      if (idList.isNotEmpty) {
+        // ignore: always_specify_types
+        KotlinRoomDataRepository().deleteKotlinRoomDataList(idList: idList).then((value2) {
+          if (mounted) {
+            setState(() => isLoading = false);
+
+            // 削除完了後にすぐ画面遷移
+            // ignore: use_build_context_synchronously
+            Navigator.pop(context);
+
+            Navigator.pushReplacement(
+              // ignore: use_build_context_synchronously
+              context,
+              // ignore: inference_failure_on_instance_creation, always_specify_types
+              MaterialPageRoute(builder: (BuildContext context) => HomeScreen(baseYm: DateTime.now().yyyymm)),
+            );
+          }
+        });
+      }
+    });
+  }
+
+  ///
+  Future<void> deleteKotlinRoomList() async {
+    final WifiLocationApi api = WifiLocationApi();
+    // ignore: always_specify_types
+    await api.deleteAllWifiLocations().then((value) {
+      if (mounted) {
+        // 削除完了後にすぐ画面遷移
+        // ignore: use_build_context_synchronously
+        Navigator.pop(context);
+
+        Navigator.pushReplacement(
+          // ignore: use_build_context_synchronously
+          context,
+          // ignore: inference_failure_on_instance_creation, always_specify_types
+          MaterialPageRoute(builder: (BuildContext context) => HomeScreen(baseYm: DateTime.now().yyyymm)),
+        );
+      }
+    });
+  }
+
+  ///
+  Future<void> _makeKotlinRoomDataList() async {
+    KotlinRoomDataRepository().getKotlinRoomDataList().then((List<KotlinRoomData>? value) {
+      if (mounted) {
+        setState(() => kotlinRoomDataList = value);
       }
     });
   }

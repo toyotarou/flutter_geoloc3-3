@@ -24,8 +24,10 @@ class KotlinRoomDataRepository {
   }
 
   ///
-  Future<void> deleteKotlinRoomDataList({required List<KotlinRoomData>? kotlinRoomDataList}) async {
-    kotlinRoomDataList?.forEach((KotlinRoomData element) => deleteKotlinRoomData(id: element.id));
+  Future<void> deleteKotlinRoomDataList({required List<int> idList}) async {
+    for (final int id in idList) {
+      deleteKotlinRoomData(id: id);
+    }
   }
 
   ///
