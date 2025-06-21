@@ -23,10 +23,10 @@ pluginManagement {
 // ✅ plugins セクション：プロジェクト全体で使用する Gradle プラグインの定義
 plugins {
     // 🔽 アプリケーション開発用 Android プラグイン
-    id "com.android.application" version "8.2.2" apply false
+    id "com.android.application" version "8.3.0" apply false
 
     // 🔽 ライブラリ用 Android プラグイン（使用しない場合も定義されていることがある）
-    id "com.android.library" version "8.2.2" apply false
+    id "com.android.library" version "8.3.0" apply false
 
     // 🔽 Kotlin プラグイン（ComposeやAndroid連携用）
     id "org.jetbrains.kotlin.android" version "1.9.22" apply false

@@ -17,12 +17,12 @@ class KotlinRoomDataDisplayAlert extends StatefulWidget {
 
 class _KotlinRoomDataDisplayAlertState extends State<KotlinRoomDataDisplayAlert> {
   bool _isRunning = false;
+
   bool _isLoading = false;
+
   List<WifiLocation> kotlinRoomData = <WifiLocation>[];
 
   List<KotlinRoomData> inputKotlinRoomDataList = <KotlinRoomData>[];
-
-  bool isLoading = false;
 
   List<KotlinRoomData>? kotlinRoomDataList = <KotlinRoomData>[];
 
@@ -146,9 +146,7 @@ class _KotlinRoomDataDisplayAlertState extends State<KotlinRoomDataDisplayAlert>
                           style: ElevatedButton.styleFrom(backgroundColor: Colors.lightGreen.withOpacity(0.2)),
                           child: const Text('Roomから取得')),
                       ElevatedButton(
-                          onPressed: () {
-                            inputKotlinRoomData();
-                          },
+                          onPressed: () => inputKotlinRoomData(),
                           style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
                           child: const Text('isar登録')),
                     ],
@@ -214,7 +212,7 @@ class _KotlinRoomDataDisplayAlertState extends State<KotlinRoomDataDisplayAlert>
               ),
             ),
           ),
-          if (isLoading) ...<Widget>[const Center(child: CircularProgressIndicator())],
+          if (_isLoading) ...<Widget>[const Center(child: CircularProgressIndicator())],
         ],
       ),
     );
@@ -222,6 +220,8 @@ class _KotlinRoomDataDisplayAlertState extends State<KotlinRoomDataDisplayAlert>
 
   ///
   Future<void> inputKotlinRoomData() async {
+    setState(() => _isLoading = true);
+
     if (inputKotlinRoomDataList.isEmpty) {
       // ignore: always_specify_types
       Future.delayed(
@@ -270,12 +270,30 @@ class _KotlinRoomDataDisplayAlertState extends State<KotlinRoomDataDisplayAlert>
       // ignore: always_specify_types
       await KotlinRoomDataRepository().inputKotlinRoomDataList(kotlinRoomDataList: inputData).then((value) {
         if (mounted) {
-          Navigator.pop(context);
+          // ignore: always_specify_types
+          Future.delayed(
+            const Duration(seconds: 2),
+            () {
+              setState(() => _isLoading = false);
+
+              // ignore: use_build_context_synchronously
+              Navigator.pop(context);
+            },
+          );
         }
       });
     } else {
       if (mounted) {
-        Navigator.pop(context);
+        // ignore: always_specify_types
+        Future.delayed(
+          const Duration(seconds: 2),
+          () {
+            setState(() => _isLoading = false);
+
+            // ignore: use_build_context_synchronously
+            Navigator.pop(context);
+          },
+        );
       }
     }
   }
@@ -312,7 +330,7 @@ class _KotlinRoomDataDisplayAlertState extends State<KotlinRoomDataDisplayAlert>
 
   ///
   Future<void> _deleteKotlinRoomDataList() async {
-    setState(() => isLoading = true);
+    setState(() => _isLoading = true);
 
     ////////////////////////////////////////
     final List<int> idList = <int>[];
@@ -323,17 +341,22 @@ class _KotlinRoomDataDisplayAlertState extends State<KotlinRoomDataDisplayAlert>
       // ignore: always_specify_types
       KotlinRoomDataRepository().deleteKotlinRoomDataList(idList: idList).then((value2) {
         if (mounted) {
-          setState(() => isLoading = false);
+          // ignore: always_specify_types
+          Future.delayed(
+            const Duration(seconds: 2),
+            () {
+              setState(() => _isLoading = false);
 
-          // 削除完了後にすぐ画面遷移
-          // ignore: use_build_context_synchronously
-          Navigator.pop(context);
+              // ignore: use_build_context_synchronously
+              Navigator.pop(context);
 
-          Navigator.pushReplacement(
-            // ignore: use_build_context_synchronously
-            context,
-            // ignore: inference_failure_on_instance_creation, always_specify_types
-            MaterialPageRoute(builder: (BuildContext context) => HomeScreen(baseYm: DateTime.now().yyyymm)),
+              Navigator.pushReplacement(
+                // ignore: use_build_context_synchronously
+                context,
+                // ignore: inference_failure_on_instance_creation, always_specify_types
+                MaterialPageRoute(builder: (BuildContext context) => HomeScreen(baseYm: DateTime.now().yyyymm)),
+              );
+            },
           );
         }
       });
