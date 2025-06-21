@@ -176,7 +176,7 @@ class _KotlinRoomDataDisplayAlertState extends State<KotlinRoomDataDisplayAlert>
                   const SizedBox(height: 10),
                   Expanded(
                     child: kotlinRoomData.isEmpty
-                        ? const Text('📭 データがまだありません')
+                        ? const Text('no data', style: TextStyle(color: Colors.yellowAccent))
                         : ListView.builder(
                             itemCount: kotlinRoomData.length,
                             itemBuilder: (BuildContext context, int index) {
@@ -291,7 +291,9 @@ class _KotlinRoomDataDisplayAlertState extends State<KotlinRoomDataDisplayAlert>
 
     final AlertDialog alert = AlertDialog(
       backgroundColor: Colors.blueGrey.withOpacity(0.3),
-      content: Text((flag == 'isar') ? '${DateTime.now().yyyymmdd}以前のisarデータを消去しますか？' : 'kotlinデータを削除しますか'),
+      content: Text(
+        (flag == 'isar') ? '${DateTime.now().yyyymmdd}以前のisarデータを消去しますか？' : 'kotlinのroomデータを削除しますか',
+      ),
       actions: <Widget>[cancelButton, continueButton],
     );
 
