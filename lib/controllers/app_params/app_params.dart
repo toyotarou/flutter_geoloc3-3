@@ -3,6 +3,8 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:latlong2/latlong.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
+import '../../collections/geoloc.dart';
+import '../../collections/kotlin_room_data.dart';
 import '../../enums/map_type.dart';
 import '../../models/geoloc_model.dart';
 import '../../models/temple_latlng_model.dart';
@@ -49,6 +51,10 @@ class AppParamsState with _$AppParamsState {
 
     MapType? mapType,
     @Default('') String mapControlDisplayDate,
+
+    ///
+    @Default(<dynamic>[]) List<Geoloc> selectedGeolocListForDelete,
+    @Default(<dynamic>[]) List<KotlinRoomData> selectedKotlinRoomDataListForDelete,
   }) = _AppParamsState;
 }
 
@@ -130,4 +136,30 @@ class AppParams extends _$AppParams {
 
   ///
   void setMapControlDisplayDate({required String date}) => state = state.copyWith(mapControlDisplayDate: date);
+
+  ///
+  void setSelectedGeolocListForDelete({required Geoloc geoloc}) {
+    final List<Geoloc> list = <Geoloc>[...state.selectedGeolocListForDelete];
+
+    if (list.contains(geoloc)) {
+      list.remove(geoloc);
+    } else {
+      list.add(geoloc);
+    }
+
+    state = state.copyWith(selectedGeolocListForDelete: list);
+  }
+
+  ///
+  void setSelectedKotlinRoomDataListForDelete({required KotlinRoomData kotlinRoomData}) {
+    final List<KotlinRoomData> list = <KotlinRoomData>[...state.selectedKotlinRoomDataListForDelete];
+
+    if (list.contains(kotlinRoomData)) {
+      list.remove(kotlinRoomData);
+    } else {
+      list.add(kotlinRoomData);
+    }
+
+    state = state.copyWith(selectedKotlinRoomDataListForDelete: list);
+  }
 }

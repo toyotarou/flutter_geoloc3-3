@@ -50,6 +50,12 @@ mixin _$AppParamsState {
   MapType? get mapType => throw _privateConstructorUsedError;
   String get mapControlDisplayDate => throw _privateConstructorUsedError;
 
+  ///
+  List<Geoloc> get selectedGeolocListForDelete =>
+      throw _privateConstructorUsedError;
+  List<KotlinRoomData> get selectedKotlinRoomDataListForDelete =>
+      throw _privateConstructorUsedError;
+
   @JsonKey(ignore: true)
   $AppParamsStateCopyWith<AppParamsState> get copyWith =>
       throw _privateConstructorUsedError;
@@ -82,7 +88,9 @@ abstract class $AppParamsStateCopyWith<$Res> {
       bool visitedTempleMapDisplayFinish,
       int selectedTimeGeolocIndex,
       MapType? mapType,
-      String mapControlDisplayDate});
+      String mapControlDisplayDate,
+      List<Geoloc> selectedGeolocListForDelete,
+      List<KotlinRoomData> selectedKotlinRoomDataListForDelete});
 }
 
 /// @nodoc
@@ -119,6 +127,8 @@ class _$AppParamsStateCopyWithImpl<$Res, $Val extends AppParamsState>
     Object? selectedTimeGeolocIndex = null,
     Object? mapType = freezed,
     Object? mapControlDisplayDate = null,
+    Object? selectedGeolocListForDelete = null,
+    Object? selectedKotlinRoomDataListForDelete = null,
   }) {
     return _then(_value.copyWith(
       calendarSelectedDate: freezed == calendarSelectedDate
@@ -206,6 +216,15 @@ class _$AppParamsStateCopyWithImpl<$Res, $Val extends AppParamsState>
           ? _value.mapControlDisplayDate
           : mapControlDisplayDate // ignore: cast_nullable_to_non_nullable
               as String,
+      selectedGeolocListForDelete: null == selectedGeolocListForDelete
+          ? _value.selectedGeolocListForDelete
+          : selectedGeolocListForDelete // ignore: cast_nullable_to_non_nullable
+              as List<Geoloc>,
+      selectedKotlinRoomDataListForDelete: null ==
+              selectedKotlinRoomDataListForDelete
+          ? _value.selectedKotlinRoomDataListForDelete
+          : selectedKotlinRoomDataListForDelete // ignore: cast_nullable_to_non_nullable
+              as List<KotlinRoomData>,
     ) as $Val);
   }
 }
@@ -239,7 +258,9 @@ abstract class _$$AppParamsStateImplCopyWith<$Res>
       bool visitedTempleMapDisplayFinish,
       int selectedTimeGeolocIndex,
       MapType? mapType,
-      String mapControlDisplayDate});
+      String mapControlDisplayDate,
+      List<Geoloc> selectedGeolocListForDelete,
+      List<KotlinRoomData> selectedKotlinRoomDataListForDelete});
 }
 
 /// @nodoc
@@ -274,6 +295,8 @@ class __$$AppParamsStateImplCopyWithImpl<$Res>
     Object? selectedTimeGeolocIndex = null,
     Object? mapType = freezed,
     Object? mapControlDisplayDate = null,
+    Object? selectedGeolocListForDelete = null,
+    Object? selectedKotlinRoomDataListForDelete = null,
   }) {
     return _then(_$AppParamsStateImpl(
       calendarSelectedDate: freezed == calendarSelectedDate
@@ -361,6 +384,15 @@ class __$$AppParamsStateImplCopyWithImpl<$Res>
           ? _value.mapControlDisplayDate
           : mapControlDisplayDate // ignore: cast_nullable_to_non_nullable
               as String,
+      selectedGeolocListForDelete: null == selectedGeolocListForDelete
+          ? _value._selectedGeolocListForDelete
+          : selectedGeolocListForDelete // ignore: cast_nullable_to_non_nullable
+              as List<Geoloc>,
+      selectedKotlinRoomDataListForDelete: null ==
+              selectedKotlinRoomDataListForDelete
+          ? _value._selectedKotlinRoomDataListForDelete
+          : selectedKotlinRoomDataListForDelete // ignore: cast_nullable_to_non_nullable
+              as List<KotlinRoomData>,
     ));
   }
 }
@@ -389,12 +421,18 @@ class _$AppParamsStateImpl implements _AppParamsState {
       this.visitedTempleMapDisplayFinish = false,
       this.selectedTimeGeolocIndex = -1,
       this.mapType,
-      this.mapControlDisplayDate = ''})
+      this.mapControlDisplayDate = '',
+      final List<Geoloc> selectedGeolocListForDelete = const [],
+      final List<KotlinRoomData> selectedKotlinRoomDataListForDelete =
+          const []})
       : _bigEntries = bigEntries,
         _monthGeolocAddMonthButtonLabelList =
             monthGeolocAddMonthButtonLabelList,
         _firstEntries = firstEntries,
-        _secondEntries = secondEntries;
+        _secondEntries = secondEntries,
+        _selectedGeolocListForDelete = selectedGeolocListForDelete,
+        _selectedKotlinRoomDataListForDelete =
+            selectedKotlinRoomDataListForDelete;
 
   @override
   final DateTime? calendarSelectedDate;
@@ -491,9 +529,32 @@ class _$AppParamsStateImpl implements _AppParamsState {
   @JsonKey()
   final String mapControlDisplayDate;
 
+  ///
+  final List<Geoloc> _selectedGeolocListForDelete;
+
+  ///
+  @override
+  @JsonKey()
+  List<Geoloc> get selectedGeolocListForDelete {
+    if (_selectedGeolocListForDelete is EqualUnmodifiableListView)
+      return _selectedGeolocListForDelete;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_selectedGeolocListForDelete);
+  }
+
+  final List<KotlinRoomData> _selectedKotlinRoomDataListForDelete;
+  @override
+  @JsonKey()
+  List<KotlinRoomData> get selectedKotlinRoomDataListForDelete {
+    if (_selectedKotlinRoomDataListForDelete is EqualUnmodifiableListView)
+      return _selectedKotlinRoomDataListForDelete;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_selectedKotlinRoomDataListForDelete);
+  }
+
   @override
   String toString() {
-    return 'AppParamsState(calendarSelectedDate: $calendarSelectedDate, selectedTimeGeoloc: $selectedTimeGeoloc, isMarkerShow: $isMarkerShow, currentZoom: $currentZoom, currentPaddingIndex: $currentPaddingIndex, currentCenter: $currentCenter, isTempleCircleShow: $isTempleCircleShow, polylineGeolocModel: $polylineGeolocModel, selectedTemple: $selectedTemple, timeGeolocDisplayStart: $timeGeolocDisplayStart, timeGeolocDisplayEnd: $timeGeolocDisplayEnd, bigEntries: $bigEntries, setStateCallback: $setStateCallback, monthGeolocAddMonthButtonLabelList: $monthGeolocAddMonthButtonLabelList, overlayPosition: $overlayPosition, firstEntries: $firstEntries, secondEntries: $secondEntries, visitedTempleMapDisplayFinish: $visitedTempleMapDisplayFinish, selectedTimeGeolocIndex: $selectedTimeGeolocIndex, mapType: $mapType, mapControlDisplayDate: $mapControlDisplayDate)';
+    return 'AppParamsState(calendarSelectedDate: $calendarSelectedDate, selectedTimeGeoloc: $selectedTimeGeoloc, isMarkerShow: $isMarkerShow, currentZoom: $currentZoom, currentPaddingIndex: $currentPaddingIndex, currentCenter: $currentCenter, isTempleCircleShow: $isTempleCircleShow, polylineGeolocModel: $polylineGeolocModel, selectedTemple: $selectedTemple, timeGeolocDisplayStart: $timeGeolocDisplayStart, timeGeolocDisplayEnd: $timeGeolocDisplayEnd, bigEntries: $bigEntries, setStateCallback: $setStateCallback, monthGeolocAddMonthButtonLabelList: $monthGeolocAddMonthButtonLabelList, overlayPosition: $overlayPosition, firstEntries: $firstEntries, secondEntries: $secondEntries, visitedTempleMapDisplayFinish: $visitedTempleMapDisplayFinish, selectedTimeGeolocIndex: $selectedTimeGeolocIndex, mapType: $mapType, mapControlDisplayDate: $mapControlDisplayDate, selectedGeolocListForDelete: $selectedGeolocListForDelete, selectedKotlinRoomDataListForDelete: $selectedKotlinRoomDataListForDelete)';
   }
 
   @override
@@ -545,7 +606,13 @@ class _$AppParamsStateImpl implements _AppParamsState {
                 other.selectedTimeGeolocIndex == selectedTimeGeolocIndex) &&
             (identical(other.mapType, mapType) || other.mapType == mapType) &&
             (identical(other.mapControlDisplayDate, mapControlDisplayDate) ||
-                other.mapControlDisplayDate == mapControlDisplayDate));
+                other.mapControlDisplayDate == mapControlDisplayDate) &&
+            const DeepCollectionEquality().equals(
+                other._selectedGeolocListForDelete,
+                _selectedGeolocListForDelete) &&
+            const DeepCollectionEquality().equals(
+                other._selectedKotlinRoomDataListForDelete,
+                _selectedKotlinRoomDataListForDelete));
   }
 
   @override
@@ -572,7 +639,10 @@ class _$AppParamsStateImpl implements _AppParamsState {
         visitedTempleMapDisplayFinish,
         selectedTimeGeolocIndex,
         mapType,
-        mapControlDisplayDate
+        mapControlDisplayDate,
+        const DeepCollectionEquality().hash(_selectedGeolocListForDelete),
+        const DeepCollectionEquality()
+            .hash(_selectedKotlinRoomDataListForDelete)
       ]);
 
   @JsonKey(ignore: true)
@@ -585,27 +655,30 @@ class _$AppParamsStateImpl implements _AppParamsState {
 
 abstract class _AppParamsState implements AppParamsState {
   const factory _AppParamsState(
-      {final DateTime? calendarSelectedDate,
-      final GeolocModel? selectedTimeGeoloc,
-      final bool isMarkerShow,
-      final double currentZoom,
-      final int currentPaddingIndex,
-      final LatLng? currentCenter,
-      final bool isTempleCircleShow,
-      final GeolocModel? polylineGeolocModel,
-      final TempleInfoModel? selectedTemple,
-      final int timeGeolocDisplayStart,
-      final int timeGeolocDisplayEnd,
-      final List<OverlayEntry>? bigEntries,
-      final void Function(void Function())? setStateCallback,
-      final List<String> monthGeolocAddMonthButtonLabelList,
-      final Offset? overlayPosition,
-      final List<OverlayEntry>? firstEntries,
-      final List<OverlayEntry>? secondEntries,
-      final bool visitedTempleMapDisplayFinish,
-      final int selectedTimeGeolocIndex,
-      final MapType? mapType,
-      final String mapControlDisplayDate}) = _$AppParamsStateImpl;
+          {final DateTime? calendarSelectedDate,
+          final GeolocModel? selectedTimeGeoloc,
+          final bool isMarkerShow,
+          final double currentZoom,
+          final int currentPaddingIndex,
+          final LatLng? currentCenter,
+          final bool isTempleCircleShow,
+          final GeolocModel? polylineGeolocModel,
+          final TempleInfoModel? selectedTemple,
+          final int timeGeolocDisplayStart,
+          final int timeGeolocDisplayEnd,
+          final List<OverlayEntry>? bigEntries,
+          final void Function(void Function())? setStateCallback,
+          final List<String> monthGeolocAddMonthButtonLabelList,
+          final Offset? overlayPosition,
+          final List<OverlayEntry>? firstEntries,
+          final List<OverlayEntry>? secondEntries,
+          final bool visitedTempleMapDisplayFinish,
+          final int selectedTimeGeolocIndex,
+          final MapType? mapType,
+          final String mapControlDisplayDate,
+          final List<Geoloc> selectedGeolocListForDelete,
+          final List<KotlinRoomData> selectedKotlinRoomDataListForDelete}) =
+      _$AppParamsStateImpl;
 
   @override
   DateTime? get calendarSelectedDate;
@@ -659,6 +732,12 @@ abstract class _AppParamsState implements AppParamsState {
   MapType? get mapType;
   @override
   String get mapControlDisplayDate;
+  @override
+
+  ///
+  List<Geoloc> get selectedGeolocListForDelete;
+  @override
+  List<KotlinRoomData> get selectedKotlinRoomDataListForDelete;
   @override
   @JsonKey(ignore: true)
   _$$AppParamsStateImplCopyWith<_$AppParamsStateImpl> get copyWith =>

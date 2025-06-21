@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../collections/geoloc.dart';
+import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../ripository/geolocs_repository.dart';
 import '../home_screen.dart';
@@ -15,7 +16,7 @@ class GeolocDataListAlert extends ConsumerStatefulWidget {
   ConsumerState<GeolocDataListAlert> createState() => _GeolocDataListAlertState();
 }
 
-class _GeolocDataListAlertState extends ConsumerState<GeolocDataListAlert> {
+class _GeolocDataListAlertState extends ConsumerState<GeolocDataListAlert> with ControllersMixin<GeolocDataListAlert> {
   bool isLoading = false;
 
   ///
@@ -23,25 +24,34 @@ class _GeolocDataListAlertState extends ConsumerState<GeolocDataListAlert> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            children: <Widget>[
-              Container(width: context.screenSize.width),
-              const Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
+      body: Stack(
+        children: <Widget>[
+          SafeArea(
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Column(
                 children: <Widget>[
-                  Text('Geoloc Data List'),
-                  SizedBox.shrink(),
+                  Container(width: context.screenSize.width),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      const Text('Geoloc Data List'),
+                      ElevatedButton(
+                        onPressed: () => _showDeleteDialog(),
+                        style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
+                        child: const Text('delete'),
+                      ),
+                    ],
+                  ),
+                  Divider(color: Colors.white.withOpacity(0.5), thickness: 5),
+                  Expanded(child: displayGeolocDataList()),
                 ],
               ),
-              Divider(color: Colors.white.withOpacity(0.5), thickness: 5),
-              Expanded(child: displayGeolocDataList()),
-            ],
+            ),
           ),
-        ),
+          if (isLoading) ...<Widget>[const Center(child: CircularProgressIndicator())],
+        ],
       ),
     );
   }
@@ -78,12 +88,11 @@ class _GeolocDataListAlertState extends ConsumerState<GeolocDataListAlert> {
                       Text(element.longitude),
                     ],
                   ),
-                  GestureDetector(
-                    onTap: () => _showDeleteDialog(id: element.id),
-                    child: Icon(
-                      Icons.delete,
-                      color: Colors.white.withValues(alpha: 0.2),
-                    ),
+                  Checkbox(
+                    value: appParamState.selectedGeolocListForDelete.contains(element),
+                    onChanged: (bool? value) => appParamNotifier.setSelectedGeolocListForDelete(geoloc: element),
+                    activeColor: Colors.greenAccent.withValues(alpha: 0.2),
+                    side: BorderSide(color: Colors.white.withValues(alpha: 0.3)),
                   ),
                 ],
               ),
@@ -105,12 +114,12 @@ class _GeolocDataListAlertState extends ConsumerState<GeolocDataListAlert> {
   }
 
   ///
-  void _showDeleteDialog({required int id}) {
+  void _showDeleteDialog() {
     final Widget cancelButton = TextButton(onPressed: () => Navigator.pop(context), child: const Text('いいえ'));
 
     final Widget continueButton = TextButton(
         onPressed: () {
-          _deleteGeoloc(id: id);
+          _deleteGeolocList();
 
           Navigator.pop(context);
         },
@@ -118,7 +127,7 @@ class _GeolocDataListAlertState extends ConsumerState<GeolocDataListAlert> {
 
     final AlertDialog alert = AlertDialog(
       backgroundColor: Colors.blueGrey.withOpacity(0.3),
-      content: Text('isarデータ:$id を消去しますか？'),
+      content: const Text('isarデータを消去しますか？'),
       actions: <Widget>[cancelButton, continueButton],
     );
 
@@ -127,29 +136,34 @@ class _GeolocDataListAlertState extends ConsumerState<GeolocDataListAlert> {
   }
 
   ///
-  Future<void> _deleteGeoloc({required int id}) async {
+  Future<void> _deleteGeolocList() async {
     setState(() => isLoading = true);
 
-    // 削除完了を待つ
-    await GeolocRepository().deleteGeoloc(id: id);
-
-    if (mounted) {
+    if (appParamState.selectedGeolocListForDelete.isNotEmpty) {
       // ignore: always_specify_types
-      Future.delayed(
-        const Duration(seconds: 2),
-        () {
-          setState(() => isLoading = false);
+      GeolocRepository().deleteGeolocList(geolocList: appParamState.selectedGeolocListForDelete).then(
+        // ignore: always_specify_types
+        (value) {
+          if (mounted) {
+            // ignore: always_specify_types
+            Future.delayed(
+              const Duration(seconds: 2),
+              () {
+                setState(() => isLoading = false);
 
-          // 削除完了後にすぐ画面遷移
-          // ignore: use_build_context_synchronously
-          Navigator.pop(context);
+                // 削除完了後にすぐ画面遷移
+                // ignore: use_build_context_synchronously
+                Navigator.pop(context);
 
-          Navigator.pushReplacement(
-            // ignore: use_build_context_synchronously
-            context,
-            // ignore: inference_failure_on_instance_creation, always_specify_types
-            MaterialPageRoute(builder: (BuildContext context) => HomeScreen(baseYm: DateTime.now().yyyymm)),
-          );
+                Navigator.pushReplacement(
+                  // ignore: use_build_context_synchronously
+                  context,
+                  // ignore: inference_failure_on_instance_creation, always_specify_types
+                  MaterialPageRoute(builder: (BuildContext context) => HomeScreen(baseYm: DateTime.now().yyyymm)),
+                );
+              },
+            );
+          }
         },
       );
     }

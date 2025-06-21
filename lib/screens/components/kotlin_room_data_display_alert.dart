@@ -237,9 +237,12 @@ class _KotlinRoomDataDisplayAlertState extends State<KotlinRoomDataDisplayAlert>
     }
 
     ////////////////////////////////////////
-    final List<int> idList = <int>[];
-    kotlinRoomDataList?.forEach((KotlinRoomData element) => idList.add(element.id));
+    final List<String> kotlinRoomDataDateTimeList = <String>[];
+    kotlinRoomDataList
+        ?.forEach((KotlinRoomData element) => kotlinRoomDataDateTimeList.add('${element.date} ${element.time}'));
     ////////////////////////////////////////
+
+    final List<String> kotlinRoomDataDateTimeList2 = <String>[];
 
     final List<KotlinRoomData> inputData = <KotlinRoomData>[];
 
@@ -251,8 +254,14 @@ class _KotlinRoomDataDisplayAlertState extends State<KotlinRoomDataDisplayAlert>
         element.time.split(':')[0].toInt(),
         element.time.split(':')[1].toInt(),
       ).isAfter(DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day))) {
-        if (!idList.contains(element.id)) {
-          inputData.add(element);
+        /// テーブルに入っている日時を除外
+        if (!kotlinRoomDataDateTimeList.contains('${element.date} ${element.time}')) {
+          /// リストに入っている日時を除外
+          if (!kotlinRoomDataDateTimeList2.contains('${element.date} ${element.time}')) {
+            inputData.add(element);
+          }
+
+          kotlinRoomDataDateTimeList2.add('${element.date} ${element.time}');
         }
       }
     }
@@ -305,30 +314,30 @@ class _KotlinRoomDataDisplayAlertState extends State<KotlinRoomDataDisplayAlert>
   Future<void> _deleteKotlinRoomDataList() async {
     setState(() => isLoading = true);
 
-    KotlinRoomDataRepository().getKotlinRoomDataList().then((List<KotlinRoomData>? value) {
-      final List<int> idList = <int>[];
-      value?.forEach((KotlinRoomData element) => idList.add(element.id));
+    ////////////////////////////////////////
+    final List<int> idList = <int>[];
+    kotlinRoomDataList?.forEach((KotlinRoomData element) => idList.add(element.id));
+    ////////////////////////////////////////
 
-      if (idList.isNotEmpty) {
-        // ignore: always_specify_types
-        KotlinRoomDataRepository().deleteKotlinRoomDataList(idList: idList).then((value2) {
-          if (mounted) {
-            setState(() => isLoading = false);
+    if (idList.isNotEmpty) {
+      // ignore: always_specify_types
+      KotlinRoomDataRepository().deleteKotlinRoomDataList(idList: idList).then((value2) {
+        if (mounted) {
+          setState(() => isLoading = false);
 
-            // 削除完了後にすぐ画面遷移
+          // 削除完了後にすぐ画面遷移
+          // ignore: use_build_context_synchronously
+          Navigator.pop(context);
+
+          Navigator.pushReplacement(
             // ignore: use_build_context_synchronously
-            Navigator.pop(context);
-
-            Navigator.pushReplacement(
-              // ignore: use_build_context_synchronously
-              context,
-              // ignore: inference_failure_on_instance_creation, always_specify_types
-              MaterialPageRoute(builder: (BuildContext context) => HomeScreen(baseYm: DateTime.now().yyyymm)),
-            );
-          }
-        });
-      }
-    });
+            context,
+            // ignore: inference_failure_on_instance_creation, always_specify_types
+            MaterialPageRoute(builder: (BuildContext context) => HomeScreen(baseYm: DateTime.now().yyyymm)),
+          );
+        }
+      });
+    }
   }
 
   ///

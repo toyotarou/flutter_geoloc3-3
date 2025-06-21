@@ -23,6 +23,7 @@ import 'components/geoloc_data_list_alert.dart';
 import 'components/geoloc_map_alert.dart';
 import 'components/history_geoloc_list_alert.dart';
 import 'components/kotlin_room_data_display_alert.dart';
+import 'components/kotlin_room_data_list_alert.dart';
 import 'components/temple_visited_date_display_alert.dart';
 
 import 'parts/geoloc_dialog.dart';
@@ -256,7 +257,6 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
                       GeolocDialog(context: context, widget: const KotlinRoomDataDisplayAlert());
                     },
                     icon: Icon(FontAwesomeIcons.k, color: Colors.white.withOpacity(0.3))),
-                const SizedBox(width: 15),
                 IconButton(
                   onPressed: () {
                     GeolocDialog(
@@ -535,6 +535,23 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
                         padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 3),
                         margin: const EdgeInsets.all(5),
                         child: const Text('Geoloc data list'),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              GestureDetector(
+                onTap: () => GeolocDialog(context: context, widget: const KotlinRoomDataListAlert()),
+                child: Row(
+                  children: <Widget>[
+                    const MenuHeadIcon(),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Container(
+                        width: double.infinity,
+                        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 3),
+                        margin: const EdgeInsets.all(5),
+                        child: const Text('Kotlin Room data list'),
                       ),
                     ),
                   ],
