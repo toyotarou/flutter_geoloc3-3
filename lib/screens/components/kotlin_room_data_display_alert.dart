@@ -26,6 +26,8 @@ class _KotlinRoomDataDisplayAlertState extends State<KotlinRoomDataDisplayAlert>
 
   List<KotlinRoomData>? kotlinRoomDataList = <KotlinRoomData>[];
 
+  bool _isLoading2 = false;
+
   ///
   Future<void> _requestPermissions() async {
     final PermissionStatus locationStatus = await Permission.location.request();
@@ -41,9 +43,7 @@ class _KotlinRoomDataDisplayAlertState extends State<KotlinRoomDataDisplayAlert>
 
   ///
   Future<void> _startService() async {
-    setState(() {
-      _isLoading = true;
-    });
+    setState(() => _isLoading = true);
 
     try {
       await _requestPermissions();
@@ -59,18 +59,14 @@ class _KotlinRoomDataDisplayAlertState extends State<KotlinRoomDataDisplayAlert>
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('❌ エラー: $e')));
     }
 
-    setState(() {
-      _isLoading = false;
-    });
+    setState(() => _isLoading = false);
   }
 
   ///
   Future<void> _checkStatus() async {
     final WifiLocationApi api = WifiLocationApi();
     final bool result = await api.isCollecting();
-    setState(() {
-      _isRunning = result;
-    });
+    setState(() => _isRunning = result);
   }
 
   ///
@@ -119,15 +115,23 @@ class _KotlinRoomDataDisplayAlertState extends State<KotlinRoomDataDisplayAlert>
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       ElevatedButton(
-                          onPressed: _isLoading ? null : _startService,
-                          style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
-                          child: const Text('取得開始')),
+                        onPressed: _isLoading ? null : _startService,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.pinkAccent.withOpacity(0.2),
+                          padding: const EdgeInsets.all(5),
+                        ),
+                        child: const Text('取得開始'),
+                      ),
                       Row(
                         children: <Widget>[
                           ElevatedButton(
-                              onPressed: _checkStatus,
-                              style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
-                              child: const Text('稼働状態')),
+                            onPressed: _checkStatus,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.pinkAccent.withOpacity(0.2),
+                              padding: const EdgeInsets.all(5),
+                            ),
+                            child: const Text('稼働状態'),
+                          ),
                           const SizedBox(width: 10),
                           Icon(
                             Icons.star,
@@ -142,33 +146,30 @@ class _KotlinRoomDataDisplayAlertState extends State<KotlinRoomDataDisplayAlert>
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: <Widget>[
                       ElevatedButton(
-                          onPressed: _fetchKotlinRoomData,
-                          style: ElevatedButton.styleFrom(backgroundColor: Colors.lightGreen.withOpacity(0.2)),
-                          child: const Text('Roomから取得')),
-                      ElevatedButton(
-                          onPressed: () => inputKotlinRoomData(),
-                          style: ElevatedButton.styleFrom(backgroundColor: Colors.pinkAccent.withOpacity(0.2)),
-                          child: const Text('isar登録')),
-                    ],
-                  ),
-                  const SizedBox(height: 10),
-                  Divider(color: Colors.white.withOpacity(0.4), thickness: 2),
-                  Container(
-                    decoration: BoxDecoration(color: Colors.white.withValues(alpha: 0.1)),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        ElevatedButton(
-                          onPressed: () => _showDeleteDialog(flag: 'room'),
-                          style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent.withOpacity(0.2)),
-                          child: const Text('Room全削除'),
+                        onPressed: _fetchKotlinRoomData,
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.lightGreen.withOpacity(0.2),
+                          padding: const EdgeInsets.all(5),
                         ),
-                        ElevatedButton(
-                            onPressed: () => _showDeleteDialog(flag: 'isar'),
-                            style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent.withOpacity(0.2)),
-                            child: const Text('isar全削除')),
-                      ],
-                    ),
+                        child: const Text('Roomから取得'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () => inputKotlinRoomData(),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.pinkAccent.withOpacity(0.2),
+                          padding: const EdgeInsets.all(5),
+                        ),
+                        child: const Text('isar登録'),
+                      ),
+                      ElevatedButton(
+                        onPressed: () => _showDeleteDialog(flag: 'room'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.redAccent.withOpacity(0.2),
+                          padding: const EdgeInsets.all(5),
+                        ),
+                        child: const Text('Room全削除'),
+                      ),
+                    ],
                   ),
                   Divider(color: Colors.white.withOpacity(0.4), thickness: 2),
                   const SizedBox(height: 10),
@@ -212,7 +213,7 @@ class _KotlinRoomDataDisplayAlertState extends State<KotlinRoomDataDisplayAlert>
               ),
             ),
           ),
-          if (_isLoading) ...<Widget>[const Center(child: CircularProgressIndicator())],
+          if (_isLoading2) ...<Widget>[const Center(child: CircularProgressIndicator())],
         ],
       ),
     );
@@ -220,7 +221,7 @@ class _KotlinRoomDataDisplayAlertState extends State<KotlinRoomDataDisplayAlert>
 
   ///
   Future<void> inputKotlinRoomData() async {
-    setState(() => _isLoading = true);
+    setState(() => _isLoading2 = true);
 
     if (inputKotlinRoomDataList.isEmpty) {
       // ignore: always_specify_types
@@ -267,34 +268,18 @@ class _KotlinRoomDataDisplayAlertState extends State<KotlinRoomDataDisplayAlert>
     }
 
     if (inputData.isNotEmpty) {
-      // ignore: always_specify_types
-      await KotlinRoomDataRepository().inputKotlinRoomDataList(kotlinRoomDataList: inputData).then((value) {
-        if (mounted) {
-          // ignore: always_specify_types
-          Future.delayed(
-            const Duration(seconds: 2),
-            () {
-              setState(() => _isLoading = false);
-
-              // ignore: use_build_context_synchronously
-              Navigator.pop(context);
-            },
-          );
-        }
-      });
-    } else {
-      if (mounted) {
+      await KotlinRoomDataRepository().inputKotlinRoomDataList(kotlinRoomDataList: inputData).then(
         // ignore: always_specify_types
-        Future.delayed(
-          const Duration(seconds: 2),
-          () {
-            setState(() => _isLoading = false);
-
-            // ignore: use_build_context_synchronously
-            Navigator.pop(context);
-          },
-        );
-      }
+        (value) {
+          if (mounted) {
+            // ignore: always_specify_types
+            Future.delayed(
+              const Duration(seconds: 2),
+              () => setState(() => _isLoading2 = false),
+            );
+          }
+        },
+      );
     }
   }
 
@@ -303,18 +288,19 @@ class _KotlinRoomDataDisplayAlertState extends State<KotlinRoomDataDisplayAlert>
     final Widget cancelButton = TextButton(onPressed: () => Navigator.pop(context), child: const Text('いいえ'));
 
     final Widget continueButton = TextButton(
-        onPressed: () {
-          switch (flag) {
-            case 'isar':
-              _deleteKotlinRoomDataList();
+      onPressed: () {
+        switch (flag) {
+          case 'isar':
+            _deleteKotlinRoomDataList();
 
-            case 'room':
-              deleteKotlinRoomList();
-          }
+          case 'room':
+            deleteKotlinRoomList();
+        }
 
-          Navigator.pop(context);
-        },
-        child: const Text('はい'));
+        Navigator.pop(context);
+      },
+      child: const Text('はい'),
+    );
 
     final AlertDialog alert = AlertDialog(
       backgroundColor: Colors.blueGrey.withOpacity(0.3),
@@ -330,7 +316,7 @@ class _KotlinRoomDataDisplayAlertState extends State<KotlinRoomDataDisplayAlert>
 
   ///
   Future<void> _deleteKotlinRoomDataList() async {
-    setState(() => _isLoading = true);
+    setState(() => _isLoading2 = true);
 
     ////////////////////////////////////////
     final List<int> idList = <int>[];
@@ -338,57 +324,64 @@ class _KotlinRoomDataDisplayAlertState extends State<KotlinRoomDataDisplayAlert>
     ////////////////////////////////////////
 
     if (idList.isNotEmpty) {
-      // ignore: always_specify_types
-      KotlinRoomDataRepository().deleteKotlinRoomDataList(idList: idList).then((value2) {
-        if (mounted) {
-          // ignore: always_specify_types
-          Future.delayed(
-            const Duration(seconds: 2),
-            () {
-              setState(() => _isLoading = false);
+      KotlinRoomDataRepository().deleteKotlinRoomDataList(idList: idList).then(
+        // ignore: always_specify_types
+        (value2) {
+          if (mounted) {
+            // ignore: always_specify_types
+            Future.delayed(
+              const Duration(seconds: 2),
+              () {
+                setState(() => _isLoading2 = false);
 
-              // ignore: use_build_context_synchronously
-              Navigator.pop(context);
-
-              Navigator.pushReplacement(
                 // ignore: use_build_context_synchronously
-                context,
-                // ignore: inference_failure_on_instance_creation, always_specify_types
-                MaterialPageRoute(builder: (BuildContext context) => HomeScreen(baseYm: DateTime.now().yyyymm)),
-              );
-            },
-          );
-        }
-      });
+                Navigator.pop(context);
+
+                Navigator.pushReplacement(
+                  // ignore: use_build_context_synchronously
+                  context,
+                  // ignore: inference_failure_on_instance_creation, always_specify_types
+                  MaterialPageRoute(builder: (BuildContext context) => HomeScreen(baseYm: DateTime.now().yyyymm)),
+                );
+              },
+            );
+          }
+        },
+      );
     }
   }
 
   ///
   Future<void> deleteKotlinRoomList() async {
     final WifiLocationApi api = WifiLocationApi();
-    // ignore: always_specify_types
-    await api.deleteAllWifiLocations().then((value) {
-      if (mounted) {
-        // 削除完了後にすぐ画面遷移
-        // ignore: use_build_context_synchronously
-        Navigator.pop(context);
 
-        Navigator.pushReplacement(
+    await api.deleteAllWifiLocations().then(
+      // ignore: always_specify_types
+      (value) {
+        if (mounted) {
+          // 削除完了後にすぐ画面遷移
           // ignore: use_build_context_synchronously
-          context,
-          // ignore: inference_failure_on_instance_creation, always_specify_types
-          MaterialPageRoute(builder: (BuildContext context) => HomeScreen(baseYm: DateTime.now().yyyymm)),
-        );
-      }
-    });
+          Navigator.pop(context);
+
+          Navigator.pushReplacement(
+            // ignore: use_build_context_synchronously
+            context,
+            // ignore: inference_failure_on_instance_creation, always_specify_types
+            MaterialPageRoute(builder: (BuildContext context) => HomeScreen(baseYm: DateTime.now().yyyymm)),
+          );
+        }
+      },
+    );
   }
 
   ///
   Future<void> _makeKotlinRoomDataList() async {
-    KotlinRoomDataRepository().getKotlinRoomDataList().then((List<KotlinRoomData>? value) {
-      if (mounted) {
-        setState(() => kotlinRoomDataList = value);
-      }
-    });
+    KotlinRoomDataRepository().getKotlinRoomDataList().then(
+      (List<KotlinRoomData>? value) {
+        if (mounted) {
+          setState(() => kotlinRoomDataList = value);
+        }
+      },
+    );
   }
 }
