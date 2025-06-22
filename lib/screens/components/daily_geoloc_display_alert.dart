@@ -78,7 +78,8 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
                           Text(widget.date.yyyymmdd),
                           const SizedBox(height: 10),
                           Text(
-                              (widget.kotlinRoomDataList != null) ? widget.kotlinRoomDataList!.length.toString() : '0'),
+                            (widget.kotlinRoomDataList != null) ? widget.kotlinRoomDataList!.length.toString() : '0',
+                          ),
                         ],
                       ),
                       Row(
@@ -188,32 +189,72 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
   Widget displayGeolocList() {
     final List<Widget> list = <Widget>[];
 
+    final List<Geoloc> roopGeolocList = <Geoloc>[];
+
     geolocList?.forEach(
       (Geoloc element) {
         if (widget.date.yyyymmdd == element.date) {
+          roopGeolocList.add(element);
+        }
+      },
+    );
+
+    final List<Geoloc> roopGeolocList2 = <Geoloc>[];
+
+    final List<String> timeList = <String>[];
+    for (final Geoloc element in roopGeolocList) {
+      timeList.add('${element.time.split(':')[0]}:${element.time.split(':')[1]}');
+    }
+
+    widget.kotlinRoomDataList?.forEach(
+      (KotlinRoomData element) {
+        if (!timeList.contains('${element.time.split(':')[0]}:${element.time.split(':')[1]}')) {
+          roopGeolocList2.add(Geoloc()
+            ..id = 0
+            ..date = element.date
+            ..time = element.time
+            ..latitude = element.latitude
+            ..longitude = element.longitude);
+        }
+      },
+    );
+
+    roopGeolocList.addAll(roopGeolocList2);
+
+    roopGeolocList
+      ..sort((Geoloc a, Geoloc b) => a.time.compareTo(b.time))
+      ..forEach(
+        (Geoloc element) {
           list.add(
             DefaultTextStyle(
               style: const TextStyle(fontSize: 12),
-              child: Row(
+              child: Stack(
                 children: <Widget>[
-                  SizedBox(
-                    width: 50,
-                    child: Text(
-                      element.id.toString(),
-                      style: const TextStyle(color: Colors.grey, fontSize: 10),
-                    ),
+                  Row(
+                    children: <Widget>[
+                      SizedBox(
+                        width: 50,
+                        child: Text(element.id.toString(), style: const TextStyle(color: Colors.grey, fontSize: 10)),
+                      ),
+                      SizedBox(width: 50, child: Text(element.time)),
+                      const SizedBox(width: 20),
+                      Expanded(child: Text(element.latitude)),
+                      Expanded(child: Text(element.longitude)),
+                    ],
                   ),
-                  SizedBox(width: 50, child: Text(element.time)),
-                  const SizedBox(width: 20),
-                  Expanded(child: Text(element.latitude)),
-                  Expanded(child: Text(element.longitude)),
+                  if (element.id == 0) ...<Widget>[
+                    Container(
+                      width: context.screenSize.width,
+                      height: 12,
+                      decoration: BoxDecoration(color: Colors.pinkAccent.withValues(alpha: 0.2)),
+                    ),
+                  ],
                 ],
               ),
             ),
           );
-        }
-      },
-    );
+        },
+      );
 
     return CustomScrollView(
       slivers: <Widget>[
@@ -232,18 +273,46 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
     String keepLat = '';
     String keepLng = '';
 
-    geolocMap[widget.date.yyyymmdd]
-      ?..sort((Geoloc a, Geoloc b) => a.time.compareTo(b.time))
-      ..forEach(
-        (Geoloc element) {
-          if (<String>{keepLat, keepLng, element.latitude, element.longitude}.toList().length >= 3) {
-            pickupGeolocList.add(element);
-          }
+    List<Geoloc> roopGeolocList = <Geoloc>[];
 
-          keepLat = element.latitude;
-          keepLng = element.longitude;
+    if (geolocMap[widget.date.yyyymmdd] != null) {
+      roopGeolocList = geolocMap[widget.date.yyyymmdd]!;
+
+      final List<Geoloc> roopGeolocList2 = <Geoloc>[];
+
+      final List<String> timeList = <String>[];
+      for (final Geoloc element in roopGeolocList) {
+        timeList.add('${element.time.split(':')[0]}:${element.time.split(':')[1]}');
+      }
+
+      widget.kotlinRoomDataList?.forEach(
+        (KotlinRoomData element) {
+          if (!timeList.contains('${element.time.split(':')[0]}:${element.time.split(':')[1]}')) {
+            roopGeolocList2.add(Geoloc()
+              ..id = 0
+              ..date = element.date
+              ..time = element.time
+              ..latitude = element.latitude
+              ..longitude = element.longitude);
+          }
         },
       );
+
+      roopGeolocList.addAll(roopGeolocList2);
+
+      roopGeolocList
+        ..sort((Geoloc a, Geoloc b) => a.time.compareTo(b.time))
+        ..forEach(
+          (Geoloc element) {
+            if (<String>{keepLat, keepLng, element.latitude, element.longitude}.toList().length >= 3) {
+              pickupGeolocList.add(element);
+            }
+
+            keepLat = element.latitude;
+            keepLng = element.longitude;
+          },
+        );
+    }
   }
 
   ///
