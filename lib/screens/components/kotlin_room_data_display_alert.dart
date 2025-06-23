@@ -219,67 +219,52 @@ class _KotlinRoomDataDisplayAlertState extends State<KotlinRoomDataDisplayAlert>
     );
   }
 
-  ///
   Future<void> inputKotlinRoomData() async {
     setState(() => _isLoading2 = true);
 
     if (inputKotlinRoomDataList.isEmpty) {
-      // ignore: always_specify_types
-      Future.delayed(
-        Duration.zero,
-        () => error_dialog(
-            // ignore: use_build_context_synchronously
-            context: context,
-            title: '登録できません。',
-            content: '値を正しく入力してください。'),
-      );
-
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        error_dialog(context: context, title: '登録できません。', content: '値を正しく入力してください。');
+      });
+      setState(() => _isLoading2 = false);
       return;
     }
 
-    ////////////////////////////////////////
-    final List<String> kotlinRoomDataDateTimeList = <String>[];
-    kotlinRoomDataList
-        ?.forEach((KotlinRoomData element) => kotlinRoomDataDateTimeList.add('${element.date} ${element.time}'));
-    ////////////////////////////////////////
+    final DateTime now = DateTime.now();
+    final DateTime today = DateTime(now.year, now.month, now.day);
 
-    final List<String> kotlinRoomDataDateTimeList2 = <String>[];
+    final Set<String> existingDateTimeSet = <String>{
+      for (final KotlinRoomData element in kotlinRoomDataList!) '${element.date} ${element.time}'
+    };
 
+    final Set<String> processedDateTimeSet = <String>{};
     final List<KotlinRoomData> inputData = <KotlinRoomData>[];
 
     for (final KotlinRoomData element in inputKotlinRoomDataList) {
-      if (DateTime(
-        element.date.split('-')[0].toInt(),
-        element.date.split('-')[1].toInt(),
-        element.date.split('-')[2].toInt(),
-        element.time.split(':')[0].toInt(),
-        element.time.split(':')[1].toInt(),
-      ).isAfter(DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day))) {
-        /// テーブルに入っている日時を除外
-        if (!kotlinRoomDataDateTimeList.contains('${element.date} ${element.time}')) {
-          /// リストに入っている日時を除外
-          if (!kotlinRoomDataDateTimeList2.contains('${element.date} ${element.time}')) {
-            inputData.add(element);
-          }
+      final DateTime dt = DateTime(
+        int.parse(element.date.split('-')[0]),
+        int.parse(element.date.split('-')[1]),
+        int.parse(element.date.split('-')[2]),
+        int.parse(element.time.split(':')[0]),
+        int.parse(element.time.split(':')[1]),
+      );
 
-          kotlinRoomDataDateTimeList2.add('${element.date} ${element.time}');
-        }
+      final String dateTimeStr = '${element.date} ${element.time}';
+
+      if (dt.isAfter(today) &&
+          !existingDateTimeSet.contains(dateTimeStr) &&
+          !processedDateTimeSet.contains(dateTimeStr)) {
+        inputData.add(element);
+        processedDateTimeSet.add(dateTimeStr);
       }
     }
 
     if (inputData.isNotEmpty) {
-      await KotlinRoomDataRepository().inputKotlinRoomDataList(kotlinRoomDataList: inputData).then(
-        // ignore: always_specify_types
-        (value) {
-          if (mounted) {
-            // ignore: always_specify_types
-            Future.delayed(
-              const Duration(seconds: 2),
-              () => setState(() => _isLoading2 = false),
-            );
-          }
-        },
-      );
+      await KotlinRoomDataRepository().inputKotlinRoomDataList(kotlinRoomDataList: inputData);
+    }
+
+    if (mounted) {
+      setState(() => _isLoading2 = false);
     }
   }
 
