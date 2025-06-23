@@ -263,9 +263,8 @@ class _KotlinRoomDataDisplayAlertState extends State<KotlinRoomDataDisplayAlert>
       await KotlinRoomDataRepository().inputKotlinRoomDataList(kotlinRoomDataList: inputData);
     }
 
-    if (mounted) {
-      setState(() => _isLoading2 = false);
-    }
+    // ignore: always_specify_types
+    Future.delayed(const Duration(seconds: 5), () => setState(() => _isLoading2 = false));
   }
 
   ///

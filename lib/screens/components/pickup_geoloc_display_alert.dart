@@ -154,19 +154,6 @@ class _PickupGeolocDisplayAlertState extends ConsumerState<PickupGeolocDisplayAl
       if (i == 0) {
         distance = '0';
       } else {
-        // final String di = utility.calcDistance(
-        //   originLat: keepLat.toDouble(),
-        //   originLng: keepLng.toDouble(),
-        //   destLat: element.latitude.toDouble(),
-        //   destLng: element.longitude.toDouble(),
-        // );
-        //
-        // final double dis = di.toDouble() * 1000;
-        //
-        // final List<String> exDis = dis.toString().split('.');
-        //
-        // distance = exDis[0];
-
         distance = utility
             .calculateDistance(
               LatLng(keepLat.toDouble(), keepLng.toDouble()),

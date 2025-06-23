@@ -8,8 +8,6 @@ import '../../models/temple_latlng_model.dart';
 import '../../models/walk_record_model.dart';
 import '../../ripository/geolocs_repository.dart';
 import '../../utilities/utilities.dart';
-import '../home_screen.dart';
-import '../parts/error_dialog.dart';
 import '../parts/geoloc_dialog.dart';
 import 'pickup_geoloc_display_alert.dart';
 
@@ -82,66 +80,20 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
                           ),
                         ],
                       ),
-                      Row(
-                        children: <Widget>[
-                          GestureDetector(
-                            onTap: () async {
-                              bool errFlg = false;
-                              String contentStr = '';
-
-                              if (widget.geolocStateList.isEmpty) {
-                                errFlg = true;
-                                contentStr = 'mysqlデータがありません。';
-                              }
-
-                              if (geolocMap.isEmpty) {
-                                errFlg = true;
-                                contentStr = 'geolocMapが作成されていません。';
-                              }
-
-                              if (errFlg) {
-                                // ignore: always_specify_types
-                                Future.delayed(
-                                  Duration.zero,
-                                  () => error_dialog(
-                                    // ignore: use_build_context_synchronously
-                                    context: context,
-                                    title: 'isarデータを削除できません。',
-                                    content: contentStr,
-                                  ),
-                                );
-
-                                return;
-                              }
-
-                              _showDeleteDialog(geolocList: geolocMap[widget.date.yyyymmdd]);
-                            },
-                            child: Column(
-                              children: <Widget>[
-                                const Text('delete'),
-                                Icon(Icons.delete,
-                                    color: (widget.geolocStateList.isEmpty) ? Colors.grey : Colors.lightBlueAccent),
-                                const Text('isar'),
-                              ],
+                      GestureDetector(
+                        onTap: () {
+                          GeolocDialog(
+                            // ignore: use_build_context_synchronously
+                            context: context,
+                            widget: PickupGeolocDisplayAlert(
+                              date: widget.date,
+                              pickupGeolocList: pickupGeolocList,
+                              walkRecord: widget.walkRecord,
+                              templeInfoMap: widget.templeInfoMap,
                             ),
-                          ),
-                          const SizedBox(width: 30),
-                          GestureDetector(
-                            onTap: () {
-                              GeolocDialog(
-                                // ignore: use_build_context_synchronously
-                                context: context,
-                                widget: PickupGeolocDisplayAlert(
-                                  date: widget.date,
-                                  pickupGeolocList: pickupGeolocList,
-                                  walkRecord: widget.walkRecord,
-                                  templeInfoMap: widget.templeInfoMap,
-                                ),
-                              );
-                            },
-                            child: const Column(children: <Widget>[Text('select'), Icon(Icons.list), Text('list')]),
-                          ),
-                        ],
+                          );
+                        },
+                        child: const Column(children: <Widget>[Text('select'), Icon(Icons.list), Text('list')]),
                       ),
                     ],
                   ),
@@ -339,57 +291,5 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
         diffSeconds = secondDiff.toString().padLeft(2, '0');
       },
     );
-  }
-
-  ///
-  void _showDeleteDialog({List<Geoloc>? geolocList}) {
-    final Widget cancelButton = TextButton(onPressed: () => Navigator.pop(context), child: const Text('いいえ'));
-
-    final Widget continueButton = TextButton(
-        onPressed: () {
-          _deleteGeolocList(geolocList: geolocList);
-
-          Navigator.pop(context);
-        },
-        child: const Text('はい'));
-
-    final AlertDialog alert = AlertDialog(
-      backgroundColor: Colors.blueGrey.withOpacity(0.3),
-      content: Text('${widget.date.yyyymmdd}のisarデータを消去しますか？'),
-      actions: <Widget>[cancelButton, continueButton],
-    );
-
-    // ignore: inference_failure_on_function_invocation
-    showDialog(context: context, builder: (BuildContext context) => alert);
-  }
-
-  ///
-  Future<void> _deleteGeolocList({List<Geoloc>? geolocList}) async {
-    setState(() => isLoading = true);
-
-    // 削除完了を待つ
-    // ignore: always_specify_types
-    await GeolocRepository().deleteGeolocList(geolocList: geolocList).then((value) {
-      if (mounted) {
-        // ignore: always_specify_types
-        Future.delayed(
-          const Duration(seconds: 2),
-          () {
-            setState(() => isLoading = false);
-
-            // 削除完了後にすぐ画面遷移
-            // ignore: use_build_context_synchronously
-            Navigator.pop(context);
-
-            Navigator.pushReplacement(
-              // ignore: use_build_context_synchronously
-              context,
-              // ignore: inference_failure_on_instance_creation, always_specify_types
-              MaterialPageRoute(builder: (BuildContext context) => HomeScreen(baseYm: widget.date.yyyymm)),
-            );
-          },
-        );
-      }
-    });
   }
 }
