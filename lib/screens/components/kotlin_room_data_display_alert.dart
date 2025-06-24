@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -27,6 +29,12 @@ class _KotlinRoomDataDisplayAlertState extends State<KotlinRoomDataDisplayAlert>
   List<KotlinRoomData>? kotlinRoomDataList = <KotlinRoomData>[];
 
   bool _isLoading2 = false;
+
+  static const double maxTime = 5.000;
+
+  double _remainingTime = maxTime;
+
+  Timer? _timer;
 
   ///
   Future<void> _requestPermissions() async {
@@ -127,9 +135,7 @@ class _KotlinRoomDataDisplayAlertState extends State<KotlinRoomDataDisplayAlert>
                           ElevatedButton(
                             onPressed: _checkStatus,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.pinkAccent.withOpacity(0.2),
-                              padding: const EdgeInsets.all(5),
-                            ),
+                                backgroundColor: Colors.pinkAccent.withOpacity(0.2), padding: const EdgeInsets.all(5)),
                             child: const Text('稼働状態'),
                           ),
                           const SizedBox(width: 10),
@@ -148,25 +154,19 @@ class _KotlinRoomDataDisplayAlertState extends State<KotlinRoomDataDisplayAlert>
                       ElevatedButton(
                         onPressed: _fetchKotlinRoomData,
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.lightGreen.withOpacity(0.2),
-                          padding: const EdgeInsets.all(5),
-                        ),
+                            backgroundColor: Colors.lightGreen.withOpacity(0.2), padding: const EdgeInsets.all(5)),
                         child: const Text('Roomから取得'),
                       ),
                       ElevatedButton(
                         onPressed: () => inputKotlinRoomData(),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.pinkAccent.withOpacity(0.2),
-                          padding: const EdgeInsets.all(5),
-                        ),
+                            backgroundColor: Colors.pinkAccent.withOpacity(0.2), padding: const EdgeInsets.all(5)),
                         child: const Text('isar登録'),
                       ),
                       ElevatedButton(
-                        onPressed: () => _showDeleteDialog(flag: 'room'),
+                        onPressed: () => _showDeleteDialog(),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.redAccent.withOpacity(0.2),
-                          padding: const EdgeInsets.all(5),
-                        ),
+                            backgroundColor: Colors.redAccent.withOpacity(0.2), padding: const EdgeInsets.all(5)),
                         child: const Text('Room全削除'),
                       ),
                     ],
@@ -213,13 +213,49 @@ class _KotlinRoomDataDisplayAlertState extends State<KotlinRoomDataDisplayAlert>
               ),
             ),
           ),
-          if (_isLoading2) ...<Widget>[const Center(child: CircularProgressIndicator())],
+          if (_isLoading2) ...<Widget>[
+            Center(
+              child: Column(
+                children: <Widget>[
+                  const CircularProgressIndicator(),
+                  const SizedBox(height: 10),
+                  Text(_remainingTime.toStringAsFixed(3))
+                ],
+              ),
+            )
+          ],
         ],
       ),
     );
   }
 
+  ///
+  void _startCountdown() {
+    _timer?.cancel();
+
+    setState(() => _remainingTime = maxTime);
+
+    const Duration interval = Duration(milliseconds: 10);
+
+    final DateTime startTime = DateTime.now();
+
+    _timer = Timer.periodic(interval, (Timer timer) {
+      final double elapsed = DateTime.now().difference(startTime).inMilliseconds / 1000;
+
+      final double newRemaining = (maxTime - elapsed).clamp(0.0, maxTime);
+
+      setState(() => _remainingTime = newRemaining);
+
+      if (newRemaining <= 0.0) {
+        _timer?.cancel();
+      }
+    });
+  }
+
+  ///
   Future<void> inputKotlinRoomData() async {
+    _startCountdown();
+
     setState(() => _isLoading2 = true);
 
     if (inputKotlinRoomDataList.isEmpty) {
@@ -268,18 +304,12 @@ class _KotlinRoomDataDisplayAlertState extends State<KotlinRoomDataDisplayAlert>
   }
 
   ///
-  void _showDeleteDialog({required String flag}) {
+  void _showDeleteDialog() {
     final Widget cancelButton = TextButton(onPressed: () => Navigator.pop(context), child: const Text('いいえ'));
 
     final Widget continueButton = TextButton(
       onPressed: () {
-        switch (flag) {
-          case 'isar':
-            _deleteKotlinRoomDataList();
-
-          case 'room':
-            deleteKotlinRoomList();
-        }
+        deleteKotlinRoomList();
 
         Navigator.pop(context);
       },
@@ -288,51 +318,12 @@ class _KotlinRoomDataDisplayAlertState extends State<KotlinRoomDataDisplayAlert>
 
     final AlertDialog alert = AlertDialog(
       backgroundColor: Colors.blueGrey.withOpacity(0.3),
-      content: Text(
-        (flag == 'isar') ? '${DateTime.now().yyyymmdd}以前のisarデータを消去しますか？' : 'kotlinのroomデータを削除しますか',
-      ),
+      content: const Text('kotlinのroomデータを削除しますか'),
       actions: <Widget>[cancelButton, continueButton],
     );
 
     // ignore: inference_failure_on_function_invocation
     showDialog(context: context, builder: (BuildContext context) => alert);
-  }
-
-  ///
-  Future<void> _deleteKotlinRoomDataList() async {
-    setState(() => _isLoading2 = true);
-
-    ////////////////////////////////////////
-    final List<int> idList = <int>[];
-    kotlinRoomDataList?.forEach((KotlinRoomData element) => idList.add(element.id));
-    ////////////////////////////////////////
-
-    if (idList.isNotEmpty) {
-      KotlinRoomDataRepository().deleteKotlinRoomDataList(idList: idList).then(
-        // ignore: always_specify_types
-        (value2) {
-          if (mounted) {
-            // ignore: always_specify_types
-            Future.delayed(
-              const Duration(seconds: 2),
-              () {
-                setState(() => _isLoading2 = false);
-
-                // ignore: use_build_context_synchronously
-                Navigator.pop(context);
-
-                Navigator.pushReplacement(
-                  // ignore: use_build_context_synchronously
-                  context,
-                  // ignore: inference_failure_on_instance_creation, always_specify_types
-                  MaterialPageRoute(builder: (BuildContext context) => HomeScreen(baseYm: DateTime.now().yyyymm)),
-                );
-              },
-            );
-          }
-        },
-      );
-    }
   }
 
   ///
