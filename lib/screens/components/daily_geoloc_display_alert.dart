@@ -174,7 +174,7 @@ class _DailyGeolocDisplayAlertState extends State<DailyGeolocDisplayAlert> {
     roopGeolocList.addAll(roopGeolocList2);
 
     roopGeolocList
-      ..sort((Geoloc a, Geoloc b) => a.time.compareTo(b.time))
+      ..sort((Geoloc a, Geoloc b) => a.time.compareTo(b.time) * -1)
       ..forEach(
         (Geoloc element) {
           list.add(
