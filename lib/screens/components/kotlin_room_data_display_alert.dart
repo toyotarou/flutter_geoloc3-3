@@ -217,9 +217,15 @@ class _KotlinRoomDataDisplayAlertState extends State<KotlinRoomDataDisplayAlert>
             Center(
               child: Column(
                 children: <Widget>[
+                  SizedBox(width: context.screenSize.width),
+                  const Spacer(),
                   const CircularProgressIndicator(),
                   const SizedBox(height: 10),
-                  Text(_remainingTime.toStringAsFixed(3))
+                  Text(
+                    _remainingTime.toStringAsFixed(3),
+                    style: const TextStyle(fontSize: 30, color: Colors.yellowAccent),
+                  ),
+                  const Spacer(),
                 ],
               ),
             )
