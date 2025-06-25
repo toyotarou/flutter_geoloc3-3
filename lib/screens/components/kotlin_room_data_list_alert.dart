@@ -6,6 +6,7 @@ import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../ripository/kotlin_room_data_repository.dart';
 import '../home_screen.dart';
+import '../parts/error_dialog.dart';
 
 class KotlinRoomDataListAlert extends ConsumerStatefulWidget {
   const KotlinRoomDataListAlert({super.key});
@@ -213,11 +214,26 @@ class _KotlinRoomDataListAlertState extends ConsumerState<KotlinRoomDataListAler
         });
 
     if (selectedDate != null) {
-      kotlinRoomDataList?.forEach((KotlinRoomData element) {
-        if (selectedDate.yyyymmdd == element.date) {
-          appParamNotifier.setSelectedKotlinRoomDataListForDelete(kotlinRoomData: element);
-        }
-      });
+      if (selectedDate.yyyymmdd != DateTime.now().yyyymmdd) {
+        kotlinRoomDataList?.forEach((KotlinRoomData element) {
+          if (selectedDate.yyyymmdd == element.date) {
+            appParamNotifier.setSelectedKotlinRoomDataListForDelete(kotlinRoomData: element);
+          }
+        });
+      } else {
+        // ignore: always_specify_types
+        Future.delayed(
+          Duration.zero,
+          () => error_dialog(
+            // ignore: use_build_context_synchronously
+            context: context,
+            title: '削除不可',
+            content: '本日分のデータは削除できません。',
+          ),
+        );
+
+        return;
+      }
     }
   }
 }

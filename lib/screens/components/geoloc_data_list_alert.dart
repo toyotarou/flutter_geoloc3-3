@@ -6,6 +6,7 @@ import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
 import '../../ripository/geolocs_repository.dart';
 import '../home_screen.dart';
+import '../parts/error_dialog.dart';
 
 class GeolocDataListAlert extends ConsumerStatefulWidget {
   const GeolocDataListAlert({super.key, this.geolocList});
@@ -202,11 +203,26 @@ class _GeolocDataListAlertState extends ConsumerState<GeolocDataListAlert> with 
         });
 
     if (selectedDate != null) {
-      widget.geolocList?.forEach((Geoloc element) {
-        if (selectedDate.yyyymmdd == element.date) {
-          appParamNotifier.setSelectedGeolocListForDelete(geoloc: element);
-        }
-      });
+      if (selectedDate.yyyymmdd != DateTime.now().yyyymmdd) {
+        widget.geolocList?.forEach((Geoloc element) {
+          if (selectedDate.yyyymmdd == element.date) {
+            appParamNotifier.setSelectedGeolocListForDelete(geoloc: element);
+          }
+        });
+      } else {
+        // ignore: always_specify_types
+        Future.delayed(
+          Duration.zero,
+          () => error_dialog(
+            // ignore: use_build_context_synchronously
+            context: context,
+            title: '削除不可',
+            content: '本日分のデータは削除できません。',
+          ),
+        );
+
+        return;
+      }
     }
   }
 }
