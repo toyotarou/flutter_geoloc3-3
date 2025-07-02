@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:scroll_to_index/scroll_to_index.dart';
 
 import '../../collections/kotlin_room_data.dart';
 import '../../controllers/controllers_mixin.dart';
@@ -20,6 +21,8 @@ class _KotlinRoomDataListAlertState extends ConsumerState<KotlinRoomDataListAler
   List<KotlinRoomData>? kotlinRoomDataList;
 
   bool isLoading = false;
+
+  final AutoScrollController autoScrollController = AutoScrollController();
 
   ///
   @override
@@ -46,7 +49,29 @@ class _KotlinRoomDataListAlertState extends ConsumerState<KotlinRoomDataListAler
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      const Text('Kotlin Room Data List'),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          const Text('Kotlin Room Data List'),
+                          const SizedBox(height: 10),
+                          Row(
+                            children: <Widget>[
+                              GestureDetector(
+                                  onTap: () {
+                                    if (kotlinRoomDataList != null) {
+                                      autoScrollController.scrollToIndex(kotlinRoomDataList!.length);
+                                    }
+                                  },
+                                  child: const Icon(Icons.arrow_downward_outlined)),
+                              const SizedBox(width: 20),
+                              GestureDetector(
+                                onTap: () => autoScrollController.scrollToIndex(0),
+                                child: const Icon(Icons.arrow_upward_outlined),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                       Row(
                         children: <Widget>[
                           IconButton(onPressed: () => _showDP(), icon: const Icon(Icons.calendar_month)),
@@ -85,35 +110,45 @@ class _KotlinRoomDataListAlertState extends ConsumerState<KotlinRoomDataListAler
   Widget displayKotlinRoomDataList() {
     final List<Widget> list = <Widget>[];
 
+    int i = 0;
     kotlinRoomDataList
       ?..sort((KotlinRoomData a, KotlinRoomData b) => '${a.date} ${a.time}'.compareTo('${b.date} ${b.time}'))
       ..forEach((KotlinRoomData element) {
-        list.add(Container(
-          decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3)))),
-          padding: const EdgeInsets.all(10),
-          child: Row(
-            children: <Widget>[
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[Text(element.date), Text(element.time)],
+        list.add(AutoScrollTag(
+          // ignore: always_specify_types
+          key: ValueKey(i),
+          index: i,
+          controller: autoScrollController,
+          child: Container(
+            decoration: BoxDecoration(border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3)))),
+            padding: const EdgeInsets.all(10),
+            child: Row(
+              children: <Widget>[
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[Text(element.date), Text(element.time)],
+                  ),
                 ),
-              ),
-              Expanded(child: Text(element.latitude)),
-              Expanded(child: Text(element.longitude)),
-              Checkbox(
-                value: appParamState.selectedKotlinRoomDataListForDelete.contains(element),
-                onChanged: (bool? value) =>
-                    appParamNotifier.setSelectedKotlinRoomDataListForDelete(kotlinRoomData: element),
-                activeColor: Colors.greenAccent.withValues(alpha: 0.2),
-                side: BorderSide(color: Colors.white.withValues(alpha: 0.3)),
-              ),
-            ],
+                Expanded(child: Text(element.latitude)),
+                Expanded(child: Text(element.longitude)),
+                Checkbox(
+                  value: appParamState.selectedKotlinRoomDataListForDelete.contains(element),
+                  onChanged: (bool? value) =>
+                      appParamNotifier.setSelectedKotlinRoomDataListForDelete(kotlinRoomData: element),
+                  activeColor: Colors.greenAccent.withValues(alpha: 0.2),
+                  side: BorderSide(color: Colors.white.withValues(alpha: 0.3)),
+                ),
+              ],
+            ),
           ),
         ));
+
+        i++;
       });
 
     return CustomScrollView(
+      controller: autoScrollController,
       slivers: <Widget>[
         SliverList(
           delegate: SliverChildBuilderDelegate(

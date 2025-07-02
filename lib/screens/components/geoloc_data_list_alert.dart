@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:scroll_to_index/scroll_to_index.dart';
 
 import '../../collections/geoloc.dart';
 import '../../controllers/controllers_mixin.dart';
@@ -20,6 +21,8 @@ class GeolocDataListAlert extends ConsumerStatefulWidget {
 class _GeolocDataListAlertState extends ConsumerState<GeolocDataListAlert> with ControllersMixin<GeolocDataListAlert> {
   bool isLoading = false;
 
+  final AutoScrollController autoScrollController = AutoScrollController();
+
   ///
   @override
   Widget build(BuildContext context) {
@@ -37,7 +40,29 @@ class _GeolocDataListAlertState extends ConsumerState<GeolocDataListAlert> with 
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: <Widget>[
-                      const Text('Geoloc Data List'),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          const Text('Geoloc Data List'),
+                          const SizedBox(height: 10),
+                          Row(
+                            children: <Widget>[
+                              GestureDetector(
+                                  onTap: () {
+                                    if (widget.geolocList != null) {
+                                      autoScrollController.scrollToIndex(widget.geolocList!.length);
+                                    }
+                                  },
+                                  child: const Icon(Icons.arrow_downward_outlined)),
+                              const SizedBox(width: 20),
+                              GestureDetector(
+                                onTap: () => autoScrollController.scrollToIndex(0),
+                                child: const Icon(Icons.arrow_upward_outlined),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
                       Row(
                         children: <Widget>[
                           IconButton(onPressed: () => _showDP(), icon: const Icon(Icons.calendar_month)),
@@ -67,48 +92,58 @@ class _GeolocDataListAlertState extends ConsumerState<GeolocDataListAlert> with 
   Widget displayGeolocDataList() {
     final List<Widget> list = <Widget>[];
 
+    int i = 0;
     widget.geolocList
       ?..sort((Geoloc a, Geoloc b) => a.id.compareTo(b.id))
       ..forEach(
         (Geoloc element) {
           list.add(
-            Container(
-              decoration: BoxDecoration(
-                border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
-              ),
-              padding: const EdgeInsets.all(10),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: <Widget>[
-                  SizedBox(width: 60, child: Text(element.id.toString())),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(element.date),
-                      Text(element.time),
-                    ],
-                  ),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Text(element.latitude),
-                      Text(element.longitude),
-                    ],
-                  ),
-                  Checkbox(
-                    value: appParamState.selectedGeolocListForDelete.contains(element),
-                    onChanged: (bool? value) => appParamNotifier.setSelectedGeolocListForDelete(geoloc: element),
-                    activeColor: Colors.greenAccent.withValues(alpha: 0.2),
-                    side: BorderSide(color: Colors.white.withValues(alpha: 0.3)),
-                  ),
-                ],
+            AutoScrollTag(
+              // ignore: always_specify_types
+              key: ValueKey(i),
+              index: i,
+              controller: autoScrollController,
+              child: Container(
+                decoration: BoxDecoration(
+                  border: Border(bottom: BorderSide(color: Colors.white.withOpacity(0.3))),
+                ),
+                padding: const EdgeInsets.all(10),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    SizedBox(width: 60, child: Text(element.id.toString())),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(element.date),
+                        Text(element.time),
+                      ],
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text(element.latitude),
+                        Text(element.longitude),
+                      ],
+                    ),
+                    Checkbox(
+                      value: appParamState.selectedGeolocListForDelete.contains(element),
+                      onChanged: (bool? value) => appParamNotifier.setSelectedGeolocListForDelete(geoloc: element),
+                      activeColor: Colors.greenAccent.withValues(alpha: 0.2),
+                      side: BorderSide(color: Colors.white.withValues(alpha: 0.3)),
+                    ),
+                  ],
+                ),
               ),
             ),
           );
+
+          i++;
         },
       );
 
     return CustomScrollView(
+      controller: autoScrollController,
       slivers: <Widget>[
         SliverList(
           delegate: SliverChildBuilderDelegate(
