@@ -526,7 +526,9 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
               ),
               Divider(color: Colors.white.withOpacity(0.4), thickness: 5),
               GestureDetector(
-                onTap: () => GeolocDialog(context: context, widget: GeolocDataListAlert(geolocList: geolocList)),
+                onTap: () => GeolocDialog(
+                    context: context,
+                    widget: GeolocDataListAlert(geolocList: geolocList, geolocStateMap: geolocState.geolocMap)),
                 child: Row(
                   children: <Widget>[
                     const MenuHeadIcon(),

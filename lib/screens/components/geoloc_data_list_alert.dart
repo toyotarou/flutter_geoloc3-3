@@ -5,14 +5,16 @@ import 'package:scroll_to_index/scroll_to_index.dart';
 import '../../collections/geoloc.dart';
 import '../../controllers/controllers_mixin.dart';
 import '../../extensions/extensions.dart';
+import '../../models/geoloc_model.dart';
 import '../../ripository/geolocs_repository.dart';
 import '../home_screen.dart';
 import '../parts/error_dialog.dart';
 
 class GeolocDataListAlert extends ConsumerStatefulWidget {
-  const GeolocDataListAlert({super.key, this.geolocList});
+  const GeolocDataListAlert({super.key, this.geolocList, required this.geolocStateMap});
 
   final List<Geoloc>? geolocList;
+  final Map<String, List<GeolocModel>> geolocStateMap;
 
   @override
   ConsumerState<GeolocDataListAlert> createState() => _GeolocDataListAlertState();
@@ -238,13 +240,7 @@ class _GeolocDataListAlertState extends ConsumerState<GeolocDataListAlert> with 
         });
 
     if (selectedDate != null) {
-      if (selectedDate.yyyymmdd != DateTime.now().yyyymmdd) {
-        widget.geolocList?.forEach((Geoloc element) {
-          if (selectedDate.yyyymmdd == element.date) {
-            appParamNotifier.setSelectedGeolocListForDelete(geoloc: element);
-          }
-        });
-      } else {
+      if (selectedDate.yyyymmdd == DateTime.now().yyyymmdd) {
         // ignore: always_specify_types
         Future.delayed(
           Duration.zero,
@@ -258,6 +254,27 @@ class _GeolocDataListAlertState extends ConsumerState<GeolocDataListAlert> with 
 
         return;
       }
+
+      if (widget.geolocStateMap[selectedDate.yyyymmdd] == null) {
+        // ignore: always_specify_types
+        Future.delayed(
+          Duration.zero,
+          () => error_dialog(
+            // ignore: use_build_context_synchronously
+            context: context,
+            title: '削除不可',
+            content: 'mysqlのデータがありません。',
+          ),
+        );
+
+        return;
+      }
+
+      widget.geolocList?.forEach((Geoloc element) {
+        if (selectedDate.yyyymmdd == element.date) {
+          appParamNotifier.setSelectedGeolocListForDelete(geoloc: element);
+        }
+      });
     }
   }
 }

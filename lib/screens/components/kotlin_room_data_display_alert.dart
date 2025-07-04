@@ -24,9 +24,7 @@ class _KotlinRoomDataDisplayAlertState extends State<KotlinRoomDataDisplayAlert>
 
   List<WifiLocation> kotlinRoomData = <WifiLocation>[];
 
-  List<KotlinRoomData> inputKotlinRoomDataList = <KotlinRoomData>[];
-
-  List<KotlinRoomData>? kotlinRoomDataList = <KotlinRoomData>[];
+  List<KotlinRoomData>? isarKotlinRoomDataList = <KotlinRoomData>[];
 
   bool _isLoading2 = false;
 
@@ -183,13 +181,6 @@ class _KotlinRoomDataDisplayAlertState extends State<KotlinRoomDataDisplayAlert>
 
                               final String ssid = loc.ssid.replaceAll('"', '');
 
-                              inputKotlinRoomDataList.add(KotlinRoomData()
-                                ..date = loc.date
-                                ..time = loc.time
-                                ..ssid = ssid
-                                ..latitude = loc.latitude
-                                ..longitude = loc.longitude);
-
                               return Card(
                                 margin: const EdgeInsets.symmetric(vertical: 6),
                                 color: Colors.transparent,
@@ -264,7 +255,7 @@ class _KotlinRoomDataDisplayAlertState extends State<KotlinRoomDataDisplayAlert>
 
     setState(() => _isLoading2 = true);
 
-    if (inputKotlinRoomDataList.isEmpty) {
+    if (kotlinRoomData.isEmpty) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         error_dialog(context: context, title: '登録できません。', content: '値を正しく入力してください。');
       });
@@ -275,14 +266,17 @@ class _KotlinRoomDataDisplayAlertState extends State<KotlinRoomDataDisplayAlert>
     final DateTime now = DateTime.now();
     final DateTime today = DateTime(now.year, now.month, now.day);
 
+    // --------------------- //
     final Set<String> existingDateTimeSet = <String>{
-      for (final KotlinRoomData element in kotlinRoomDataList!) '${element.date} ${element.time}'
+      for (final KotlinRoomData element in isarKotlinRoomDataList!) '${element.date} ${element.time}'
     };
-
     final Set<String> processedDateTimeSet = <String>{};
+    // --------------------- //
+
     final List<KotlinRoomData> inputData = <KotlinRoomData>[];
 
-    for (final KotlinRoomData element in inputKotlinRoomDataList) {
+    ////////////////////////////////////////////
+    for (final WifiLocation element in kotlinRoomData) {
       final DateTime dt = DateTime(
         int.parse(element.date.split('-')[0]),
         int.parse(element.date.split('-')[1]),
@@ -296,10 +290,15 @@ class _KotlinRoomDataDisplayAlertState extends State<KotlinRoomDataDisplayAlert>
       if (dt.isAfter(today) &&
           !existingDateTimeSet.contains(dateTimeStr) &&
           !processedDateTimeSet.contains(dateTimeStr)) {
-        inputData.add(element);
-        processedDateTimeSet.add(dateTimeStr);
+        inputData.add(KotlinRoomData()
+          ..date = element.date
+          ..time = element.time
+          ..ssid = element.ssid.replaceAll('"', '')
+          ..latitude = element.latitude
+          ..longitude = element.longitude);
       }
     }
+    ////////////////////////////////////////////
 
     if (inputData.isNotEmpty) {
       await KotlinRoomDataRepository().inputKotlinRoomDataList(kotlinRoomDataList: inputData);
@@ -360,7 +359,7 @@ class _KotlinRoomDataDisplayAlertState extends State<KotlinRoomDataDisplayAlert>
     KotlinRoomDataRepository().getKotlinRoomDataList().then(
       (List<KotlinRoomData>? value) {
         if (mounted) {
-          setState(() => kotlinRoomDataList = value);
+          setState(() => isarKotlinRoomDataList = value);
         }
       },
     );
