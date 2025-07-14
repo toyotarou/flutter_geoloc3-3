@@ -5,7 +5,7 @@ import 'isar_repository.dart';
 
 class KotlinRoomDataRepository {
   ///
-  Future<List<KotlinRoomData>?> getKotlinRoomDataList() async {
+  Future<List<KotlinRoomData>?> getAllKotlinRoomDataList() async {
     await IsarRepository.configure();
     return IsarRepository.isar.kotlinRoomDatas.where().sortByDateDesc().thenByTimeDesc().findAll();
   }

@@ -99,7 +99,7 @@ class _KotlinRoomDataListAlertState extends ConsumerState<KotlinRoomDataListAler
 
   ///
   void _makeKotlinRoomDataList() {
-    KotlinRoomDataRepository().getKotlinRoomDataList().then((List<KotlinRoomData>? value) {
+    KotlinRoomDataRepository().getAllKotlinRoomDataList().then((List<KotlinRoomData>? value) {
       if (mounted) {
         setState(() => kotlinRoomDataList = value);
       }

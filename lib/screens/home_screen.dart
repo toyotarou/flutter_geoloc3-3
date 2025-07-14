@@ -27,7 +27,6 @@ import 'components/history_geoloc_list_alert.dart';
 import 'components/kotlin_room_data_display_alert.dart';
 import 'components/kotlin_room_data_list_alert.dart';
 import 'components/temple_visited_date_display_alert.dart';
-
 import 'parts/geoloc_dialog.dart';
 import 'parts/menu_head_icon.dart';
 
@@ -182,6 +181,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
 
   ///
   void _init() {
+    /// setState地獄に陥るのでisarからのデータ取得を追加してはいけない
     _makeGeolocList();
   }
 
@@ -707,7 +707,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> with ControllersMixin<H
                                                 // ignore: prefer_final_locals
                                                 List<KotlinRoomData>? list = <KotlinRoomData>[];
 
-                                                await KotlinRoomDataRepository().getKotlinRoomDataList().then(
+                                                await KotlinRoomDataRepository().getAllKotlinRoomDataList().then(
                                                       (List<KotlinRoomData>? value) => value?.forEach(
                                                         (KotlinRoomData element) {
                                                           if (generateYmd == element.date) {

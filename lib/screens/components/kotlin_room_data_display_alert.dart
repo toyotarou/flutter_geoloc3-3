@@ -356,7 +356,7 @@ class _KotlinRoomDataDisplayAlertState extends State<KotlinRoomDataDisplayAlert>
 
   ///
   Future<void> _makeKotlinRoomDataList() async {
-    KotlinRoomDataRepository().getKotlinRoomDataList().then(
+    KotlinRoomDataRepository().getAllKotlinRoomDataList().then(
       (List<KotlinRoomData>? value) {
         if (mounted) {
           setState(() => isarKotlinRoomDataList = value);
