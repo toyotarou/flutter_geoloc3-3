@@ -240,35 +240,35 @@ class _GeolocDataListAlertState extends ConsumerState<GeolocDataListAlert> with 
         });
 
     if (selectedDate != null) {
-      if (selectedDate.yyyymmdd == DateTime.now().yyyymmdd) {
-        // ignore: always_specify_types
-        Future.delayed(
-          Duration.zero,
-          () => error_dialog(
-            // ignore: use_build_context_synchronously
-            context: context,
-            title: '削除不可',
-            content: '本日分のデータは削除できません。',
-          ),
-        );
-
-        return;
-      }
-
-      if (widget.geolocStateMap[selectedDate.yyyymmdd] == null) {
-        // ignore: always_specify_types
-        Future.delayed(
-          Duration.zero,
-          () => error_dialog(
-            // ignore: use_build_context_synchronously
-            context: context,
-            title: '削除不可',
-            content: 'mysqlのデータがありません。',
-          ),
-        );
-
-        return;
-      }
+      // if (selectedDate.yyyymmdd == DateTime.now().yyyymmdd) {
+      //   // ignore: always_specify_types
+      //   Future.delayed(
+      //     Duration.zero,
+      //     () => error_dialog(
+      //       // ignore: use_build_context_synchronously
+      //       context: context,
+      //       title: '削除不可',
+      //       content: '本日分のデータは削除できません。',
+      //     ),
+      //   );
+      //
+      //   return;
+      // }
+      //
+      // if (widget.geolocStateMap[selectedDate.yyyymmdd] == null) {
+      //   // ignore: always_specify_types
+      //   Future.delayed(
+      //     Duration.zero,
+      //     () => error_dialog(
+      //       // ignore: use_build_context_synchronously
+      //       context: context,
+      //       title: '削除不可',
+      //       content: 'mysqlのデータがありません。',
+      //     ),
+      //   );
+      //
+      //   return;
+      // }
 
       widget.geolocList?.forEach((Geoloc element) {
         if (selectedDate.yyyymmdd == element.date) {

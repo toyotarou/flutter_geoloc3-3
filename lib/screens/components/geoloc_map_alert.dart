@@ -150,10 +150,35 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
       },
     );
 
+
+
+
+    print(widget.geolocStateList.length);
+
+
+
+
+
+
     sortedWidgetGeolocStateList = widget.geolocStateList
       ..sort(
           (GeolocModel a, GeolocModel b) => '${a.year}-${a.month}-${a.day}'.compareTo('${b.year}-${b.month}-${b.day}'))
       ..sort((GeolocModel a, GeolocModel b) => a.time.compareTo(b.time));
+
+
+
+
+
+    print(sortedWidgetGeolocStateList.length);
+
+
+
+
+
+
+
+
+
   }
 
   ///
@@ -974,6 +999,20 @@ class _GeolocMapAlertState extends ConsumerState<GeolocMapAlert> with Controller
   ///
   void makeMarker() {
     markerList = <Marker>[];
+
+
+
+
+
+
+
+
+    print(gStateList.length);
+
+
+
+
+
 
     for (final GeolocModel element in gStateList) {
       final bool isRed = emphasisMarkers.contains(LatLng(element.latitude.toDouble(), element.longitude.toDouble()));
